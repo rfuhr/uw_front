@@ -20,3 +20,6 @@ export { default as CarteiraFinanceiraService } from './CarteiraFinanceiraServic
 export { default as FatoGeradorService } from './FatoGeradorService'
 export { default as GrupoFinanceiroService } from './GrupoFinanceiroService'
 export { default as TipoOperacaoFinanceiraService } from './TipoOperacaoFinanceiraService'
+export { default as RegimeTributarioService } from './RegimeTributarioService'
+export { default as GrupoTributacaoService } from './GrupoTributacaoService'
+export { default as NcmService } from './NcmService'

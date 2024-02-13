@@ -13,6 +13,10 @@ class UsuarioService extends CrudService {
         else
             return api.get(`${this.pathService}/permissao/${empresaId}/${empresaFilialId}/${tag}?operacao=${operacao}`)
     }
+
+    checkAutonomia(empresaId, empresaFilialId, tag) {
+        return api.get(`${this.pathService}/autonomia/${empresaId}/${empresaFilialId}/${tag}`)
+    }    
 }
 
 export default new UsuarioService('seguranca/usuario');

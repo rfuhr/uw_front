@@ -1,6 +1,11 @@
 <script setup>
 import { ref, defineProps, onMounted, onBeforeMount, computed } from 'vue';
 import _ from 'lodash';
+import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
+
+import { ParceiroLocalService as Service } from '@/service';
+
+const { formatDocumento } = useFormatDocumentos();
 
 const props = defineProps({
     id: {
@@ -12,25 +17,9 @@ const props = defineProps({
         type: String,
         default: ''
     },
-    optionLabel: {
-        type: String,
-        default: ''
-    },
-    optionValue: {
-        type: String,
-        default: ''
-    },
-    placeholder: {
-        type: String,
-        default: ''
-    },
     required: {
         type: Boolean,
         default: false
-    },
-    service: {
-        type: Object,
-        required: true
     },
     columnsFilters: {},
     erros: {},
@@ -47,6 +36,8 @@ const lazyParams = ref();
 const filters = ref();
 const valorFiltro = ref();
 const filtroAtivo = ref();
+const optionspESQ = ref(['Nome', 'Cnpj / Cpf', 'Código']);
+const tipofiltro = ref('Nome');
 
 const montarFiltros = async () => {
     filters.value = {
@@ -54,7 +45,7 @@ const montarFiltros = async () => {
             value: valorFiltro.value,
             matchMode: 'contains',
             tipo: 'text',
-            fieldFilter: 'nome'
+            fieldFilter: (tipofiltro.value === 'Nome' ? 'nomeLocal' : tipofiltro.value === 'Código' ? 'codigo' : 'cpfCnpj') 
         }
     };
     if (valorFiltro.value && valorFiltro.value !== '') filtroAtivo.value = true;
@@ -73,19 +64,16 @@ const montarFiltros = async () => {
     try {
         if (filters.value) lazyParams.value.filters = filters.value;
         if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
+        else lazyParams.value.id = null;
     } catch {}
 };
 
 const getLista = async () => {
     try {
         await montarFiltros();
-        const data = await props.service.getPageAll(lazyParams.value);
+        const data = await Service.getPageAll(lazyParams.value);
         registros.value = data.registros;
         totalRegistros.value = data.totalRegistros;
-        if (!props.modelValue && totalRegistros.value === 1) {
-            localFieldName.value = registros.value[0].id;
-            handleChange({ value: registros.value[0].id })
-        }
     } catch {
         registros.value = [];
     }
@@ -109,8 +97,8 @@ const onLazyLoad = (event) => {
     getLista();
 };
 
-onBeforeMount(() => {
-    montarFiltros();
+onBeforeMount(async () => {
+    await montarFiltros();
 });
 
 onMounted(() => {
@@ -132,6 +120,7 @@ const localFieldName = computed({
     get: () => props.modelValue,
     set: (newValue) => {
         if (!_.isEqual(newValue, props.modelValue)) {
+            console.log('NewValue ', newValue, 'OldValue', props.modelValue);
             emit('update:modelValue', newValue);
             emit('change');
         }
@@ -142,6 +131,16 @@ const handleChange = (event) => {
     const reg = registros.value.find((e) => e.id === event.value);
     emit('changeObject', reg);
 };
+
+const formatarDocumento = (value) => {
+    return formatDocumento(value);
+};
+
+const beforeShow = () => {
+  limparFiltro();
+  getLista();
+}
+
 </script>
 
 <template>
@@ -151,23 +150,33 @@ const handleChange = (event) => {
                 :id="props.id"
                 v-model="localFieldName"
                 :options="registros"
-                :optionLabel="optionLabel"
-                :optionValue="optionValue"
-                :placeholder="placeholder"
+                optionLabel="nomeLocal"
+                optionValue="id"
+                placeholder="Selecione o parceiro"
                 class="minimodrop"
                 :showClear="true"
                 :disabled="disabled"
                 :class="{ 'p-invalid': props.erros, 'w-full': true }"
-                @before-show="getLista()"
+                @before-show="beforeShow()"
                 @change="handleChange"
             >
                 <template #header>
                     <div class="col-12 md:col-12">
+                        <div class="flex justify-content-start align-items-center">
+                           <span>Pesquisar por: </span> <SelectButton v-model="tipofiltro" :options="optionspESQ" aria-labelledby="basic" />
+                        </div>
+
                         <div class="p-inputgroup">
                             <InputText autofocus placeholder="Digite argumento de pesquisa" v-model="valorFiltro" @keypress.enter="getLista()" />
                             <Button v-if="filtroAtivo" icon="pi pi-times" class="p-button-danger" @click.stop="limparFiltro()" />
                             <Button icon="pi pi-search" class="p-button-warning" @click.stop="getLista()" />
                         </div>
+                    </div>
+                </template>
+                <template #option="slotProps">
+                    <div class="flex flex-column align-items-start">
+                        <span>{{ slotProps.option.nomeRazaoSocial }} - ({{ formatarDocumento(slotProps.option.cpfCnpj) }})</span>
+                        <span v-if="slotProps.option.cpfCnpj.length === 9" style="font-size: 0.9rem; color: black">Filial: {{ slotProps.option.nomeLocal }}</span>
                     </div>
                 </template>
 

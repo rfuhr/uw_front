@@ -23,3 +23,8 @@ export { default as TipoOperacaoFinanceiraService } from './TipoOperacaoFinancei
 export { default as RegimeTributarioService } from './RegimeTributarioService'
 export { default as GrupoTributacaoService } from './GrupoTributacaoService'
 export { default as NcmService } from './NcmService'
+export { default as ParceiroLocalService } from './ParceiroLocalService'
+export { default as DepartamentoService } from './DepartamentoService'  
+export { default as HistoricoPadraoService } from './HistoricoPadraoService'
+export { default as GrupoAutonomiaService } from './GrupoAutonomiaService';
+export { default as AutonomiaService } from './AutonomiaService';

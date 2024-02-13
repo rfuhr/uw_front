@@ -6,11 +6,12 @@ import * as yup from 'yup';
 import _ from 'lodash';
 import { useToast } from 'primevue/usetoast';
 import Swal from 'sweetalert2';
-import { UsuarioService, EmpresaService, EmpresaFilialService, PerfilService, FuncionalidadeService } from '@/service';
+import { UsuarioService, EmpresaService, EmpresaFilialService, PerfilService, FuncionalidadeService, GrupoAutonomiaService, AutonomiaService } from '@/service';
 
 const idUsuario = ref();
 const dtPermissoes = ref();
 const dtFuncionalidades = ref();
+const dtAutonomias = ref();
 
 const route = useRoute();
 const router = useRouter();
@@ -25,6 +26,13 @@ const funcionalidadeSchema = yup.object().shape({
     empresaId: yup.string().required('Empresa para permissão é obrigatória ser informada.'),
     filiaisId: yup.array().of(yup.number().integer()).optional().nullable(),
     funcionalidadeId: yup.string().required('Funcionalidade para permissão é obrigatória ser informada.')
+});
+
+const autonomiaSchema = yup.object().shape({
+    empresaId: yup.string().required('Empresa para permissão é obrigatória ser informada.'),
+    filiaisId: yup.array().of(yup.number().integer()).optional().nullable(),
+    grupoAutonomiaId: yup.string().required('Grupo de Autonomia para permissão é obrigatória ser informada.'),
+    autonomiaId: yup.string().required('Autonomia para permissão é obrigatória ser informada.')
 });
 
 const senhaIsRequired = () => {
@@ -48,7 +56,8 @@ const createSchema = () => {
                   .required('Confirmação de Senha é obrigatória')
             : yup.string(),
         permissoes: yup.array().of(permissaoSchema),
-        funcionalidades: yup.array().of(funcionalidadeSchema)
+        funcionalidades: yup.array().of(funcionalidadeSchema),
+        autonomias: yup.array().of(autonomiaSchema),
     });
 };
 
@@ -64,7 +73,8 @@ const formData = reactive({
     username: undefined,
     ativo: true,
     permissoes: [],
-    funcionalidades: []
+    funcionalidades: [],
+    autonomias: []
 });
 
 onMounted(() => {
@@ -81,6 +91,8 @@ onMounted(() => {
                     formData.permissoes.push(...data.permissoes);
                 if (data.funcionalidades && data.funcionalidades.length > 0)
                     formData.funcionalidades.push(...data.funcionalidades);
+                if (data.autonomias && data.autonomias.length > 0)
+                    formData.autonomias.push(...data.autonomias);
             })
             .catch(async () => {
                 await Swal.fire('Falha', `Não foi encontrado usuário para o id ${idUsuario.value}`, 'error');
@@ -154,6 +166,17 @@ const adicionarRegraFuncionalidade = () => {
     });
 };
 
+const adicionarRegraAutonomia = () => {
+    const idLine = Math.floor(Math.random() * 100) * -1;
+    formData.autonomias.push({
+        id: idLine,
+        empresaId: undefined,
+        filiaisId: undefined,
+        grupoAutonomiaId: undefined,
+        autonomiaId: undefined,
+    });
+};
+
 const removerRegraPermissao = (idRemover) => {
     _.remove(formData.permissoes, (n) => {
         return n.id === idRemover;
@@ -166,8 +189,13 @@ const removerRegraFuncionalidade = (idRemover) => {
     });
 };
 
+const removerRegraAutonomia = (idRemover) => {
+    _.remove(formData.autonomias, (n) => {
+        return n.id === idRemover;
+    });
+};
+
 const handleFuncionalidade = (newObject, values) => {
-    console.log('valores', newObject, values);
     if (newObject.crud !== values.crud) {
         values.crud = newObject.crud;
         values.liberado = undefined;
@@ -177,6 +205,13 @@ const handleFuncionalidade = (newObject, values) => {
         values.inserir = undefined
     }
 }
+
+
+const handleGrupoAutonomia = (newObject, values) => {
+    values.autonomiaId = undefined;
+}
+
+
 </script>
 
 <template>
@@ -399,10 +434,74 @@ const handleFuncionalidade = (newObject, values) => {
                         <Toolbar class="mb-2">
                             <template v-slot:end>
                                 <div>
-                                    <Button label="Adicionar Regra" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarRegraPermissao()" />
+                                    <Button label="Adicionar Regra" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarRegraAutonomia()" />
                                 </div>
                             </template>
                         </Toolbar>
+                        <DataTable ref="dtAutonomias" :value="formData.autonomias" responsiveLayout="scroll">
+                            <Column field="empresaId" header="Empresa" style="width: 25%">
+                                <template #body="slotProps">
+                                    <UWSeletor
+                                        classContainer="w-full"
+                                        v-model="slotProps.data.empresaId"
+                                        optionLabel="nome"
+                                        optionValue="id"
+                                        :service="EmpresaService"
+                                        placeholder="Selecione a empresa"
+                                        @change="slotProps.data.filiaisId = []"
+                                        :erros="_.get(errors.value, `autonomias[${slotProps.index}].empresaId`, null)"
+                                    />
+                                </template>
+                            </Column>
+                            <Column field="filiaisId" header="Filial" style="width: 35%">
+                                <template #body="slotProps">
+                                    <UWMultiSeletor
+                                        classContainer="w-full"
+                                        v-model="slotProps.data.filiaisId"
+                                        :disabled="true"
+                                        optionLabel="nome"
+                                        optionValue="id"
+                                        :service="EmpresaFilialService"
+                                        placeholder="Selecione a filial"
+                                        :erros="_.get(errors.value, `autonomias[${slotProps.index}].filiaisId`, null)"
+                                        :columnsFilters="[{ field: 'empresa', value: slotProps.data.empresaId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresa.id' }]"
+                                    />
+                                </template>
+                            </Column>
+                            <Column field="grupoAutonomiaId" header="Grupo de Autonomia" style="width: 20%">
+                                <template #body="slotProps">
+                                    <UWSeletor
+                                        classContainer="w-full"
+                                        v-model="slotProps.data.grupoAutonomiaId"
+                                        optionLabel="nome"
+                                        optionValue="id"
+                                        :service="GrupoAutonomiaService"
+                                        placeholder="Selecione o grupo de autonomia"
+                                        @changeObject="handleGrupoAutonomia($event, slotProps.data)"
+                                        :erros="_.get(errors.value, `autonomias[${slotProps.index}].grupoAutonomiaId`, null)"
+                                    />
+                                </template>
+                            </Column>                            
+                            <Column field="autonomiaId" header="Autonomia" style="width: 20%">
+                                <template #body="slotProps">
+                                    <UWSeletor
+                                        classContainer="w-full"
+                                        v-model="slotProps.data.autonomiaId"
+                                        optionLabel="nome"
+                                        optionValue="id"
+                                        :service="AutonomiaService"
+                                        placeholder="Selecione a autonomia"
+                                        :erros="_.get(errors.value, `autonomias[${slotProps.index}].autonomiaId`, null)"
+                                        :columnsFilters="[{ field: 'grupoAutonomia', value: slotProps.data.grupoAutonomiaId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'grupoAutonomia.id' }]"
+                                    />
+                                </template>
+                            </Column>
+                            <Column header="" style="width: 5%">
+                                <template #body="slotProps">
+                                    <Button icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm" @click="removerRegraAutonomia(slotProps.data.id)" />
+                                </template>
+                            </Column>
+                        </DataTable>
                     </TabPanel>
                 </TabView>
             </template>

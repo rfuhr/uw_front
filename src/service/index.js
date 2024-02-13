@@ -20,3 +20,8 @@ export { default as CarteiraFinanceiraService } from './CarteiraFinanceiraServic
 export { default as FatoGeradorService } from './FatoGeradorService'
 export { default as GrupoFinanceiroService } from './GrupoFinanceiroService'
 export { default as TipoOperacaoFinanceiraService } from './TipoOperacaoFinanceiraService'
+export { default as ParceiroLocalService } from './ParceiroLocalService'
+export { default as DepartamentoService } from './DepartamentoService'  
+export { default as HistoricoPadraoService } from './HistoricoPadraoService'
+export { default as GrupoAutonomiaService } from './GrupoAutonomiaService';
+export { default as AutonomiaService } from './AutonomiaService';

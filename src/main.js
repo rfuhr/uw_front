@@ -110,6 +110,8 @@ import UWFieldSet from '@/components/layout/UWFieldSet.vue';
 import UWPickList from '@/components/UWPickList.vue';
 import UWInputMask from '@/components/UWInputMask.vue';
 import UWCalendar from '@/components/UWCalendar.vue';
+import UWParceiroLocal from '@/components/UWParceiroLocal.vue';  
+import UWCurrency from '@/components/UWCurrency.vue';  
 
 import '@/assets/styles.scss';
 
@@ -352,5 +354,7 @@ app.component('UWMultiSeletor', UWMultiSeletor);
 app.component('UWPickList', UWPickList);
 app.component('UWInputMask', UWInputMask);
 app.component('UWCalendar', UWCalendar);
+app.component('UWParceiroLocal', UWParceiroLocal);
+app.component('UWCurrency', UWCurrency);
 
 app.mount('#app');

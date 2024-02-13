@@ -15,6 +15,13 @@ export const menu = [
         ]
     },        
     {
+        label: 'Organograma', 
+        icon: 'pi pi-fw pi-sitemap',
+        items: [
+            {label: 'Departamento', icon: '', to: '/admin/organograma/departamentos'},
+        ]
+    },
+    {
         label: 'Tabelas', 
         icon: 'pi pi-fw pi-table',
         items: [

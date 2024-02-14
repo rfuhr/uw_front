@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import ManutencaoNcm from './ManutencaoNcm.vue';
+import ManutencaoCfop from './ManutencaoCfop.vue';
 import { useDelete } from '@/composables/useDelete';
-import { NcmService as Service } from '@/service';
+import { CfopService as Service } from '@/service';
 
 const { execute } = useDelete();
 const crudDialog = ref(false);
@@ -14,11 +14,11 @@ const columns = reactive([
     {
         label: 'Código',
         field: 'codigo',
-        tipoField: 'text',
+        tipoField: 'integer',
         filter: true,
-        matchMode: 'contains',
+        matchMode: 'equal',
         placeholder: '',
-        size: '15%'
+        size: '10%'
     },
     {
         label: 'Nome',
@@ -30,12 +30,21 @@ const columns = reactive([
         size: '45%'
     },
     {
+        label: 'Tipo Operação',
+        field: 'tipoOperacao',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '10%'
+    },
+    {
         label: 'Início Vigência',
         field: 'dataInicioVigencia',
         tipoField: 'date',
         filter: false,
         placeholder: '',
-        size: '15%'
+        size: '12%'
     },
     {
         label: 'Final Vigência',
@@ -43,7 +52,7 @@ const columns = reactive([
         tipoField: 'date',
         filter: false,
         placeholder: '',
-        size: '15%'
+        size: '12%'
     }
 ]);
 
@@ -60,9 +69,9 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão do NCM, ${dados.codigo}, você não poderá reverter isso!`
-    const textoSucesso = `O NCM, ${dados.codigo}, foi excluido com sucesso.`
-    const textoCancelado = "A exclusão do NCM não foi realizada :)"
+    const textoConfirmacao = `Após a exclusão do CFOP, ${dados.codigo}, você não poderá reverter isso!`
+    const textoSucesso = `O CFOP, ${dados.codigo}, foi excluido com sucesso.`
+    const textoCancelado = "A exclusão do CFOP não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);
     if (result) crudlista.value.reload();
@@ -75,6 +84,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="ncm" title="NCM" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
-    <ManutencaoNcm :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
+    <UWPageCrud ref="crudlista" tag="cfop" title="CFOP" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <ManutencaoCfop :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

@@ -32,6 +32,7 @@ const columns = reactive([
 ]);
 
 const openNew = () => {
+    mode.value = 'create';
     crudDialog.value = true;
 };
 

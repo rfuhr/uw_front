@@ -28,3 +28,7 @@ export { default as DepartamentoService } from './DepartamentoService'
 export { default as HistoricoPadraoService } from './HistoricoPadraoService'
 export { default as GrupoAutonomiaService } from './GrupoAutonomiaService';
 export { default as AutonomiaService } from './AutonomiaService';
+export { default as CfopService } from './CfopService';
+export { default as OrigemService } from './OrigemService';
+export { default as EnquadramentoService } from './EnquadramentoService';
+export { default as MotivoDesoneracaoService } from './MotivoDesoneracaoService';

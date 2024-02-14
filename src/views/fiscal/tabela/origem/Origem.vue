@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import ManutencaoGrupoTributacao from './ManutencaoGrupoTributacao.vue';
+import ManutencaoOrigem from './ManutencaoOrigem.vue';
 import { useDelete } from '@/composables/useDelete';
-import { GrupoTributacaoService as Service } from '@/service';
+import { OrigemService as Service } from '@/service';
 
 const { execute } = useDelete();
 const crudDialog = ref(false);
@@ -44,9 +44,9 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão do Grupo Tributação, ${dados.nome}, você não poderá reverter isso!`
-    const textoSucesso = `O Grupo Tributação, ${dados.nome}, foi excluido com sucesso.`
-    const textoCancelado = "A exclusão do Grupo Tributação não foi realizada :)"
+    const textoConfirmacao = `Após a exclusão da Origem, ${dados.nome}, você não poderá reverter isso!`
+    const textoSucesso = `A Origem, ${dados.nome}, foi excluido com sucesso.`
+    const textoCancelado = "A exclusão da Origem não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);
     if (result) crudlista.value.reload();
@@ -59,6 +59,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="grupotributacao" title="Grupo Tributação" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
-    <ManutencaoGrupoTributacao :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
+    <UWPageCrud ref="crudlista" tag="origem" title="Origem" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <ManutencaoOrigem :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

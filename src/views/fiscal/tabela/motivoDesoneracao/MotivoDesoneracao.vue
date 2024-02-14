@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import ManutencaoGrupoTributacao from './ManutencaoGrupoTributacao.vue';
+import ManutencaoMotivoDesoneracao from './ManutencaoMotivoDesoneracao.vue';
 import { useDelete } from '@/composables/useDelete';
-import { GrupoTributacaoService as Service } from '@/service';
+import { MotivoDesoneracaoService as Service } from '@/service';
 
 const { execute } = useDelete();
 const crudDialog = ref(false);
@@ -44,9 +44,9 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão do Grupo Tributação, ${dados.nome}, você não poderá reverter isso!`
-    const textoSucesso = `O Grupo Tributação, ${dados.nome}, foi excluido com sucesso.`
-    const textoCancelado = "A exclusão do Grupo Tributação não foi realizada :)"
+    const textoConfirmacao = `Após a exclusão do Motivo de Desoneração, ${dados.nome}, você não poderá reverter isso!`
+    const textoSucesso = `O Motivo de Desoneração, ${dados.nome}, foi excluido com sucesso.`
+    const textoCancelado = "A exclusão do Motivo de Desoneração não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);
     if (result) crudlista.value.reload();
@@ -59,6 +59,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="grupotributacao" title="Grupo Tributação" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
-    <ManutencaoGrupoTributacao :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
+    <UWPageCrud ref="crudlista" tag="motivodesoneracao" title="Motivo de Desoneração" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <ManutencaoMotivoDesoneracao :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

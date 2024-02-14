@@ -26,6 +26,26 @@ const fiscalRouter = {
             },
             children: [
                 {
+                    path: 'cfop',
+                    component: () => import('../../views/fiscal/tabela/cfop/Cfop.vue'),
+                    name: 'fis-tabela-cfop',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'CFOP' }],
+                        tag: 'cfop',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'enquadramento',
+                    component: () => import('../../views/fiscal/tabela/enquadramento/Enquadramento.vue'),
+                    name: 'fis-tabela-enquadramento',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Enquadramento' }],
+                        tag: 'enquadramento',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'grupo-tributacao',
                     component: () => import('../../views/fiscal/tabela/grupoTributacao/GrupoTributacao.vue'),
                     name: 'fis-tabela-grupotributacao',
@@ -36,12 +56,32 @@ const fiscalRouter = {
                     }
                 },
                 {
+                    path: 'motivo-desoneracao',
+                    component: () => import('../../views/fiscal/tabela/motivoDesoneracao/MotivoDesoneracao.vue'),
+                    name: 'fis-tabela-motivodesoneracao',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Motivo de Desoneração' }],
+                        tag: 'motivodesoneracao',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'ncm',
                     component: () => import('../../views/fiscal/tabela/ncm/Ncm.vue'),
                     name: 'fis-tabela-ncm',
                     meta: {
                         breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'NCM' }],
                         tag: 'ncm',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'origem',
+                    component: () => import('../../views/fiscal/tabela/origem/Origem.vue'),
+                    name: 'fis-tabela-origem',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Origem' }],
+                        tag: 'origem',
                         operacao: 'consultar'
                     }
                 },

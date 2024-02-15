@@ -65,7 +65,27 @@ const estoqueRouter = {
                     },
                   },
                 ]
-              }          
+              },
+              {
+                path: 'marca',
+                component: () => import('../../views/estoque/cadastro/marca/Marca.vue'),
+                name: 'est-cadastro-marca',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Cadastro'}, {label: 'Marca'}],
+                    tag: 'marca',
+                    operacao: 'consultar'
+                },
+              },    
+              {
+                path: 'linha',
+                component: () => import('../../views/estoque/cadastro/linha/Linha.vue'),
+                name: 'est-cadastro-linha',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Cadastro'}, {label: 'Linha'}],
+                    tag: 'linha',
+                    operacao: 'consultar'
+                },
+              },       
             ]
           },
         

@@ -32,6 +32,7 @@ export const menu = [
                     {label: 'Nacionalidade', icon: '', to: '/admin/tabela/nacionalidade'},
                     {label: 'Profissão', icon: '', to: '/admin/tabela/profissao'},
                     {label: 'Sexo', icon: '', to: '/admin/tabela/sexo'},
+                    {label: 'Unidade de Medida', icon: '', to: '/admin/tabela/unidade-medida'}
                 ]
             },
 

@@ -112,6 +112,8 @@ import UWInputMask from '@/components/UWInputMask.vue';
 import UWCalendar from '@/components/UWCalendar.vue';
 import UWParceiroLocal from '@/components/UWParceiroLocal.vue';  
 import UWCurrency from '@/components/UWCurrency.vue';  
+import UWDecimal from '@/components/UWDecimal.vue';
+import UWInteger from '@/components/UWInteger.vue';
 
 import '@/assets/styles.scss';
 
@@ -356,5 +358,7 @@ app.component('UWInputMask', UWInputMask);
 app.component('UWCalendar', UWCalendar);
 app.component('UWParceiroLocal', UWParceiroLocal);
 app.component('UWCurrency', UWCurrency);
+app.component('UWDecimal', UWDecimal);
+app.component('UWInteger', UWInteger);
 
 app.mount('#app');

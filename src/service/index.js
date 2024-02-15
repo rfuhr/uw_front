@@ -25,3 +25,6 @@ export { default as DepartamentoService } from './DepartamentoService'
 export { default as HistoricoPadraoService } from './HistoricoPadraoService'
 export { default as GrupoAutonomiaService } from './GrupoAutonomiaService';
 export { default as AutonomiaService } from './AutonomiaService';
+export { default as UnidadeMedidaService } from './UnidadeMedidaService';
+export { default as TiposService } from './TiposService';
+export { default as ItemService } from './ItemService';

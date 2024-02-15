@@ -18,7 +18,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: 'Busca por Nome...',
-        size: '80%'
+        size: '80%',
+        sortable: true
     }
 ]);
 
@@ -49,6 +50,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="sexo" title="Sexo" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <UWPageCrud ref="crudlista" tag="sexo" title="Sexo" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" sortField="nome"/>
     <ManutencaoSexo :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

@@ -1,7 +1,4 @@
-import { ref } from 'vue';
-
 export function useFormatDocumentos() {
-    const formattedDocumento = ref('');
 
     function formatDocumento(documento) {
         if (documento.length === 11) {
@@ -16,7 +13,6 @@ export function useFormatDocumentos() {
     }
 
     return {
-        formattedDocumento,
         formatDocumento
     };
 }

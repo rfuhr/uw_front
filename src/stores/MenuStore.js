@@ -3,6 +3,7 @@ import { useContexto } from './ContextoStore'
 
 import { menu as menuAdmin } from './menus/admin'
 import { menu as menuFinanceiro } from './menus/financeiro'
+import { menu as menuEstoque } from './menus/estoque'
 
 export const useMenu = defineStore('menu', () => {
 
@@ -14,6 +15,9 @@ export const useMenu = defineStore('menu', () => {
         }
         if (contexto.getPathModuloSelecionado === 'financeiro') {
             return menuFinanceiro;
+        }
+        if (contexto.getPathModuloSelecionado === 'estoque') {
+            return menuEstoque;
         }
         
     }

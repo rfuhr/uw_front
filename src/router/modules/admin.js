@@ -294,6 +294,16 @@ const adminRouter = {
               operacao: 'consultar'
             },
           },
+          {
+            path: 'unidade-medida',
+            component: () => import('../../views/administrativo/tabela/unidadeMedida/UnidadeMedida.vue'),
+            name: 'admin-tabela-unidadeMedida',
+            meta: {
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Apoio'}, { label: 'Unidade Medida' }],
+              tag: 'unidademedida',
+              operacao: 'consultar'
+            },
+          }
     //       {
     //         path: 'tipoParceiro',
     //         component: () => import('../../views/administrativo/tabela/tipoParceiro/TipoParceiro.vue'),

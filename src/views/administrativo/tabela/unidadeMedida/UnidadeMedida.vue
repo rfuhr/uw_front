@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import ManutencaoUF from './ManutencaoUf.vue';
+import ManutencaoUnidadeMedida from './ManutencaoUnidadeMedida.vue';
 import { useDelete } from '@/composables/useDelete';
-import { UfService as Service } from '@/service';
+import { UnidadeMedidaService as Service } from '@/service'
 
 const { execute } = useDelete();
 const crudDialog = ref(false);
@@ -17,8 +17,8 @@ const columns = reactive([
         tipoField: 'text',
         filter: true,
         matchMode: 'contains',
-        placeholder: 'Busca por Nome...',
-        size: '40%',
+        placeholder: '',
+        size: '50%',
         sortable: true
     },
     {
@@ -27,23 +27,26 @@ const columns = reactive([
         tipoField: 'text',
         filter: true,
         matchMode: 'contains',
-        placeholder: 'Busca por Sigla...',
-        size: '10%',
+        placeholder: '',
+        size: '20%',
         sortable: true
     },
     {
-        label: 'Código',
-        field: 'codigo',
-        tipoField: 'text',
-        filter: true,
+        label: 'Grandeza de Medida',
+        field: 'grandezaNome',
+        tipoField: 'enum',
+        fieldFilter: 'grandezaMedida',
+        filter: false,
         matchMode: 'contains',
-        placeholder: 'Busca por Código...',
+        placeholder: '',
         size: '20%',
-        sortable: true
+        sortable: false
     }
+
 ]);
 
 const openNew = () => {
+    mode.value = 'create';
     crudDialog.value = true;
 };
 
@@ -55,9 +58,9 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão do estado, ${dados.nome}, você não poderá reverter isso!`
-    const textoSucesso = `O estado, ${dados.nome}, foi excluido com sucesso.`
-    const textoCancelado = "A exclusão do estado não foi realizada :)"
+    const textoConfirmacao = `Após a exclusão da unidade de medida, ${dados.nome}, você não poderá reverter isso!`
+    const textoSucesso = `A unidade de medida, ${dados.nome}, foi excluída com sucesso.`
+    const textoCancelado = "A exclusão da unidade de medida não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);
     if (result) crudlista.value.reload();
@@ -70,6 +73,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="uf" title="UFs" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" sortField="nome"/>
-    <ManutencaoUF :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
+    <UWPageCrud ref="crudlista" tag="unidademedida" title="Unidade de Medida" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" sortField="nome"/>
+    <ManutencaoUnidadeMedida :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

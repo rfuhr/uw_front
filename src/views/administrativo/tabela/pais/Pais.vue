@@ -19,7 +19,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: 'Busca por Nome...',
-        size: '40%'
+        size: '40%',
+        sortable: true
     },
     {
         label: 'Sigla',
@@ -28,7 +29,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: 'Busca por Sigla...',
-        size: '10%'
+        size: '10%',
+        sortable: true
     },
     {
         label: 'Código IBGE',
@@ -37,7 +39,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: 'Busca por Cód. IBGE...',
-        size: '20%'
+        size: '20%',
+        sortable: true
     },
     {
         label: 'Código SisComex',
@@ -46,7 +49,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: 'Busca por Cód. SisComex...',
-        size: '20%'
+        size: '20%',
+        sortable: true
     }
 ]);
 
@@ -77,6 +81,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlistapais" tag="pais" title="Países" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <UWPageCrud ref="crudlistapais" tag="pais" title="Países" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" sortField="nome"/>
     <ManutencaoPais :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

@@ -24,7 +24,12 @@ const props = defineProps({
         type: String,
         required: false,
         default: undefined
-    }
+    },
+    sortField: {
+        type: String,
+        required: false,
+        default: undefined
+    },
 });
 
 const emit = defineEmits(['openNew', 'openEdit']);
@@ -68,8 +73,8 @@ onMounted(() => {
         first: 0,
         page: 0,
         rows: tableCrud.value.rows,
-        sortField: null,
-        sortOrder: null,
+        sortField: props.sortField || props.columns[0].field,
+        sortOrder: 1,
         filters: filters.value
     };
     getPageRegistros();
@@ -134,10 +139,12 @@ defineExpose({
     <UWPageBase :title="title" :subtitle="subtitle">
         <DataTable
             ref="tableCrud"
+            size="small"
             class="p-datatable-sm"
             :value="registros"
             dataKey="id"
-            :sortOrder="-1"
+            :sortField="props.sortField || props.columns[0].field"
+            :sortOrder="1"
             :paginator="true"
             :rows="20"
             :lazy="true"
@@ -165,7 +172,7 @@ defineExpose({
                 :header="column.label"
                 ref="nome"
                 :dataType="column.tipoField"
-                :sortable="true"
+                :sortable="column.sortable"
                 :sortField="column.sortField || column.field"
                 :style="{ width: column.size }"
                 v-for="column in columns"

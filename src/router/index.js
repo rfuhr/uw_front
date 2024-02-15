@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import { useAuth, useContexto } from '../stores';
-import { adminRoutes, financeiroRoutes } from './routes';
+import { adminRoutes, financeiroRoutes, estoqueRoutes } from './routes';
 import { UsuarioService } from '../service';
 
 const constantRoutes = [
@@ -17,7 +17,7 @@ const constantRoutes = [
             }
         ]
     },
-    adminRoutes, financeiroRoutes,
+    adminRoutes, financeiroRoutes, estoqueRoutes,
     { path: '/login', name: 'Login', exact: true, component: () => import('../pages/Login.vue') },
     { path: '/notFound', name: 'NotFound', component: () => import('../pages/NotFound.vue') },
     { path: '/accessDenied', name: 'AccessDenied', component: () => import('../pages/AccessDenied.vue') },

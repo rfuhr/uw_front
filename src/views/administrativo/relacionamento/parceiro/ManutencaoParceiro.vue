@@ -3,7 +3,6 @@ import { ref, reactive, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useRoute, useRouter } from 'vue-router';
 import { validateCPF, validateCNPJ } from 'validations-br';
-import { parseISO } from 'date-fns';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { ParceiroService } from '@/service';
@@ -114,15 +113,6 @@ onMounted(() => {
                 formData.nomeRazaoSocial = data.nomeRazaoSocial;
                 formData.nomeFantasia = data.nomeFantasia;
                 formData.locais = data.locais;
-
-                if (formData.tipoPessoa === 'F') {
-                    if (formData.locais[0].dadosPessoaFisica.dataNascimento) formData.locais[0].dadosPessoaFisica.dataNascimento = parseISO(formData.locais[0].dadosPessoaFisica.dataNascimento);
-                }
-                if (formData.tipoPessoa === 'J' && formData.locais.length > 0) {
-                    formData.locais.forEach((local) => {
-                        if (local.dadosPessoaJuridica.dataFundacao) local.dadosPessoaJuridica.dataFundacao = parseISO(local.dadosPessoaJuridica.dataFundacao);
-                    });                    
-                }
             })
             .catch(async () => {
                 await Swal.fire('Falha', `Não foi encontrado parceiro para o id ${idParceiro.value}`, 'error');

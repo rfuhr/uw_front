@@ -16,7 +16,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'equal',
         placeholder: '',
-        size: '80%'
+        size: '80%',
+        sortable: true
     }
 ]);
 
@@ -43,5 +44,5 @@ const openDelete = async (dados) => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" title="Perfis" :columns="columns" :service="PerfilService" @openNew="openNew" @openEdit="openEdit($event)" @openDelete="openDelete" />
+    <UWPageCrud ref="crudlista" title="Perfis" :columns="columns" :service="PerfilService" @openNew="openNew" @openEdit="openEdit($event)" @openDelete="openDelete" sortField="nome"/>
 </template>

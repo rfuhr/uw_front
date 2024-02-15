@@ -1,14 +1,13 @@
 <script setup>
-import { reactive, computed, defineProps } from 'vue';
+import { ref, computed, defineProps, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import _ from 'lodash';
-import { NacionalidadeService as Service } from '@/service';
-
+import { UnidadeMedidaService as Service, TiposService } from '@/service';
 
 const schema = yup.object().shape({
     nome: yup.string().required('Nome é obrigatório.').max(120, 'Nome deve ter no máximo 120 caracteres.'),
-    codigo: yup.number().required('Código é obrigatório.')
+    sigla: yup.string().required('Sigla é obrigatória.').max(120, 'Sigla deve ter no máximo 120 caracteres.'),
 });
 
 const props = defineProps({
@@ -26,13 +25,16 @@ const props = defineProps({
     }
 });
 
+
 const emit = defineEmits(['closeDialog']);
 
 const toast = useToast();
 
-const formData = reactive({
+const formData = ref({
     nome: undefined
 });
+
+const grandezasMedida = ref();
 
 const showDialogComputed = computed({
     get: () => props.showDialog,
@@ -48,23 +50,23 @@ const hideDialog = () => {
 const criarRegistro = () => {
     Service.create(formData)
         .then(() => {
-            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Nacionalidade criada com sucesso', life: 5000 });
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Unidade de medida criada com sucesso', life: 5000 });
             emit('closeDialog');
         })
         .catch(() => {
-            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível criar a nacionalidade.', life: 5000 });
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível criar a unidade de medida.', life: 5000 });
         });
 };
 
 const alterarRegistro = () => {
-    formData.id = props.id;
+    formData.value.id = props.id;
     Service.update(formData)
         .then(() => {
-            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Nacionalidade alterada com sucesso', life: 5000 });
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Unidade de medida alterada com sucesso', life: 5000 });
             emit('closeDialog');
         })
         .catch(() => {
-            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível alterar a nacionalidade.', life: 5000 });
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível alterar a unidade de medida.', life: 5000 });
         });
 };
 
@@ -78,22 +80,30 @@ const salvarRegistro = async () => {
 
 const showModal = async () => {
     if (props.mode === 'create') {
-        formData.nome = undefined;
+        formData.value = {}
     } else {
         await Service.getById(props.id).then((data) => {
-            _.assign(formData, data);
+            _.assign(formData.value, data);
         });
     }
 };
+
+onMounted(async () => {
+    await TiposService.getGrandezasMedida().then((data) => {
+        grandezasMedida.value = data;
+    });
+});
+
 </script>
 
 <template>
-    <Dialog v-model:visible="showDialogComputed" :style="{ width: '40%' }" :header="mode === 'create' ? 'Nova Nacionalidade' : 'Alterar Nacionalidade'" :modal="true" :closable="false" @show="showModal">
-        <UWForm :schema="schema" :values="formData" @doCancel="hideDialog" @doSubmit="salvarRegistro">
+    <Dialog v-model:visible="showDialogComputed" :style="{ width: '40%' }" :header="mode === 'create' ? 'Nova Unidade de Medida' : 'Alterar Unidade de Medida'" :modal="true" :closable="false" @show="showModal">
+        <UWForm :schema="schema" :values="formData" ref="formUnidadeMedida" @doCancel="hideDialog" @doSubmit="salvarRegistro">
             <template #errors="{ errors }">
                 <div class="col-12">
                     <div class="p-fluid formgrid grid">
-                        <UWInteger id="codigo" label="Código" required autofocus v-model="formData.codigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
+                        <UWPickList id="tipoGrandeza" :autofocus="true" label="Tipo de Grandeza de Medida" v-model="formData.grandeza" optionLabel="name" optionValue="value" required :options="grandezasMedida" classContainer="col-12 md:col-4" />
+                        <UWInput id="sigla" label="Sigla" required v-model="formData.sigla" :errors="errors.value?.sigla" classContainer="col-12 md:col-4" />
                         <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
                     </div>
                 </div>

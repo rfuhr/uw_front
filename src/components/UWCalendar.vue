@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, computed } from 'vue';
-
+import { parseISO, isValid } from 'date-fns';
 const props = defineProps({
     id: {
         type: String,
@@ -30,8 +30,9 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const localFieldName = computed({
-    get: () => props.modelValue,
+    get: () => isValid(props.modelValue) ? props.modelValue : parseISO(props.modelValue),
     set: (value) => {
+        console.log('value', value);
         emit('update:modelValue', value);
     }
 });

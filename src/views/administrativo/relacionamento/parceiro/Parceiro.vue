@@ -16,7 +16,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'equal',
         placeholder: '',
-        size: '20%'
+        size: '20%',
+        sortable: true
     },
     {
         label: 'Razão social',
@@ -25,7 +26,8 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '60%'
+        size: '60%',
+        sortable: true
     }
 ]);
 
@@ -53,5 +55,5 @@ const openDelete = async (dados) => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="parceiro" title="Parceiros" :columns="columns" :service="ParceiroService" @openNew="openNew" @openEdit="openEdit($event)" @openDelete="openDelete" />
+    <UWPageCrud ref="crudlista" tag="parceiro" title="Parceiros" :columns="columns" :service="ParceiroService" @openNew="openNew" @openEdit="openEdit($event)" @openDelete="openDelete" sortField="nomeRazaoSocial" />
 </template>

@@ -33,14 +33,14 @@ const columns = reactive([
     },
     {
         label: 'Grandeza de Medida',
-        field: 'grandezaNome',
+        field: 'grandezaMedida',
         tipoField: 'enum',
         fieldFilter: 'grandezaMedida',
-        filter: false,
+        filter: true,
         matchMode: 'contains',
         placeholder: '',
         size: '20%',
-        sortable: false
+        sortable: true
     }
 
 ]);

@@ -102,7 +102,7 @@ onMounted(async () => {
             <template #errors="{ errors }">
                 <div class="col-12">
                     <div class="p-fluid formgrid grid">
-                        <UWPickList id="tipoGrandeza" :autofocus="true" label="Tipo de Grandeza de Medida" v-model="formData.grandeza" optionLabel="name" optionValue="value" required :options="grandezasMedida" classContainer="col-12 md:col-4" />
+                        <UWPickList id="tipoGrandeza" :autofocus="true" label="Tipo de Grandeza de Medida" v-model="formData.grandezaMedida" optionLabel="name" optionValue="value" required :options="grandezasMedida" classContainer="col-12 md:col-4" />
                         <UWInput id="sigla" label="Sigla" required v-model="formData.sigla" :errors="errors.value?.sigla" classContainer="col-12 md:col-4" />
                         <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
                     </div>

@@ -36,6 +36,16 @@ const fiscalRouter = {
                     }
                 },
                 {
+                    path: 'classificacao-operacao',
+                    component: () => import('../../views/fiscal/tabela/classificacaoOperacao/ClassificacaoOperacao.vue'),
+                    name: 'fis-tabela-classificacaooperacao',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Classificação da Operação' }],
+                        tag: 'classificacaooperacao',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'enquadramento',
                     component: () => import('../../views/fiscal/tabela/enquadramento/Enquadramento.vue'),
                     name: 'fis-tabela-enquadramento',
@@ -92,6 +102,16 @@ const fiscalRouter = {
                     meta: {
                         breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Regime Tributário' }],
                         tag: 'regimetributario',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'tipo-produto',
+                    component: () => import('../../views/fiscal/tabela/tipoProduto/TipoProduto.vue'),
+                    name: 'fis-tabela-tipoproduto',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Tipo de Produto' }],
+                        tag: 'tipoproduto',
                         operacao: 'consultar'
                     }
                 }

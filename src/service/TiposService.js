@@ -6,6 +6,10 @@ class TiposService {
         return api.get('/tabela/grandeza-medida');
     }
 
+    getTipoOperacaoFiscal() {
+        return api.get('/fiscal/tipo-operacao');
+    }
+
 }
 
 export default new TiposService();

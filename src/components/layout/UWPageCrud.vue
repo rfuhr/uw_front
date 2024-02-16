@@ -3,7 +3,9 @@ import { ref, onMounted, onBeforeMount, defineProps } from 'vue';
 import UWPageBase from './UWPageBase.vue';
 import { UsuarioService } from '@/service';
 import { useContexto } from '@/stores';
+import { useFormatDate } from '@/composables/useFormatDate'
 
+const { formatDate } = useFormatDate();
 const { contexto } = useContexto();
 
 const props = defineProps({
@@ -133,6 +135,7 @@ const handleDelete = async (dados) => {
 defineExpose({
     reload
 });
+
 </script>
 
 <template>
@@ -184,6 +187,7 @@ defineExpose({
                 </template>
                 <template #body="slotProps">
                     <i v-if="column.tipoField === 'boolean'" class="pi" :class="{ 'p-sucess pi-check-circle': slotProps.data[slotProps.field], 'p-error pi-times-circle': !slotProps.data[slotProps.field] }"></i>
+                    <span v-if="column.tipoField === 'maskDate'" >{{ formatDate(slotProps.data[slotProps.field], column.maskDate) }} </span>
                     <span v-else>{{ slotProps.data[slotProps.field] }} </span>
                 </template>
             </Column>

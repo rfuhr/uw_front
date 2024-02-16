@@ -32,18 +32,20 @@ const columns = reactive([
     {
         label: 'Início Vigência',
         field: 'dataInicioVigencia',
-        tipoField: 'date',
         filter: false,
         placeholder: '',
-        size: '15%'
+        size: '15%',
+        tipoField: 'maskDate',
+        maskDate: 'dd/MM/yyyy'        
     },
     {
         label: 'Final Vigência',
         field: 'dataFinalVigencia',
-        tipoField: 'date',
         filter: false,
         placeholder: '',
-        size: '15%'
+        size: '15%',
+        tipoField: 'maskDate',
+        maskDate: 'dd/MM/yyyy'        
     }
 ]);
 

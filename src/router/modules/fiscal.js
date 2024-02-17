@@ -106,6 +106,16 @@ const fiscalRouter = {
                     }
                 },
                 {
+                    path: 'situacao-tributaria',
+                    component: () => import('../../views/fiscal/tabela/situacaoTributaria/SituacaoTributaria.vue'),
+                    name: 'fis-tabela-situacaotributaria',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Situacao Tributária' }],
+                        tag: 'situacaotributaria',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'tipo-produto',
                     component: () => import('../../views/fiscal/tabela/tipoProduto/TipoProduto.vue'),
                     name: 'fis-tabela-tipoproduto',

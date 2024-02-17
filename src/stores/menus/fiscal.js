@@ -18,6 +18,7 @@ export const menu = [
             {label: 'NCM', icon: '', to: '/fiscal/tabela/ncm'},
             {label: 'Origem', icon: '', to: '/fiscal/tabela/origem'},
             {label: 'Regime Tributário', icon: '', to: '/fiscal/tabela/regime-tributario'},
+            {label: 'Situação Tributária', icon: '', to: '/fiscal/tabela/situacao-tributaria'},
             {label: 'Tipo de Produto', icon: '', to: '/fiscal/tabela/tipo-produto'},
         ]
     },  

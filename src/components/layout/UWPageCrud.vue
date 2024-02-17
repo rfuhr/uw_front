@@ -149,7 +149,7 @@ defineExpose({
             :sortField="props.sortField || props.columns[0].field"
             :sortOrder="1"
             :paginator="true"
-            :rows="20"
+            :rows="10"
             :lazy="true"
             v-model:filters="filters"
             :totalRecords="totalRegistros"

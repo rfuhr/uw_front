@@ -30,6 +30,21 @@ const props = defineProps({
         required: false,
         default: undefined
     },
+    iconButtonNew: {
+        type: String,
+        required: false,
+        default: 'pi pi-user-plus'
+    },
+    labelButtonNew: {
+        type: String,
+        required: false,
+        default: 'Novo'
+    },
+    showButtonNew: {
+        type: Boolean,
+        required: false,
+        default: true
+    }
 });
 
 const emit = defineEmits(['openNew', 'openEdit']);
@@ -162,7 +177,8 @@ defineExpose({
         >
             <template #header>
                 <div class="flex flex-wrap gap-2 align-items-center justify-content-end">
-                    <Button type="button" icon="pi pi-user-plus" label="Novo" class="w-full sm:w-auto flex-order-0 sm:flex-order-1" outlined @click="addNew" />
+                    <slot name="headerActions"></slot>
+                    <Button type="button" :v-show="showButtonNew" :icon="iconButtonNew" :label="labelButtonNew" class="w-full sm:w-auto flex-order-0 sm:flex-order-1" outlined @click="addNew" />
                 </div>
             </template>
             <Column
@@ -179,16 +195,19 @@ defineExpose({
                 :key="column.field"
             >
                 <template #filter="{ filterModel, filterCallback }" v-if="column.filter">
-                    <TriStateCheckbox v-if="column.tipoField === 'boolean'" type="text" v-model="filterModel.value" @change="filterCallback()" />
+                    <Dropdown v-if="column.filterSeletor" :options="column.filterValues" optionLabel="label" optionValue="value" :placeholder="column.placeholder" showClear v-model="filterModel.value" @change="filterCallback()"/>
+                    <TriStateCheckbox v-else-if="column.tipoField === 'boolean'" type="text" v-model="filterModel.value" @change="filterCallback()" />
                     <InputText v-else type="text" v-model="filterModel.value" @keydown.enter="filterCallback()" class="p-column-filter" :placeholder="column.placeholder" />
                 </template>
                 <template #body="slotProps">
-                    <i v-if="column.tipoField === 'boolean'" class="pi" :class="{ 'p-sucess pi-check-circle': slotProps.data[slotProps.field], 'p-error pi-times-circle': !slotProps.data[slotProps.field] }"></i>
+                    <span v-if="column.format" v-html="column.format(slotProps.data[slotProps.field])" />
+                    <i v-else-if="column.tipoField === 'boolean'" class="pi" :class="{ 'font-bold text-green-600 pi-check-circle': slotProps.data[slotProps.field], 'font-bold text-red-600 pi pi-times-circle': !slotProps.data[slotProps.field] }"></i>
                     <span v-else>{{ slotProps.data[slotProps.field] }} </span>
                 </template>
             </Column>
             <Column header="Ações" style="width: 10%">
                 <template #body="slotProps">
+                    <slot name="tableActions" v-bind="slotProps"></slot>
                     <Button icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="handleEdit(slotProps.data.id)" />
                     <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete(slotProps.data)" />
                 </template>

@@ -13,6 +13,7 @@ export const menu = [
             {label: 'Item', icon: '', to: '/estoque/cadastro/item'},
             {label: 'Marca', icon: '', to: '/estoque/cadastro/marca'},
             {label: 'Linha', icon: '', to: '/estoque/cadastro/linha'},
+            {label: 'Classificação Comercial', icon: '', to: '/estoque/cadastro/classificacao-comercial'},
         ]
     },    
   

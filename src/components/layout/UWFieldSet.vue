@@ -9,13 +9,18 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    color: {
+        type: String,
+        default: 'transparent'
+    
+    }
 });
 
 </script>
 
 <template>
-    <fieldset class="fieldset-border" :class="{'disabled': props.disabled}">
-        <legend class="fieldset-border">{{ title }}</legend>
+    <fieldset class="fieldset-border" :class="{'disabled': props.disabled}" :style="{'background-color': props.color}">
+        <legend class="fieldset-border" :style="{'background-color': props.color}">{{ title }}</legend>
         <slot></slot>
     </fieldset>
 </template>

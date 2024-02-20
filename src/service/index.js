@@ -37,4 +37,7 @@ export { default as TiposService } from './TiposService';
 export { default as ItemService } from './ItemService';
 export { default as MarcaService } from './MarcaService';
 export { default as LinhaService } from './LinhaService';
+export { default as ClassificacaoOperacaoService } from './ClassificacaoOperacaoService';
+export { default as TipoProdutoService } from './TipoProdutoService';
+export { default as SituacaoTributariaService } from './SituacaoTributariaService';
 export { default as PlanoClassificacaoItemService } from './PlanoClassificacaoItemService';

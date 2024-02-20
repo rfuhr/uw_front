@@ -1,6 +1,6 @@
 import { format, parseISO, isValid } from 'date-fns';
 
-export default function useFormatDate() {
+export function useFormatDate() {
     
     function formatDate(date, formatString) {
         return format(isValid(date) ? date : parseISO(date), formatString);

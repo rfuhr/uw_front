@@ -30,7 +30,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const localFieldName = computed({
-    get: () => isValid(props.modelValue) ? props.modelValue : parseISO(props.modelValue),
+    get: () => isValid(props.modelValue) ? props.modelValue : (props.modelValue ? parseISO(props.modelValue) : props.modelValue),
     set: (value) => {
         console.log('value', value);
         emit('update:modelValue', value);

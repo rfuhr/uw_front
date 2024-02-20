@@ -3,7 +3,9 @@ import { ref, onMounted, onBeforeMount, defineProps } from 'vue';
 import UWPageBase from './UWPageBase.vue';
 import { UsuarioService } from '@/service';
 import { useContexto } from '@/stores';
+import { useFormatDate } from '@/composables/useFormatDate'
 
+const { formatDate } = useFormatDate();
 const { contexto } = useContexto();
 
 const props = defineProps({
@@ -148,6 +150,7 @@ const handleDelete = async (dados) => {
 defineExpose({
     reload
 });
+
 </script>
 
 <template>
@@ -161,7 +164,7 @@ defineExpose({
             :sortField="props.sortField || props.columns[0].field"
             :sortOrder="1"
             :paginator="true"
-            :rows="20"
+            :rows="10"
             :lazy="true"
             v-model:filters="filters"
             :totalRecords="totalRegistros"
@@ -202,6 +205,7 @@ defineExpose({
                 <template #body="slotProps">
                     <span v-if="column.format" v-html="column.format(slotProps.data[slotProps.field])" />
                     <i v-else-if="column.tipoField === 'boolean'" class="pi" :class="{ 'font-bold text-green-600 pi-check-circle': slotProps.data[slotProps.field], 'font-bold text-red-600 pi pi-times-circle': !slotProps.data[slotProps.field] }"></i>
+                    <span v-else-if="column.tipoField === 'maskDate'" >{{ formatDate(slotProps.data[slotProps.field], column.maskDate) }} </span>
                     <span v-else>{{ slotProps.data[slotProps.field] }} </span>
                 </template>
             </Column>

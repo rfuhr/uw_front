@@ -1,10 +1,9 @@
 <script setup>
-import { ref, reactive, computed, defineProps } from 'vue';
+import { ref, reactive, computed, defineProps, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import _ from 'lodash';
-import { CfopService as Service } from '@/service';
-import { parseISO } from 'date-fns';
+import { CfopService as Service, TiposService } from '@/service';
 
 const schema = yup.object().shape({
     nome: yup.string().required('Nome é obrigatório.').max(4000, 'Nome deve ter no máximo 4000 caracteres.'),
@@ -33,11 +32,7 @@ const emit = defineEmits(['closeDialog']);
 
 const toast = useToast();
 
-const tiposOperacoes = ref([
-    { name: 'Estadual', value: 'Estadual' },
-    { name: 'Interestadual', value: 'Interestadual' },
-    { name: 'Exterior', value: 'Exterior' }
-]);
+const tiposOperacoes = ref();
 
 const formData = reactive({
     nome: undefined,
@@ -96,11 +91,16 @@ const showModal = async () => {
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
-            formData.dataInicioVigencia = parseISO(data.dataInicioVigencia)
-            formData.dataFinalVigencia = parseISO(data.dataFinalVigencia)
         });
     }
 };
+
+onMounted(async () => {
+    await TiposService.getTipoOperacaoFiscal().then((data) => {
+        tiposOperacoes.value = data;
+    });
+});
+
 </script>
 
 <template>

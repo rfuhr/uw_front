@@ -116,6 +116,7 @@ import UWCurrency from '@/components/UWCurrency.vue';
 import UWDecimal from '@/components/UWDecimal.vue';
 import UWInteger from '@/components/UWInteger.vue';
 import UWCheckBox from '@/components/layout/UWCheckBox.vue';
+import UWEstruturaConta from '@/components/UWEstruturaConta.vue';
 
 import '@/assets/styles.scss';
 
@@ -363,6 +364,7 @@ app.component('UWParceiroLocal', UWParceiroLocal);
 app.component('UWCurrency', UWCurrency);
 app.component('UWDecimal', UWDecimal);
 app.component('UWInteger', UWInteger);
+app.component('UWEstruturaConta', UWEstruturaConta);
 app.component('UWCheckBox', UWCheckBox);
 
 app.mount('#app');

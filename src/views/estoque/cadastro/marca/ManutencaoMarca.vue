@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, defineProps } from 'vue';
+import { reactive, computed } from 'vue';
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import _ from 'lodash';
@@ -91,7 +91,7 @@ const showModal = async () => {
             <template #errors="{ errors }">
                 <div class="col-12">
                     <div class="p-fluid formgrid grid">
-                        <UWInput id="nome" label="Nome" uppercase required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
+                        <UWInput id="nome" label="Nome" uppercase required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-8" />
                     </div>
                 </div>
             </template>

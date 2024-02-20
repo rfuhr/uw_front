@@ -78,7 +78,8 @@ const handleChange = (event) => {
                 :showClear="showClear"
                 :disabled="disabled"
                 :class="{ 'p-invalid': props.errors, 'w-full': true }"
-                @change="handleChange">
+                @change="handleChange"
+            >
 
             </Dropdown>
             <label :for="props.id" v-required="props.required">{{ props.label }}</label>

@@ -86,6 +86,16 @@ const estoqueRouter = {
                     operacao: 'consultar'
                 },
               },       
+              {
+                path: 'classificacao-comercial',
+                component: () => import('../../views/estoque/cadastro/classificacaoComercial/ClassificacaoComercial.vue'),
+                name: 'est-cadastro-classificacao-comercial',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Cadastro'}, {label: 'Classificação Comercial'}],
+                    tag: 'classificacaocomercial',
+                    operacao: 'consultar'
+                },
+              },  
             ]
           },
         

@@ -25,7 +25,7 @@ const props = defineProps({
     },
     label: {
         type: String,
-        default: ''
+        default: null
     },
     errors: {
         type: String,
@@ -59,7 +59,7 @@ const localModelValue = computed({
     <div :class="['field', classContainer]">
         <span class="p-float-label">
             <InputText :id="id" :type="type" v-uppercase="uppercase" v-lowercase="lowercase" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs"/>
-            <label :for="id" v-required="required">{{ label }}</label>
+            <label :for="id" v-required="required" v-if="props.label">{{ label }}</label>
         </span>
         <span v-if="errors">
             <span v-for="(error, index) of errors" :key="index">

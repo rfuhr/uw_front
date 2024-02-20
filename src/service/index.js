@@ -41,3 +41,4 @@ export { default as ClassificacaoOperacaoService } from './ClassificacaoOperacao
 export { default as TipoProdutoService } from './TipoProdutoService';
 export { default as SituacaoTributariaService } from './SituacaoTributariaService';
 export { default as ConfiguracaoFiscalService } from './ConfiguracaoFiscalService';
+export { default as PlanoClassificacaoItemService } from './PlanoClassificacaoItemService';

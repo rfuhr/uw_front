@@ -22,4 +22,11 @@ export const menu = [
             {label: 'Tipo de Produto', icon: '', to: '/fiscal/tabela/tipo-produto'},
         ]
     },  
+    {
+        label: 'Configurações',
+        icon: 'pi pi-fw pi-pencil',
+        items: [
+            {label: 'Configuração Fiscal', icon: '', to: '/fiscal/configuracoes/configuracao-fiscal'}
+        ]
+    }
 ];

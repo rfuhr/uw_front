@@ -142,7 +142,7 @@ const changeNcm = (event) => {
                     </TabPanel>
                     <TabPanel header="Estoque" class="col-12">
                         <div class="p-fluid formgrid grid">
-                            <div class="field md:col-2 pt-0">
+                            <div class="field md:col-3 pt-0">
                                 <span class="p-float-label">
                                     <ToggleButton
                                         v-model="formData.controlaEstoque"
@@ -175,7 +175,6 @@ const changeNcm = (event) => {
                             <div class="border-1 surface-border border-round mb-3 col-12 ml-3 mr-3 bg-bluegray-50">
                                 <span class="text-900 font-bold block border-bottom-1 surface-border p-3">Quantidades</span>
                                 <div class="p-3 flex gap-2">
-                                    <
                                     <UWInteger id="id" label="Mínima" required autofocus v-model="formData.codigo" classContainer="col-12 md:col-3" :errors="errors.value?.codigo" />
                                     <UWInteger id="id" label="Máxima" required autofocus v-model="formData.codigo" classContainer="col-12 md:col-3" :errors="errors.value?.codigo" />
                                     <UWInteger id="id" label="Ideal" required autofocus v-model="formData.codigo" classContainer="col-12 md:col-3" :errors="errors.value?.codigo" />

@@ -14,6 +14,10 @@ class TiposService {
         return api.get('/fiscal/tipo-tributo');
     }
 
+    getEntradaSaida() {
+        return api.get('/fiscal/entrada-saida');
+    }
+
 }
 
 export default new TiposService();

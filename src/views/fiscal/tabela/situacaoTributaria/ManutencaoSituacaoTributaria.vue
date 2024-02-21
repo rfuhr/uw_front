@@ -117,15 +117,168 @@ onMounted(async () => {
                         <UWInput id="codigo" label="Código" required autofocus v-model="formData.codigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
                         <UWTextArea id="nome" label="Nome" rows="5" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
                         <UWPickList id="tipoTributo" label="Tipo Tributo" v-model="formData.tipoTributo" optionLabel="name" optionValue="value" required :options="tiposTributos" classContainer="col-12 md:col-4" />
-                        <UWCheckBox id="aliquotaZero" label="Alíquota Zero" required v-model="formData.aliquotaZero" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="controlaImpostoRetido" label="Controla Imposto Retido" required v-model="formData.controlaImpostoRetido" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="destacaStSaida" label="Destaca Substituição Tributária de Saída" required v-model="formData.destacaStSaida" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="excluirIcmsBaseCalculo" label="Excluir ICMS da Base Cálculo" required v-model="formData.excluirIcmsBaseCalculo" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="excluirIcmsBcPiscofins" label="Excluir ICMS da Base Cálculo PIS COFINS" required v-model="formData.excluirIcmsBcPiscofins" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="exigeAliquotaDesonerada" label="Exige Alíquota Desonerada" required v-model="formData.exigeAliquotaDesonerada" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="naoExcluirIcmsEntrada" label="Não Excluir ICMS da Entrada" required v-model="formData.naoExcluirIcmsEntrada" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="requerMensagemFiscal" label="Requer Mensagem Fiscal" required v-model="formData.requerMensagemFiscal" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
-                        <UWCheckBox id="simplesNacional" label="Simples Nacional" required v-model="formData.simplesNacional" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.aliquotaZero"
+                                        onLabel="Alíquota Zero"
+                                        offLabel="Alíquota Zero"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.aliquotaZero, 'bg-red-100 border-white': !formData.aliquotaZero }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.controlaImpostoRetido"
+                                        onLabel="Controla Imposto Retido"
+                                        offLabel="Controla Imposto Retido"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.controlaImpostoRetido, 'bg-red-100 border-white': !formData.controlaImpostoRetido }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
+                        <div class="field md:col-6 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.destacaStSaida"
+                                        onLabel="Destaca Substituição Tributária de Saída"
+                                        offLabel="Destaca Substituição Tributária de Saída"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.destacaStSaida, 'bg-red-100 border-white': !formData.destacaStSaida }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
+                        <div class="field md:col-6 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.excluirIcmsBcPiscofins"
+                                        onLabel="Excluir ICMS da Base Cálculo PIS COFINS"
+                                        offLabel="Excluir ICMS da Base Cálculo PIS COFINS"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.excluirIcmsBcPiscofins, 'bg-red-100 border-white': !formData.excluirIcmsBcPiscofins }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.excluirIcmsBaseCalculo"
+                                        onLabel="Excluir ICMS da Base Cálculo"
+                                        offLabel="Excluir ICMS da Base Cálculo"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.excluirIcmsBaseCalculo, 'bg-red-100 border-white': !formData.excluirIcmsBaseCalculo }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>                        
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.exigeAliquotaDesonerada"
+                                        onLabel="Exige Alíquota Desonerada"
+                                        offLabel="Exige Alíquota Desonerada"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.exigeAliquotaDesonerada, 'bg-red-100 border-white': !formData.exigeAliquotaDesonerada }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.naoExcluirIcmsEntrada"
+                                        onLabel="Não Excluir ICMS da Entrada"
+                                        offLabel="Não Excluir ICMS da Entrada"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.naoExcluirIcmsEntrada, 'bg-red-100 border-white': !formData.naoExcluirIcmsEntrada }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.requerMensagemFiscal"
+                                        onLabel="Requer Mensagem Fiscal"
+                                        offLabel="Requer Mensagem Fiscal"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.requerMensagemFiscal, 'bg-red-100 border-white': !formData.requerMensagemFiscal }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.simplesNacional"
+                                        onLabel="Simples Nacional"
+                                        offLabel="Simples Nacional"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.simplesNacional, 'bg-red-100 border-white': !formData.simplesNacional }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
                     </div>
                 </div>
             </template>

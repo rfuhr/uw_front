@@ -50,6 +50,7 @@ const toast = useToast();
 
 const emit = defineEmits(['doSubmit', 'doCancel', 'handleErrorSubmit']);
 const submitted = ref(false);
+const validated = ref(false);
 const errors = reactive({});
 
 // eslint-disable-next-line no-unused-vars
@@ -65,6 +66,7 @@ const validate = (field) => {
 };
 
 const validateForm = () => {
+    validated.value = true;
     errors.value = {};
     return props.schema
         .validate(props.values, { abortEarly: false })
@@ -119,7 +121,7 @@ const handleVoltar = () => {
 };
 
 watch(props.values, () => {
-    if (submitted.value) validateForm();
+    if (submitted.value || validated.value) validateForm();
 });
 
 const preventEnterSubmit = (event) => {
@@ -135,7 +137,7 @@ const preventEnterSubmit = (event) => {
             <slot />
         </slot>
 
-        <div class="col-12">
+        <div class="col-12" v-if="visibleCancel || visibleVoltar || visibleSave || visibleConfirmar">
             <Divider />
             <div class="flex justify-content-end flex-wrap gap-2">
                 <slot name="buttons" />

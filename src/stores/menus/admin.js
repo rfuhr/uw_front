@@ -11,7 +11,8 @@ export const menu = [
         icon: 'pi pi-fw pi-cog',
         items: [
             {label: 'Sistema', icon: '', to: ''},
-            {label: 'Empresa', icon: '', to: ''},
+            {label: 'Empresa', icon: '', to: '/admin/configuracao/empresa'},
+            {label: 'Certificado', icon: '', to: '/admin/configuracao/certificado'},
         ]
     },        
     {
@@ -31,8 +32,7 @@ export const menu = [
                     {label: 'Estado Civil', icon: '', to: '/admin/tabela/estadoCivil'},
                     {label: 'Nacionalidade', icon: '', to: '/admin/tabela/nacionalidade'},
                     {label: 'Profissão', icon: '', to: '/admin/tabela/profissao'},
-                    {label: 'Sexo', icon: '', to: '/admin/tabela/sexo'},
-                    {label: 'Unidade de Medida', icon: '', to: '/admin/tabela/unidade-medida'}
+                    {label: 'Sexo', icon: '', to: '/admin/tabela/sexo'}
                 ]
             },
 
@@ -50,6 +50,22 @@ export const menu = [
                     {label: 'Tipo de Parceiro', icon: '', to: '/admin/tabela/tipoParceiro'},
                 ]
             },
+            {
+                label: 'Classificação',
+                items: [
+                    {label: 'Natureza da Operação', icon: '', to: '/admin/tabela/natureza-operacao'},
+                    {label: 'Operação Interna', icon: '', to: '/admin/tabela/operacao-interna'},
+                ]
+            },
+
+            {
+                label: 'Gerais',
+                items: [
+                    {label: 'Tipo de Documento', icon: '', to: '/admin/tabela/tipo-documento'},
+                    {label: 'Unidade de Medida', icon: '', to: '/admin/tabela/unidade-medida'}
+                ]
+            },
+            
         ]
     },     
     {

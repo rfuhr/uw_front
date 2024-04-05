@@ -226,3 +226,12 @@ const checkActiveRoute = (item) => {
         </ul>
     </li>
 </template>
+
+<style scoped>
+    .icon-nfe {
+        background: url('@/assets/erp/icons/nfe.svg') no-repeat;
+        height:32px;
+        width:32px;
+    }
+
+</style>

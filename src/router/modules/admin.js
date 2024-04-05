@@ -32,6 +32,7 @@ const adminRouter = {
             meta: {
               breadcrumb: [{label: 'Administrativo'}, {label: 'Segurança'}, {label: 'Usuário'}],
             },
+            
             children: [
               {
                 path: '',
@@ -216,14 +217,6 @@ const adminRouter = {
             breadcrumb: [{ parent: 'Administrativo', label: 'Tabela' }],
         },
         children: [
-    //       {
-    //         path: 'parceiro',
-    //         component: () => import('../../views/administrativo/tabela/parceiro/Parceiro.vue'),
-    //         name: 'admin-tabela-parceiro',
-    //         meta: {
-    //             breadcrumb: [{ parent: 'Administrativo', label: 'Parceiros' }],
-    //         },
-    //       },
           {
             path: 'paises',
             component: () => import('../../views/administrativo/tabela/pais/Pais.vue'),
@@ -299,21 +292,72 @@ const adminRouter = {
             component: () => import('../../views/administrativo/tabela/unidadeMedida/UnidadeMedida.vue'),
             name: 'admin-tabela-unidadeMedida',
             meta: {
-              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Apoio'}, { label: 'Unidade Medida' }],
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Gerais'}, { label: 'Unidade Medida' }],
               tag: 'unidademedida',
               operacao: 'consultar'
             },
+          },
+          {
+            path: 'tipo-documento',
+            component: () => import('../../views/administrativo/tabela/tipoDocumento/TipoDocumento.vue'),
+            name: 'admin-tabela-tipoDocumento',
+            meta: {
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Gerais'}, { label: 'Tipo de Documento' }],
+              tag: 'tipodocumento',
+              operacao: 'consultar'
+            },
+          },
+          {
+            path: 'natureza-operacao',
+            component: () => import('../../views/administrativo/tabela/naturezaOperacao/NaturezaOperacao.vue'),
+            name: 'admin-tabela-natureza-operacao',
+            meta: {
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Classificação'}, { label: 'Natureza da Operação' }],
+              tag: 'naturezaoperacao',
+              operacao: 'consultar'
+            },
+          },
+          {
+            path: 'operacao-interna',
+            component: () => import('../../views/administrativo/tabela/operacaoInterna/OperacaoInterna.vue'),
+            name: 'admin-tabela-operacao-interna',
+            meta: {
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Classificação'}, { label: 'Operação Interna' }],
+              tag: 'operacaointerna',
+              operacao: 'consultar'
+            },
           }
-    //       {
-    //         path: 'tipoParceiro',
-    //         component: () => import('../../views/administrativo/tabela/tipoParceiro/TipoParceiro.vue'),
-    //         name: 'admin-tabela-tipoParceiro',
-    //         meta: {
-    //             breadcrumb: [{ parent: 'Administrativo', label: 'Tipo de Parceiro' }],
-    //         },
-    //       }
         ]
       },      
+      {
+        path: 'configuracao',
+        name: 'admin-configuracao',
+        meta: {
+            breadcrumb: [{ parent: 'Administrativo', label: 'Configurações' }],
+        },
+        children: [
+          {
+            path: 'empresa',
+            component: () => import('../../views/administrativo/configuracao/configEmpresa/ConfigEmpresa.vue'),
+            name: 'admin-configuracao-empresa',
+            meta: {
+                breadcrumb: [{label: 'Administrativo'}, {label: 'Configurações'}, {label: 'Empresa'}],
+                tag: 'configempresa',
+                operacao: 'consultar'
+            },
+          },
+          {
+            path: 'certificado',
+            component: () => import('../../views/administrativo/configuracao/certificado/Certificado.vue'),
+            name: 'admin-configuracao-certificado',
+            meta: {
+                breadcrumb: [{label: 'Administrativo'}, {label: 'Configurações'}, {label: 'Certificado'}],
+                tag: 'certificado',
+                operacao: 'consultar'
+            },
+          }
+        ]
+      },    
     ]
 }
 

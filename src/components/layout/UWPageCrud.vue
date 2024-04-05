@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeMount, defineProps } from 'vue';
+import _ from 'lodash'
 import UWPageBase from './UWPageBase.vue';
 import { UsuarioService } from '@/service';
 import { useContexto } from '@/stores';
@@ -203,10 +204,10 @@ defineExpose({
                     <InputText v-else type="text" v-model="filterModel.value" @keydown.enter="filterCallback()" class="p-column-filter" :placeholder="column.placeholder" />
                 </template>
                 <template #body="slotProps">
-                    <span v-if="column.format" v-html="column.format(slotProps.data[slotProps.field])" />
-                    <i v-else-if="column.tipoField === 'boolean'" class="pi" :class="{ 'font-bold text-green-600 pi-check-circle': slotProps.data[slotProps.field], 'font-bold text-red-600 pi pi-times-circle': !slotProps.data[slotProps.field] }"></i>
+                    <span v-if="column.format" v-html="column.format(_.get(slotProps.data, slotProps.field))" />
+                    <i v-else-if="column.tipoField === 'boolean'" class="pi" :class="{ 'font-bold text-green-600 pi-check-circle': _.get(slotProps.data, slotProps.field), 'font-bold text-red-600 pi pi-times-circle': !_.get(slotProps.data, slotProps.field) }"></i>
                     <span v-else-if="column.tipoField === 'maskDate'" >{{ formatDate(slotProps.data[slotProps.field], column.maskDate) }} </span>
-                    <span v-else>{{ slotProps.data[slotProps.field] }} </span>
+                    <span v-else>{{ _.get(slotProps.data, slotProps.field) }} </span>
                 </template>
             </Column>
             <Column header="Ações" style="width: 10%">

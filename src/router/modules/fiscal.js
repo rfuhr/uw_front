@@ -16,7 +16,38 @@ const fiscalRouter = {
             name: 'fin-dashboard',
             meta: {
                 breadcrumb: [{ parent: 'Fiscal', label: 'Dashboard' }]
-            }
+            },
+        },
+        {
+            path: 'gerenciador-nfe',
+            redirect: '/fiscal/gerenciador-nfe',
+            // component: () => import('../../views/fiscal/gerenciador/GerenciadorNFe.vue'),
+            name: 'fis-gerenciador-nfe',
+            meta: {
+                breadcrumb: [{ parent: 'Fiscal', label: 'Gerenciador de NFe' }]
+            },
+            children: [
+                {
+                  path: '',
+                  component: () => import('@/views/fiscal/gerenciador/GerenciadorNFe.vue'),
+                  name: 'fis-gerenciador-nfe-listagem',
+                  meta: {
+                    breadcrumb: [{label: 'Fiscal'}, {label: 'Gerenciador de NFe'}, {label: 'Listagem'}],
+                    tag: 'gerenciador-nfe',
+                    operacao: 'consultar'
+                  },
+                },
+                {
+                    path: 'novo',
+                    component: () => import('@/views/fiscal/nfe/NovaNFe.vue'),
+                    name: 'fis-nfe-nova',
+                    meta: {
+                      breadcrumb: [{label: 'Fiscal'}, {label: 'Nota Fiscal Eletrônica'}, {label: 'Nova'}],
+                      tag: 'nfe',
+                      operacao: 'inserir'
+                    },
+                  }, 
+            ]
         },
         {
             path: 'tabela',

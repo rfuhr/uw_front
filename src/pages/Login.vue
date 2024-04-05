@@ -39,8 +39,8 @@
                 </UWForm>
             </div>
         </div>
-        <div :style="{ backgroundImage: 'url(/erp/images/pages/accessDenied-bg.jpg)' }" class="hidden lg:flex flex-1 align-items-center justify-content-center bg-cover">
-            <img src="/layout/images/logo/vector_logo.png" alt="" />
+        <div :style="{ backgroundImage: 'url(/erp/images/pages/login-bg.jpg)' }" class="hidden lg:flex flex-1 align-items-center justify-content-center bg-cover">
+            <img src="/layout/images/logo/logo-login.png" alt="" />
         </div>
     </div>
 </template>

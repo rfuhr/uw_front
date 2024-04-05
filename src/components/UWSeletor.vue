@@ -99,11 +99,9 @@ const montarFiltros = async () => {
         });
     }
 
-    try {
-        if (filters.value) lazyParams.value.filters = filters.value;
+        if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value
         if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
         else lazyParams.value.id = null;
-    } catch {}
 };
 
 const getLista = async () => {
@@ -220,7 +218,7 @@ const changeFilter = () => {
                 class="minimodrop"
                 :showClear="true"
                 :disabled="disabled"
-                :class="{ 'p-invalid': props.erros, 'w-full': true }"
+                :class="{ 'p-invalid': !_.isEmpty(props.erros), 'w-full': true }"
                 @before-show="getLista()"
                 @change="handleChange"
                 v-bind="$attrs"

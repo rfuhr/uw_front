@@ -84,7 +84,7 @@ const handleChange = (event) => {
             </Dropdown>
             <label :for="props.id" v-required="props.required">{{ props.label }}</label>
         </span>
-        <span v-if="props.erros">
+        <span v-if="props.errors">
             <span id="id-error" v-for="(error, index) of props.errors" :key="index">
                 <small class="p-error">{{ error }}</small>
             </span>

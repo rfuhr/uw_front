@@ -91,7 +91,10 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     (response) => {
         if (response.status >= 200 && response.status <= 299) {
-            return response.data;
+            if (response.request.responseType === 'blob') 
+                return response;
+            else
+                return response.data;
         } else {
             Swal.fire({
                 icon: 'error',

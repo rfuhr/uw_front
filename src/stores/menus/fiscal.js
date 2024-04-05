@@ -7,6 +7,14 @@ export const menu = [
         ]
     },
     {
+        label: 'Gerenciador de NFe', 
+        icon: 'icon-nfe',
+        to: '/fiscal/gerenciador-nfe'
+        // items: [
+        //     {label: 'Gerenciador de NFe', icon: 'icon-nfe', to: '/fiscal/gerenciador-nfe'},
+        // ]
+    },
+    {
         label: 'Tabelas', 
         icon: 'pi pi-fw pi-table',
         items: [

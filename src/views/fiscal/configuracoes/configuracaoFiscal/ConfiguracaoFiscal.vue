@@ -36,7 +36,7 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '8%'
+        size: '5%'
     },    
     {
         label: 'UF Dest',

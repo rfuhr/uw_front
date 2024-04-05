@@ -7,9 +7,10 @@ import { ConfiguracaoFiscalService as Service, UfService, PaisService, TiposServ
          OrigemService, GrupoTributacaoService, OperacaoInternaService, ClassificacaoOperacaoService, CfopService,
          NcmService, ItemService } from '@/service';
 import { useFormatString } from '@/composables/useFormatString';
+import  ManutencaoConfiguracaoFiscalICMS from './ManutencaoConfiguracaoFiscalICMS.vue';
+import  ManutencaoConfiguracaoFiscalIPI from './ManutencaoConfiguracaoFiscalIPI.vue';
 
 const schema = yup.object().shape({
-    // id: yup.number().optional(),
     ufOrigemId: yup.number().required('UF de Origem é obrigatória.'),
     paisDestinoId: yup.number().required('País de Destino é obrigatório.'),
     ufDestinoId: yup.number().required('UF de Destino é obrigatória.'),
@@ -17,13 +18,6 @@ const schema = yup.object().shape({
     entradaSaida: yup.string().required('Entrada/Saída é obrigatório.'),
     dataInicioVigencia: yup.date().required('Data Início Vigência é obrigatório.'),
     dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.'),
-    // origemId: yup.number().optional(),
-    // grupoTributacaoId: yup.number().optional(),
-    // operacaoId: yup.number().optional(),
-    // classificacaoOperacaoId: yup.number().optional(),
-    // cfopId: yup.number().optional(),
-    // ncmId: yup.number().optional(),
-    // itemId: yup.number().optional(),
 });
 
 const entradaSaida = ref();
@@ -74,7 +68,13 @@ const formData = reactive({
     itemNome: undefined,
     entradaSaida: undefined,
     dataInicioVigencia: undefined,
-    dataFinalVigencia: undefined
+    dataFinalVigencia: undefined,
+    configuracaoFiscalIcms: {
+        situacaoTributariaId: undefined
+    },
+    configuracaoFiscalIpi: {
+        situacaoTributariaId: undefined
+    }
 });
 
 const showDialogComputed = computed({
@@ -147,6 +147,14 @@ const showModal = async () => {
         formData.entradaSaida = undefined;
         formData.dataInicioVigencia = undefined;
         formData.dataFinalVigencia = undefined;
+        formData.configuracaoFiscalIcms = {
+            situacaoTributariaId: undefined,
+            somaIpiBaseCalculo: false,
+            somaIpiBaseCalculoST: false
+        }
+        formData.configuracaoFiscalIpi = {
+            situacaoTributariaId: undefined
+        }
         formData.cfop = {};
         formData.origem = {};
         formData.ncm = {};
@@ -154,6 +162,18 @@ const showModal = async () => {
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
+            if (!formData.configuracaoFiscalIcms) {
+                formData.configuracaoFiscalIcms = {
+                    configuracaoFiscalId: formData.id,
+                    somaIpiBaseCalculo: false,
+                    somaIpiBaseCalculoST: false
+                }
+            }
+            if (!formData.configuracaoFiscalIpi) {
+                formData.configuracaoFiscalIpi = {
+                    configuracaoFiscalId: formData.id
+                }
+            }
         });
     }
 };
@@ -177,7 +197,14 @@ const changeNcm = (event) => {
 };
 
 const changeItem = (event) => {
-    formData.item = event;
+    if (event) {
+        formData.itemNome = event.nome;
+        formData.itemCodigo = event.codigo;
+    } else {
+        formData.itemId = undefined;
+        formData.itemNome = undefined;
+        formData.itemCodigo = undefined;
+    }
 };
 
 </script>
@@ -359,7 +386,7 @@ const changeItem = (event) => {
                                                 ]"
                                     fieldSearchDefault="nome"
                                     >
-                            <template #values> {{ formData.item?.codigo }} - {{ formData.item?.nome }} </template>
+                            <template #values> {{ formData.itemCodigo }} - {{ formData.itemNome }} </template>
                             <template #options="slotProps">
                                 <div class="flex flex-column">
                                     {{ truncate(slotProps.option.nome, 100 )}} 
@@ -371,6 +398,18 @@ const changeItem = (event) => {
                         <UWCalendar id="dataFinalVigencia" label="Data Final Vigência" required v-model="formData.dataFinalVigencia" :errors="errors.value?.dataFinalVigencia" classContainer="col-12 md:col-2" />                        
                     </div>
                 </div>
+                <TabView class="col-12">
+                    <TabPanel header="ICMS" class="col-12">
+                        <ManutencaoConfiguracaoFiscalICMS v-model="formData.configuracaoFiscalIcms" />
+                    </TabPanel>
+                    <TabPanel header="IPI" class="col-12">
+                        <ManutencaoConfiguracaoFiscalIPI v-model="formData.configuracaoFiscalIpi" />
+                    </TabPanel>
+                    <TabPanel header="PIS" class="col-12">
+                    </TabPanel>
+                    <TabPanel header="COFINS" class="col-12">
+                    </TabPanel>
+                </TabView>        
             </template>
         </UWForm>
     </Dialog>

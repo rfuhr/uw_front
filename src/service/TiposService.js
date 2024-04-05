@@ -18,6 +18,14 @@ class TiposService {
         return api.get('/fiscal/entrada-saida');
     }
 
+    getModalidadeBaseCalculo() {
+        return api.get('/fiscal/modalidade-base-calculo');
+    }
+
+    getTipoCalculo() {
+        return api.get('/fiscal/tipo-calculo');
+    }
+
 }
 
 export default new TiposService();

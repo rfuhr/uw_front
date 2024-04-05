@@ -97,7 +97,24 @@ const showModal = async () => {
                     <div class="p-fluid formgrid grid">
                         <UWInput id="codigo" label="Código" required autofocus v-model="formData.codigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
                         <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
-                        <UWCheckBox id="usoconsumo" label="Uso e Consumo" required v-model="formData.usoConsumo" :errors="errors.value?.nome" classContainer="col-12 md:col-3" />
+                        <div class="field md:col-6 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.usoConsumo"
+                                        onLabel="Uso e Consumo"
+                                        offLabel="Uso e Consumo"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.usoConsumo, 'bg-red-100 border-white': !formData.usoConsumo }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
                     </div>
                 </div>
             </template>

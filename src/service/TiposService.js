@@ -45,6 +45,15 @@ class TiposService {
     getDestinoOperacao() {
         return api.get('/fiscal/destino-operacao');
     }
+ 
+    getModalidadeBaseCalculo() {
+        return api.get('/fiscal/modalidade-base-calculo');
+    }
+
+    getTipoCalculo() {
+        return api.get('/fiscal/tipo-calculo');
+    }
+
 }
 
 export default new TiposService();

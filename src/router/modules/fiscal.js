@@ -157,6 +157,25 @@ const fiscalRouter = {
                     }
                 }
             ]
+        },
+        {
+            path: 'configuracoes',
+            name: 'fis-configuracoes',
+            meta: {
+                breadcrumb: [{ parent: 'Fiscal', label: 'Configurações' }]
+            },
+            children: [
+                {
+                    path: 'configuracao-fiscal',
+                    component: () => import('../../views/fiscal/configuracoes/configuracaoFiscal/ConfiguracaoFiscal.vue'),
+                    name: 'fis-configuracoes-configuracaofiscal',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Configurações' }, { label: 'Configuração Fiscal' }],
+                        tag: 'configuracaofiscal',
+                        operacao: 'consultar'
+                    }
+                }
+            ]
         }
     ]
 };

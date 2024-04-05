@@ -238,7 +238,7 @@ const labelNcmSelector = computed(() => {
                     </TabPanel>
                     <TabPanel header="Estoque" class="col-12">
                         <div class="p-fluid formgrid grid">
-                            <div class="field md:col-2 pt-0">
+                            <div class="field md:col-3 pt-0">
                                 <span class="p-float-label">
                                     <ToggleButton
                                         v-model="formData.controlaEstoque"

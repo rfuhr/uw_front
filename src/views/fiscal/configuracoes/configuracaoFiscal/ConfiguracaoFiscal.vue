@@ -12,14 +12,131 @@ const crudlista = ref();
 
 const columns = reactive([
     {
-        label: 'Identificador',
+        label: 'ID',
         field: 'id',
         tipoField: 'integer',
         filter: true,
         matchMode: 'equal',
         placeholder: '',
+        size: '5%'
+    },
+    {
+        label: 'Regime Tributário',
+        field: 'regimeTributarioNome',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
         size: '10%'
     },    
+    {
+        label: 'UF Orig',
+        field: 'ufOrigemSigla',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '5%'
+    },    
+    {
+        label: 'UF Dest',
+        field: 'ufDestinoSigla',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '5%'
+    },    
+    {
+        label: 'Ent/Sai',
+        field: 'entradaSaida',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '5%'
+    },    
+    {
+        label: 'Origem',
+        field: 'origemCodigo',
+        tipoField: 'integer',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '8%'
+    },
+    {
+        label: 'Gr.Tribut.',
+        field: 'grupoTributacaoCodigo',
+        tipoField: 'integer',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '5%'
+    },
+    {
+        label: 'Clas.Oper.',
+        field: 'classificacaoOperacaoCodigo',
+        tipoField: 'integer',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '5%'
+    },
+    {
+        label: 'Oper.Int.',
+        field: 'operacaoInternaSigla',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '5%'
+    }, 
+    {
+        label: 'CFOP',
+        field: 'cfopCodigo',
+        tipoField: 'integer',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '5%'
+    },
+    {
+        label: 'NCM',
+        field: 'ncmCodigo',
+        tipoField: 'integer',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '8%'
+    },
+    {
+        label: 'Item',
+        field: 'itemCodigo',
+        tipoField: 'integer',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '8%'
+    },
+    {
+        label: 'Início Vigência',
+        field: 'dataInicioVigencia',
+        tipoField: 'maskDate',
+        filter: false,
+        placeholder: '',
+        size: '10%',
+        maskDate: 'dd/MM/yyyy'
+    },
+    {
+        label: 'Final Vigência',
+        field: 'dataFinalVigencia',
+        filter: false,
+        placeholder: '',
+        size: '10%',
+        tipoField: 'maskDate',
+        maskDate: 'dd/MM/yyyy'
+    }       
 ]);
 
 const openNew = () => {

@@ -1,6 +1,5 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 import { FormWizard, TabContent } from 'vue3-form-wizard';
@@ -8,7 +7,6 @@ import 'vue3-form-wizard/dist/style.css';
 import IdentificacaoNFe from '@/views/fiscal/nfe/IdentificacaoNFe.vue';
 import DestinatarioNFe from './DestinatarioNFe.vue';
 import ProdutosNFe from './ProdutosNFe.vue';
-import { useValidationsSchemaNFe } from './useValidationsSchemaNFe';
 import { ConfigEmpresaService } from '@/service';
 import { useContexto } from '@/stores';
 
@@ -23,32 +21,23 @@ const formData = reactive({
         modelo: 55,
         possuiDocumentoReferenciado: false,
         outroLocalRetirada: false,
-        documentosReferenciados: []
+        documentosReferenciados: [],
+        localRetirada: {},
+        autorizarObterXml: false,
+        autorizacoes: []
     },
-    itensNFe: []
+    destinatario: {
+        outroLocalEntrega: false,
+        localEntrega: {}
+    },
+    itensNFe: {
+        itens: []
+    }
 });
+const identificacaoNFe = ref(null);
+const destinatarioNFe = ref(null);
+const produtosNFe = ref(null);
 
-const createSchemaIdentificacaoNFe = (dynamicFields) => {
-    const schemaObject = {
-        emitenteId: yup.string().required('Emitente é obrigatório.'),
-        operacaoInternaId: yup.string().required('Operação Interna é obrigatória.')
-    };
-    Object.assign(schemaObject, dynamicFields);
-    return yup.object().shape(schemaObject);
-};
-
-const createSchema = () => {
-    const { createSchemaDataHoraSaidaEntrada } = useValidationsSchemaNFe(formData);
-
-    return yup.object().shape({
-        identificacaoNFe: createSchemaIdentificacaoNFe({
-            dataHoraSaidaEntrada: createSchemaDataHoraSaidaEntrada(formData)
-            // Adicione aqui outros campos dinâmicos, se necessário
-        })
-    });
-};
-
-const formNovaNFe = ref(null);
 const configEmpresaNFe = ref(null);
 
 function onComplete() {
@@ -76,56 +65,74 @@ const onCancelar = async () => {
     }
 };
 
-const validForm = () => {
-      if (formNovaNFe.value) {
-        return formNovaNFe.value.validateForm();
-      } else {
+const validFormIdentificacaoNFe = () => {
+    if (identificacaoNFe.value) {
+        return identificacaoNFe.value.validateForm();
+    } else {
         return true;
-      }
     }
+};
 
 const beforeChangeIdentificacao = async () => {
-    return validForm();
+    return validFormIdentificacaoNFe();
+};
+
+
+const validDestinatarioNFe = () => {
+    if (destinatarioNFe.value) {
+        return destinatarioNFe.value.validateForm();
+    } else {
+        return true;
+    }
+};
+
+const beforeChangeDestinatario = async () => {
+    return validDestinatarioNFe();
+};
+
+const validProdutosNFe = () => {
+    if (produtosNFe.value) {
+        return produtosNFe.value.validateForm();
+    } else {
+        return true;
+    }
+};
+
+const beforeChangeProdutos = async () => {
+    return validProdutosNFe();
 };
 
 onMounted(async () => {
     ConfigEmpresaService.getConfigNFe(contextoStore.contexto.empresaFilialId).then((data) => {
         configEmpresaNFe.value = data;
-        formData.identificacaoNFe.serie = data.serie
-        formData.identificacaoNFe.tipoEmissao = data.tipoEmissao
+        formData.identificacaoNFe.serie = data.serie;
+        formData.identificacaoNFe.tipoEmissao = data.tipoEmissao;
     });
 });
-
 </script>
 
 <template>
     <UWPageBase title="Emissão de NFe" subtitle="Para emissão da nfe, seguir as etapas.">
-        <UWForm :schema="createSchema()" :values="formData" ref="formNovaNFe" :visibleSave="false" :visibleCancel="false">
-            <template #errors="{ errors }">
-                <FormWizard @on-complete="onComplete" color="#094899" step-size="xs" nextButtonText="Próximo" backButtonText="Anterior" finishButtonText="Enviar NFe">
-                    <template #custom-buttons-left>
-                        <Button type="button" class="p-button-danger ml-6" @click="onCancelar">Cancelar emissão</Button>
-                    </template>
-                    <TabContent title="Identificação da Nota Final" icon="fa fa-file-invoice" :before-change="beforeChangeIdentificacao">
-                        <IdentificacaoNFe v-model="formData.identificacaoNFe" :errors="errors" />
-                    </TabContent>
-                    <TabContent title="Destinatário" icon="fa fa-handshake">
-                        <DestinatarioNFe />
-                    </TabContent>
-                    <TabContent title="Produtos" icon="fa fa-barcode">
-                        <ProdutosNFe v-model="formData.itensNFe" />
-                    </TabContent>
-                    <TabContent title="Totalizadores" icon="fa fa-list-ol"> Yuhuuu! This seems pretty damn simple </TabContent>
-                    <TabContent title="Informações do Transporte" icon="fa fa-truck"> Yuhuuu! This seems pretty damn simple </TabContent>
-                    <TabContent title="Dados do Faturamento" icon="fa fa-wallet"> Yuhuuu! This seems pretty damn simple </TabContent>
-                    <TabContent title="Informações Adicionais" icon="fa fa-info"> Yuhuuu! This seems pretty damn simple </TabContent>
-                    <TabContent title="Finalizar" icon="fa fa-envelope-circle-check"> Yuhuuu! This seems pretty damn simple </TabContent>
-                </FormWizard>
+        <FormWizard @on-complete="onComplete" color="#094899" step-size="xs" nextButtonText="Próximo" backButtonText="Anterior" finishButtonText="Enviar NFe">
+            <template #custom-buttons-left>
+                <Button type="button" class="p-button-danger ml-6" @click="onCancelar">Cancelar emissão</Button>
             </template>
-        </UWForm>
+            <TabContent title="Identificação da Nota Final" icon="fa fa-file-invoice" :before-change="beforeChangeIdentificacao">
+                <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe" />
+            </TabContent>
+            <TabContent title="Destinatário" icon="fa fa-handshake" :before-change="beforeChangeDestinatario">
+                <DestinatarioNFe ref="destinatarioNFe" v-model="formData.destinatario"  />
+            </TabContent>
+            <TabContent title="Produtos" icon="fa fa-barcode" :before-change="beforeChangeProdutos">
+                <ProdutosNFe ref="produtosNFe" v-model="formData.itensNFe" />
+            </TabContent>
+            <TabContent title="Totalizadores" icon="fa fa-list-ol"> Yuhuuu! This seems pretty damn simple </TabContent>
+            <TabContent title="Informações do Transporte" icon="fa fa-truck"> Yuhuuu! This seems pretty damn simple </TabContent>
+            <TabContent title="Dados do Faturamento" icon="fa fa-wallet"> Yuhuuu! This seems pretty damn simple </TabContent>
+            <TabContent title="Informações Adicionais" icon="fa fa-info"> Yuhuuu! This seems pretty damn simple </TabContent>
+            <TabContent title="Finalizar" icon="fa fa-envelope-circle-check"> Yuhuuu! This seems pretty damn simple </TabContent>
+        </FormWizard>
     </UWPageBase>
 </template>
 
-<style>
-
-</style>
+<style></style>

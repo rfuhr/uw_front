@@ -1,6 +1,8 @@
 export function useFormatDocumentos() {
 
     function formatDocumento(documento) {
+        if (!documento) return "";
+        
         if (documento.length === 11) {
             // Format CPF
             return documento.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');

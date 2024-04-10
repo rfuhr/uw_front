@@ -103,20 +103,22 @@ import { requiredDirective } from './directives/required';
 import UWPageBase from '@/components/layout/UWPageBase.vue';
 import UWPageCrud from '@/components/layout/UWPageCrud.vue';
 import UWForm from '@/components/layout/UWForm.vue';
-import UWInput from '@/components/layout/UWInput.vue';
-import UWTextArea from '@/components/layout/UWTextArea.vue';
-import UWSeletor from '@/components/UWSeletor.vue';
-import UWMultiSeletor from '@/components/UWMultiSeletor.vue';
+import UWInput from '@/components/inputs/UWInput.vue';
+import UWTextArea from '@/components/inputs/UWTextArea.vue';
+import UWSeletor from '@/components/seletores/UWSeletor.vue';
+import UWMultiSeletor from '@/components/seletores/UWMultiSeletor.vue';
 import UWFieldSet from '@/components/layout/UWFieldSet.vue';
-import UWPickList from '@/components/UWPickList.vue';
-import UWInputMask from '@/components/UWInputMask.vue';
-import UWCalendar from '@/components/UWCalendar.vue';
-import UWParceiroLocal from '@/components/UWParceiroLocal.vue';  
-import UWCurrency from '@/components/UWCurrency.vue';  
-import UWDecimal from '@/components/UWDecimal.vue';
-import UWInteger from '@/components/UWInteger.vue';
-import UWCheckBox from '@/components/layout/UWCheckBox.vue';
-import UWEstruturaConta from '@/components/UWEstruturaConta.vue';
+import UWPickList from '@/components/seletores/UWPickList.vue';
+import UWInputMask from '@/components/inputs/UWInputMask.vue';
+import UWCalendar from '@/components/seletores/UWCalendar.vue';
+import UWParceiroLocal from '@/components/seletores/UWParceiroLocal.vue';  
+import UWCurrency from '@/components/inputs/UWCurrency.vue';  
+import UWDecimal from '@/components/inputs/UWDecimal.vue';
+import UWInteger from '@/components/inputs/UWInteger.vue';
+import UWCheckBox from '@/components/inputs/UWCheckBox.vue';
+import UWEstruturaConta from '@/components/diversos/UWEstruturaConta.vue';
+import UWMonth from '@/components/seletores/UWMonth.vue';
+
 
 import '@/assets/styles.scss';
 
@@ -366,5 +368,6 @@ app.component('UWDecimal', UWDecimal);
 app.component('UWInteger', UWInteger);
 app.component('UWEstruturaConta', UWEstruturaConta);
 app.component('UWCheckBox', UWCheckBox);
+app.component('UWMonth', UWMonth);
 
 app.mount('#app');

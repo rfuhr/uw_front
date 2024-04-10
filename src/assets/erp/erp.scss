@@ -9,3 +9,12 @@
     max-width: 50vw;
 }
 
+.p-togglebutton .p-button {
+    background-color: rgb(215, 243, 215);
+}
+
+.p-togglebutton.p-highlight .p-button {
+    background: #e9cdf7;
+    border-color: #e9cdf7;
+    color: rgba(0, 0, 0, 0.87);
+}

@@ -143,7 +143,6 @@ const handleFileChange = (event) => {
                         </div>
                     </div>
                 </div>
-                <code>{{ formData }}</code>
             </template>
         </UWForm>
     </Dialog>

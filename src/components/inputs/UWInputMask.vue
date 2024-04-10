@@ -43,6 +43,14 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    showButton: {
+        type: Boolean,
+        default: false
+    },
+    iconButton: {
+        type: String,
+        default: 'pi pi-bolt'
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -53,14 +61,21 @@ const localModelValue = computed({
         emit('update:modelValue', value);
     }
 });
+
+const execButton = () => {
+    emit('clickButton');
+};
 </script>
 
 <template>
     <div :class="['field', classContainer]">
-        <span class="p-float-label">
-            <InputMask :id="id" :mask="mask" :unmask="unmask" :placeholder="placeholder" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs"/>
-            <label :for="id" v-required="required">{{ label }}</label>
-        </span>
+        <div class="p-inputgroup">
+            <span class="p-float-label">
+                <InputMask :id="id" :mask="mask" :unmask="unmask" :placeholder="placeholder" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs" />
+                <label :for="id" v-required="required">{{ label }}</label>
+            </span>
+            <Button v-show="showButton" :icon="iconButton" severity="help" @click.stop="execButton" />
+        </div>
         <span v-if="errors">
             <span v-for="(error, index) of errors" :key="index">
                 <small class="p-error">{{ error }}</small>

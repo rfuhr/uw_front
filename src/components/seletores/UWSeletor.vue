@@ -6,7 +6,7 @@ import { useFormatString } from '@/composables/useFormatString';
 const props = defineProps({
     id: {
         type: String,
-        required: true
+        required: false
     },
     modelValue: {},
     label: {
@@ -60,7 +60,7 @@ const props = defineProps({
 
 const registros = ref([]);
 const totalRegistros = ref(0);
-const lazyParams = ref();
+const lazyParams = ref({filters: {}});
 const filters = ref();
 const valorFiltro = ref();
 const filtroAtivo = ref();
@@ -233,7 +233,8 @@ const changeFilter = () => {
                                 :options="options"
                                 optionLabel="value"
                                 aria-labelledby="basic"
-                                style="margin-bottom: 0.1rem"
+                                style="margin-bottom: 0.1rem;"
+                                cla
                                 @change="changeFilter()"
                                 :pt="{
                                     button: ({ context }) => ({

@@ -32,7 +32,7 @@ const props = defineProps({
         default: undefined
     },
     classContainer: {
-        type: String,
+        type: [String, Array],
         default: ''
     },
     disabled: {

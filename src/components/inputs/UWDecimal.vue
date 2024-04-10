@@ -31,6 +31,10 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    maximoDigitos: {
+        type: Number,
+        default: 2
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -45,9 +49,9 @@ const localModelValue = computed({
 
 <template>
     <div :class="['field', classContainer]">
-        <span class="flex align-items-left">
-            <Checkbox :id="id" :disabled="disabled" v-model="localModelValue" :binary="true" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs"/>
-            <label :for="id" class="ml-3">{{ label }}</label>
+        <span class="p-float-label">
+            <InputNumber :id="id" :minFractionDigits=2 :maxFractionDigits=maximoDigitos locale="pt-Br" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs"/>
+            <label :for="id" v-required="required">{{ label }}</label>
         </span>
         <span v-if="errors">
             <span v-for="(error, index) of errors" :key="index">

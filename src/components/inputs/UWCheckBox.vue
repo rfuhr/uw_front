@@ -31,10 +31,6 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    showButton: {
-        type: Boolean,
-        default: false
-    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -45,22 +41,14 @@ const localModelValue = computed({
         emit('update:modelValue', value);
     }
 });
-
-const execButton = () => {
-    emit('clickButton');
-};
-
 </script>
 
 <template>
     <div :class="['field', classContainer]">
-        <div class="p-inputgroup">
-            <span class="p-float-label">
-                <InputNumber :id="id" minFractionDigits="0" maxFractionDigits="0" locale="pt-Br" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs" />
-                <label :for="id" v-required="required">{{ label }}</label>
-            </span>
-            <Button v-show="showButton" icon="pi pi-bolt" severity="help" @click.stop="execButton" />
-        </div>
+        <span class="flex align-items-left">
+            <Checkbox :id="id" :disabled="disabled" v-model="localModelValue" :binary="true" :autofocus="autofocus" :class="{ 'p-invalid': errors }" v-bind="$attrs"/>
+            <label :for="id" class="ml-3">{{ label }}</label>
+        </span>
         <span v-if="errors">
             <span v-for="(error, index) of errors" :key="index">
                 <small class="p-error">{{ error }}</small>

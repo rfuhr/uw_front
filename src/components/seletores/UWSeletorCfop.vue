@@ -29,7 +29,7 @@ const props = defineProps({
 
 const registros = ref([]);
 const totalRegistros = ref(0);
-const lazyParams = ref();
+const lazyParams = ref({filters: {}});
 const filters = ref();
 const valorFiltro = ref();
 const filtroAtivo = ref();

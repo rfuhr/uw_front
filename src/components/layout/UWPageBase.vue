@@ -16,7 +16,7 @@ const props = defineProps({
 
 <template>
     <div class="grid">
-        <AppBreadCrumb></AppBreadCrumb>
+        <!-- <AppBreadCrumb></AppBreadCrumb> -->
         <div class="col-12">
             <div class="card">
                 <h5>{{ title }}</h5>

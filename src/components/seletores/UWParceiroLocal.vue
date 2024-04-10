@@ -1,8 +1,11 @@
 <script setup>
 import { ref, defineProps, onMounted, onBeforeMount, computed } from 'vue';
 import _ from 'lodash';
+import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 
-import { ItemService as Service } from '@/service';
+import { ParceiroLocalService as Service } from '@/service';
+
+const { formatDocumento } = useFormatDocumentos();
 
 const props = defineProps({
     id: {
@@ -29,11 +32,11 @@ const props = defineProps({
 
 const registros = ref([]);
 const totalRegistros = ref(0);
-const lazyParams = ref({filters: {}});
+const lazyParams = ref({filters:{}});
 const filters = ref();
 const valorFiltro = ref();
 const filtroAtivo = ref();
-const optionsPesq = ref(['Nome', 'Código']);
+const optionspESQ = ref(['Nome', 'Cnpj / Cpf', 'Código']);
 const tipofiltro = ref('Nome');
 
 const montarFiltros = async () => {
@@ -41,8 +44,8 @@ const montarFiltros = async () => {
         nome: {
             value: valorFiltro.value,
             matchMode: 'contains',
-            tipo: tipofiltro.value === 'Nome' ? 'text' : 'integer',
-            fieldFilter: tipofiltro.value === 'Nome' ? 'nome' : 'codigo'
+            tipo: 'text',
+            fieldFilter: tipofiltro.value === 'Nome' ? 'nomeLocal' : tipofiltro.value === 'Código' ? 'codigo' : 'cpfCnpj'
         }
     };
     if (valorFiltro.value && valorFiltro.value !== '') filtroAtivo.value = true;
@@ -80,6 +83,12 @@ const limparFiltro = async () => {
     lazyParams.value.page = 0;
     await getLista();
 };
+
+// const checkLimparFiltro = () => {
+//     if (filtroAtivo.value && (valorFiltro.value || valorFiltro.value === '')) {
+//         limparFiltro();
+//     }
+// };
 
 const onLazyLoad = (event) => {
     if (event) lazyParams.value.first = event.first;
@@ -120,6 +129,10 @@ const handleChange = (event) => {
     emit('changeObject', reg);
 };
 
+const formatarDocumento = (value) => {
+    return formatDocumento(value);
+};
+
 const beforeShow = () => {
     limparFiltro();
     getLista();
@@ -133,9 +146,9 @@ const beforeShow = () => {
                 :id="props.id"
                 v-model="localFieldName"
                 :options="registros"
-                optionLabel="nome"
+                optionLabel="nomeRazaoSocial"
                 optionValue="id"
-                placeholder="Selecione o item"
+                placeholder="Selecione o parceiro"
                 class="minimodrop"
                 :showClear="true"
                 :disabled="disabled"
@@ -145,7 +158,7 @@ const beforeShow = () => {
             >
                 <template #header>
                     <div class="col-12 md:col-12">
-                        <div class="flex justify-content-start align-items-center"><span>Pesquisar por: </span> <SelectButton v-model="tipofiltro" :options="optionsPesq" aria-labelledby="basic" /></div>
+                        <div class="flex justify-content-start align-items-center"><span>Pesquisar por: </span> <SelectButton v-model="tipofiltro" :options="optionspESQ" aria-labelledby="basic" /></div>
 
                         <div class="p-inputgroup">
                             <InputText autofocus placeholder="Digite argumento de pesquisa" v-model="valorFiltro" @keypress.enter="getLista()" />
@@ -156,8 +169,8 @@ const beforeShow = () => {
                 </template>
                 <template #option="slotProps">
                     <div class="flex flex-column align-items-start">
-                        <span>[ {{ slotProps.option.codigo }} ] - {{ slotProps.option.nome }}</span>
-                        <!-- <span v-if="slotProps.option.cpfCnpj.length === 9" style="font-size: 0.9rem; color: black">Filial: {{ slotProps.option.nomeLocal }}</span> -->
+                        <span>{{ slotProps.option.nomeRazaoSocial }} - ({{ formatarDocumento(slotProps.option.cpfCnpj) }})</span>
+                        <span v-if="slotProps.option.cpfCnpj.length === 9" style="font-size: 0.9rem; color: black">Filial: {{ slotProps.option.nomeLocal }}</span>
                     </div>
                 </template>
 

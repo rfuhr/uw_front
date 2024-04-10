@@ -1,11 +1,8 @@
 <script setup>
-import { ref, defineProps, onMounted, onBeforeMount, computed } from 'vue';
+import { ref, defineProps, onMounted, onBeforeMount, computed, watch } from 'vue';
 import _ from 'lodash';
-import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 
-import { ParceiroLocalService as Service } from '@/service';
-
-const { formatDocumento } = useFormatDocumentos();
+import { CfopService as Service } from '@/service';
 
 const props = defineProps({
     id: {
@@ -27,25 +24,30 @@ const props = defineProps({
     disabled: {
         type: Boolean,
         default: false
+    }, 
+    operacaoInternaId: {
+        type: Number,
+        required: true,
+        default: 0
     }
 });
 
 const registros = ref([]);
 const totalRegistros = ref(0);
-const lazyParams = ref();
+const lazyParams = ref({filters: {}});
 const filters = ref();
 const valorFiltro = ref();
 const filtroAtivo = ref();
-const optionspESQ = ref(['Nome', 'Cnpj / Cpf', 'Código']);
-const tipofiltro = ref('Nome');
+const optionsPesq = ref(['Nome', 'Código']);
+const tipofiltro = ref('Código');
 
 const montarFiltros = async () => {
     filters.value = {
         nome: {
             value: valorFiltro.value,
             matchMode: 'contains',
-            tipo: 'text',
-            fieldFilter: tipofiltro.value === 'Nome' ? 'nomeLocal' : tipofiltro.value === 'Código' ? 'codigo' : 'cpfCnpj'
+            tipo: tipofiltro.value === 'Nome' ? 'text' : 'integer',
+            fieldFilter: tipofiltro.value === 'Nome' ? 'nome' : 'codigo'
         }
     };
     if (valorFiltro.value && valorFiltro.value !== '') filtroAtivo.value = true;
@@ -69,9 +71,14 @@ const montarFiltros = async () => {
 const getLista = async () => {
     try {
         await montarFiltros();
-        const data = await Service.getPageAll(lazyParams.value);
+        let operacaoInternaId = props.operacaoInternaId
+        if (operacaoInternaId === undefined || operacaoInternaId === null) 
+            operacaoInternaId = 0
+        const data = await Service.getSeletorByOperacaoInterna(lazyParams.value, operacaoInternaId);
         registros.value = data.registros;
         totalRegistros.value = data.totalRegistros;
+        if (totalRegistros.value === 1)
+            localFieldName.value = data.registros[0].id
     } catch {
         registros.value = [];
     }
@@ -83,12 +90,6 @@ const limparFiltro = async () => {
     lazyParams.value.page = 0;
     await getLista();
 };
-
-// const checkLimparFiltro = () => {
-//     if (filtroAtivo.value && (valorFiltro.value || valorFiltro.value === '')) {
-//         limparFiltro();
-//     }
-// };
 
 const onLazyLoad = (event) => {
     if (event) lazyParams.value.first = event.first;
@@ -118,7 +119,6 @@ const localFieldName = computed({
     get: () => props.modelValue,
     set: (newValue) => {
         if (!_.isEqual(newValue, props.modelValue)) {
-            console.log('NewValue ', newValue, 'OldValue', props.modelValue);
             emit('update:modelValue', newValue);
             emit('change');
         }
@@ -130,14 +130,15 @@ const handleChange = (event) => {
     emit('changeObject', reg);
 };
 
-const formatarDocumento = (value) => {
-    return formatDocumento(value);
-};
-
 const beforeShow = () => {
     limparFiltro();
     getLista();
 };
+
+watch(() => props.operacaoInternaId, () => {
+      getLista();
+});
+
 </script>
 
 <template>
@@ -147,9 +148,9 @@ const beforeShow = () => {
                 :id="props.id"
                 v-model="localFieldName"
                 :options="registros"
-                optionLabel="nomeLocal"
+                optionLabel="nome"
                 optionValue="id"
-                placeholder="Selecione o parceiro"
+                placeholder="Selecione o item"
                 class="minimodrop"
                 :showClear="true"
                 :disabled="disabled"
@@ -159,10 +160,10 @@ const beforeShow = () => {
             >
                 <template #header>
                     <div class="col-12 md:col-12">
-                        <div class="flex justify-content-start align-items-center"><span>Pesquisar por: </span> <SelectButton v-model="tipofiltro" :options="optionspESQ" aria-labelledby="basic" /></div>
+                        <div class="flex justify-content-start align-items-center"><span>Pesquisar por: </span> <SelectButton v-model="tipofiltro" :options="optionsPesq" aria-labelledby="basic" /></div>
 
                         <div class="p-inputgroup">
-                            <InputText autofocus placeholder="Digite argumento de pesquisa" v-model="valorFiltro" @keypress.enter="getLista()" />
+                            <InputText placeholder="Digite argumento de pesquisa" v-model="valorFiltro" @keypress.enter="getLista()" />
                             <Button v-if="filtroAtivo" icon="pi pi-times" class="p-button-danger" @click.stop="limparFiltro()" />
                             <Button icon="pi pi-search" class="p-button-warning" @click.stop="getLista()" />
                         </div>
@@ -170,8 +171,8 @@ const beforeShow = () => {
                 </template>
                 <template #option="slotProps">
                     <div class="flex flex-column align-items-start">
-                        <span>{{ slotProps.option.nomeRazaoSocial }} - ({{ formatarDocumento(slotProps.option.cpfCnpj) }})</span>
-                        <span v-if="slotProps.option.cpfCnpj.length === 9" style="font-size: 0.9rem; color: black">Filial: {{ slotProps.option.nomeLocal }}</span>
+                        <span>[ {{ slotProps.option.codigo }} ] - {{ slotProps.option.nome }}</span>
+                        <!-- <span v-if="slotProps.option.cpfCnpj.length === 9" style="font-size: 0.9rem; color: black">Filial: {{ slotProps.option.nomeLocal }}</span> -->
                     </div>
                 </template>
 

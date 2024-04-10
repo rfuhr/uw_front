@@ -32,14 +32,14 @@ const emit = defineEmits(['closeDialog']);
 const toast = useToast();
 
 const initialValues = () => {
-    formData.id = undefined,
-    formData.naturezaOperacaoId = undefined,
-    formData.naturezaOperacao = undefined,
-    formData.nome = undefined,
-    formData.sigla = undefined,
-    formData.caracteristicaFiscal = false,
-    formData.operacaoInternaFiscal = {}
-}
+    (formData.id = undefined),
+        (formData.naturezaOperacaoId = undefined),
+        (formData.naturezaOperacao = undefined),
+        (formData.nome = undefined),
+        (formData.sigla = undefined),
+        (formData.caracteristicaFiscal = false),
+        (formData.operacaoInternaFiscal = {});
+};
 
 const formData = reactive({});
 const activeIndexTabView = ref(0);
@@ -88,15 +88,13 @@ const salvarRegistro = async () => {
 
 const showModal = async () => {
     if (props.mode === 'create') {
-        initialValues()
+        initialValues();
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
         });
     }
 };
-
-
 </script>
 
 <template>
@@ -123,32 +121,27 @@ const showModal = async () => {
                     </UWFieldSet>
                 </div>
                 <div class="col-12 pt-0 pb-0">
-                    <div class="field md:col-2 p-0">
-                            <span class="p-float-label">
-                                <ToggleButton
-                                    v-model="formData.caracteristicaFiscal"
-                                    onLabel="Tem característica fiscal"
-                                    offLabel="Sem característica fiscal"
-                                    onIcon="pi pi-lock"
-                                    offIcon="pi pi-lock-open"
-                                    class="w-full"
-                                    aria-label="Do you confirm"
-                                    :pt="{
-                                        root: {
-                                            class: [{ 'h-full': true, 'bg-green-100 border-white': !formData.caracteristicaFiscal, 'bg-purple-100 border-white': formData.caracteristicaFiscal }]
-                                        }
-                                    }"
-                                    @change="() => { activeIndexTabView = 0; formData.operacaoInternaFiscal = {}}"
-                                />
-                            </span>
-                        </div>                    
+                    <UWFieldSet title="Definição de característica" class="h-full pb-0 mb-0">
+                    <UWCheckBox
+                        label="Tem Característica Fiscal"
+                        v-model="formData.caracteristicaFiscal"
+                        classContainer="col-12 md:col-2 mb-0 p-0"
+                        @change="
+                            () => {
+                                activeIndexTabView = 0;
+                                formData.operacaoInternaFiscal = {};
+                            }
+                        "
+                    />
+                    </UWFieldSet>
                 </div>
                 <div class="col-12 pt-0">
-                        <TabView class="col-12" v-model:activeIndex="activeIndexTabView" v-if="formData.caracteristicaFiscal">
-                            <TabPanel header="Configuração Fiscal" class="col-12" v-if="formData.caracteristicaFiscal">
-                                <OperacaoInternaConfigFiscal v-model="formData.operacaoInternaFiscal"/>
-                            </TabPanel>
-                        </TabView>
+                    <TabView class="col-12" v-model:activeIndex="activeIndexTabView">
+                        <TabPanel header="Configuração Fiscal" class="col-12" :disabled="!formData.caracteristicaFiscal">
+                            <Message v-if="!formData.caracteristicaFiscal" severity="warn" :closable="false">Operação Interna não possui característica fiscal!</Message>
+                            <OperacaoInternaConfigFiscal v-if="formData.caracteristicaFiscal" v-model="formData.operacaoInternaFiscal" />
+                        </TabPanel>
+                    </TabView>
                 </div>
             </template>
         </UWForm>

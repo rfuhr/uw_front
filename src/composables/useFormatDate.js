@@ -26,12 +26,20 @@ export function useFormatDate() {
         return format(isValid(date) ? date : parseISO(date), 'HH:mm:ss');
     }
 
+    function formatToMMYYYY(date) {
+        if (!date)
+            return ''
+        else
+            return format(isValid(date) ? date : parseISO(date), 'MM/yyyy');
+    }
+
     return {
         formatDate,
         formatToISO,
         formatToUTC,
         formatToDDMMYYYY,
         formatToDDMMYYYYHHMMSS,
-        formatToHHMMSS
+        formatToHHMMSS,
+        formatToMMYYYY,
     };
 }

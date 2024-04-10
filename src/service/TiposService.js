@@ -54,6 +54,10 @@ class TiposService {
         return api.get('/fiscal/tipo-calculo');
     }
 
+    getTipoDocumentoReferenciado() {
+        return api.get('/fiscal/tipo-documento-referenciado');
+    }
+
 }
 
 export default new TiposService();

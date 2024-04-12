@@ -336,5 +336,6 @@ defineExpose({
                 </div>
             </template>
         </UWForm>
+        <code>{{ localModelValue }}</code>
     </div>
 </template>

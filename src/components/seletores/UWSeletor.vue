@@ -60,11 +60,11 @@ const props = defineProps({
 
 const registros = ref([]);
 const totalRegistros = ref(0);
-const lazyParams = ref({filters: {}});
+const lazyParams = ref({ filters: {} });
 const filters = ref();
 const valorFiltro = ref();
 const filtroAtivo = ref();
-const filterSelected = ref({'value': 'Nome'});
+const filterSelected = ref({ value: 'Nome' });
 
 const filterSearchAtivo = {
     field: 'nome',
@@ -99,9 +99,9 @@ const montarFiltros = async () => {
         });
     }
 
-        if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value
-        if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
-        else lazyParams.value.id = null;
+    if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
+    if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
+    else lazyParams.value.id = null;
 };
 
 const getLista = async () => {
@@ -145,16 +145,15 @@ const getConfigFilter = (filterSelected) => {
     filterSearchAtivo.labelFilter = filter.labelFilter;
 };
 
-
 const montarOpcoesSearchFilter = () => {
     if (props.filtersSearch.length >= 1) {
         const configParaFieldDefault = _.find(props.filtersSearch, { field: props.fieldSearchDefault });
-        filterSelected.value = {'value': configParaFieldDefault.labelFilter || props.filtersSearch[0].labelFilter};
+        filterSelected.value = { value: configParaFieldDefault.labelFilter || props.filtersSearch[0].labelFilter };
         getConfigFilter(filterSelected.value);
-    } 
+    }
     if (props.filtersSearch.length > 1) {
         options.value = [];
-        
+
         props.filtersSearch.forEach((element) => {
             options.value.push({ value: element.labelFilter });
         });
@@ -203,6 +202,14 @@ const changeFilter = () => {
     getConfigFilter(filterSelected.value);
     getLista();
 };
+
+const getLabel = (value) => {
+    const reg = registros.value.find(item => item[props.optionValue] === value)
+    if (reg)
+        return reg[props.optionLabel];
+    else
+        return '';
+};
 </script>
 
 <template>
@@ -233,14 +240,14 @@ const changeFilter = () => {
                                 :options="options"
                                 optionLabel="value"
                                 aria-labelledby="basic"
-                                style="margin-bottom: 0.1rem;"
+                                style="margin-bottom: 0.1rem"
                                 cla
                                 @change="changeFilter()"
                                 :pt="{
                                     button: ({ context }) => ({
                                         class: context.active ? 'bg-blue-100 border-blue-200' : undefined,
                                         style: {
-                                            padding: '0.2rem',
+                                            padding: '0.2rem'
                                         }
                                     })
                                 }"
@@ -259,9 +266,15 @@ const changeFilter = () => {
                     </div>
                 </template>
 
-                <template #value="slotProps">
-                    <slot name="values" v-bind="slotProps"></slot>
-                </template>
+                    <template #value="slotProps">
+                        <div v-if="slotProps.value" class="flex align-items-center">
+                            <slot v-if="$slots.values" name="values" v-bind="slotProps"></slot>
+                            <slot v-if="!$slots.values"><span>{{ getLabel(slotProps.value)  }}</span></slot>
+                        </div>
+                        <span v-else>
+                            {{ slotProps.placeholder }}
+                        </span>
+                    </template>
 
                 <template #option="slotProps">
                     <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-wrap: wrap">

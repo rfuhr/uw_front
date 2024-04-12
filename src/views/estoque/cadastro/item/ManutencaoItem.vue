@@ -406,10 +406,11 @@ const labelNcmSelector = computed(() => {
                                 optionLabel="nome"
                                 optionValue="id"
                                 required
-                                label="Unidade Medida Tributável"
+                                label="Unidade Medida Comercial"
                                 :service="UnidadeMedidaService"
                                 placeholder="Selecione a unidade medida"
-                                :erros="errors?.value?.unidadeMedidaTributavelId"
+                                :erros="errors.value?.unidadeMedidaTributavelId"
+                                positionTooltip="right"
                             />
                         </div>
                     </TabPanel>

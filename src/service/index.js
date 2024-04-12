@@ -48,3 +48,4 @@ export { default as CertificadoService } from './CertificadoService';
 export { default as NFeService } from './NFeService';
 export { default as OperacaoInternaService } from './OperacaoInternaService';
 export { default as NaturezaOperacaoService } from './NaturezaOperacaoService';
+export { default as ExternalService } from './ExternalService';

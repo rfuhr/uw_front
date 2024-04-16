@@ -9,18 +9,20 @@ import { ConfiguracaoFiscalService as Service, UfService, PaisService, TiposServ
 import { useFormatString } from '@/composables/useFormatString';
 import  ManutencaoConfiguracaoFiscalICMS from './ManutencaoConfiguracaoFiscalICMS.vue';
 import  ManutencaoConfiguracaoFiscalIPI from './ManutencaoConfiguracaoFiscalIPI.vue';
+import  ManutencaoConfiguracaoFiscalPIS from './ManutencaoConfiguracaoFiscalPIS.vue';
+import  ManutencaoConfiguracaoFiscalCOFINS from './ManutencaoConfiguracaoFiscalCOFINS.vue';
 
 const schema = yup.object().shape({
     ufOrigemId: yup.number().required('UF de Origem é obrigatória.'),
     paisDestinoId: yup.number().required('País de Destino é obrigatório.'),
     ufDestinoId: yup.number().required('UF de Destino é obrigatória.'),
     regimeTributarioId: yup.number().required('Regime Tributário é obrigatório.'),
-    entradaSaida: yup.string().required('Entrada/Saída é obrigatório.'),
+    indicadorOperacao: yup.string().required('Entrada/Saída é obrigatório.'),
     dataInicioVigencia: yup.date().required('Data Início Vigência é obrigatório.'),
     dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.'),
 });
 
-const entradaSaida = ref();
+const indicadorOperacao = ref();
 
 const { truncate } = useFormatString();
 
@@ -52,6 +54,7 @@ const formData = reactive({
     ufDestinoNome: undefined,
     regimeTributarioId: undefined,
     regimeTributarioNome: undefined,
+    regimeTributarioSimplesNacional: false,
     grupoTributacaoId: undefined,
     grupoTributacaoNome: undefined,
     operacaoInternaId: undefined,
@@ -66,13 +69,19 @@ const formData = reactive({
     ncmNome: undefined,
     itemId: undefined,
     itemNome: undefined,
-    entradaSaida: undefined,
+    indicadorOperacao: undefined,
     dataInicioVigencia: undefined,
     dataFinalVigencia: undefined,
     configuracaoFiscalIcms: {
         situacaoTributariaId: undefined
     },
     configuracaoFiscalIpi: {
+        situacaoTributariaId: undefined
+    },
+    configuracaoFiscalPis: {
+        situacaoTributariaId: undefined
+    },
+    configuracaoFiscalCofins: {
         situacaoTributariaId: undefined
     }
 });
@@ -130,6 +139,7 @@ const showModal = async () => {
         formData.ufDestinoNome = undefined;
         formData.regimeTributarioId = undefined;
         formData.regimeTributarioNome = undefined;
+        formData.regimeTributarioSimplesNacional = false;
         formData.grupoTributacaoId = undefined;
         formData.grupoTributacaoNome = undefined;
         formData.classificacaoOperacaoId = undefined;
@@ -144,7 +154,7 @@ const showModal = async () => {
         formData.ncmNome = undefined;
         formData.itemId = undefined;
         formData.itemNome = undefined;
-        formData.entradaSaida = undefined;
+        formData.indicadorOperacao = undefined;
         formData.dataInicioVigencia = undefined;
         formData.dataFinalVigencia = undefined;
         formData.configuracaoFiscalIcms = {
@@ -153,6 +163,13 @@ const showModal = async () => {
             somaIpiBaseCalculoST: false
         }
         formData.configuracaoFiscalIpi = {
+            situacaoTributariaId: undefined,
+            tipoCalculo: undefined
+        }
+        formData.configuracaoFiscalPis = {
+            situacaoTributariaId: undefined
+        }
+        formData.configuracaoFiscalCofins = {
             situacaoTributariaId: undefined
         }
         formData.cfop = {};
@@ -174,13 +191,23 @@ const showModal = async () => {
                     configuracaoFiscalId: formData.id
                 }
             }
+            if (!formData.configuracaoFiscalPis) {
+                formData.configuracaoFiscalPis = {
+                    configuracaoFiscalId: formData.id
+                }
+            }
+            if (!formData.configuracaoFiscalCofins) {
+                formData.configuracaoFiscalCofins = {
+                    configuracaoFiscalId: formData.id
+                }
+            }
         });
     }
 };
 
 onMounted(async () => {
-    await TiposService.getEntradaSaida().then((data) => {
-        entradaSaida.value = data;
+    await TiposService.getIndicadorOperacao().then((data) => {
+        indicadorOperacao.value = data;
     });
 });
 
@@ -205,6 +232,20 @@ const changeItem = (event) => {
         formData.itemNome = undefined;
         formData.itemCodigo = undefined;
     }
+};
+
+const changeRegimeTributario = (event) => {
+    if (event) {
+        formData.regimeTributarioNome = event.nome;
+        formData.regimeTributarioCodigo = event.codigo;
+        formData.regimeTributarioSimplesNacional = event.simplesNacional;
+    } else {
+        formData.regimeTributarioId = undefined;
+        formData.regimeTributarioNome = undefined;
+        formData.regimeTributarioCodigo = undefined;
+        formData.regimeTributarioSimplesNacional = false;
+    }
+    console.log(formData)
 };
 
 </script>
@@ -264,11 +305,12 @@ const changeItem = (event) => {
                                     optionValue="id" 
                                     placeholder="Selecione o Regime Tributário" 
                                     :service="RegimeTributarioService" 
+                                    @changeObject="changeRegimeTributario"
                                     classContainer="col-12 md:col-3" 
                                     :erros="errors?.value?.regimeTributarioId"
                                     >
                         </UWSeletor>   
-                        <UWPickList id="entradaSaida" label="Entrada/Saída" v-model="formData.entradaSaida" optionLabel="name" optionValue="value" required :options="entradaSaida" classContainer="col-12 md:col-2" :erros="errors?.value?.entradaSaida"/>
+                        <UWPickList id="indicadorOperacao" label="Entrada/Saída" v-model="formData.indicadorOperacao" optionLabel="name" optionValue="value" required :options="indicadorOperacao" classContainer="col-12 md:col-2" :erros="errors?.value?.indicadorOperacao"/>
                         <UWSeletor 
                                     id="seletorOrigem" 
                                     label="Origem" 
@@ -331,6 +373,7 @@ const changeItem = (event) => {
                                     v-model="formData.cfopId" 
                                     optionLabel="nome" 
                                     optionValue="id" 
+                                    sortField="codigo"
                                     placeholder="Selecione o Código Fiscal (CFOP)" 
                                     :service="CfopService" 
                                     classContainer="col-12 md:col-6"
@@ -354,6 +397,7 @@ const changeItem = (event) => {
                                     v-model="formData.ncmId" 
                                     optionLabel="nome" 
                                     optionValue="id" 
+                                    sortField="codigo"
                                     placeholder="Selecione o NCM" 
                                     :service="NcmService" 
                                     classContainer="col-12 md:col-6"
@@ -400,14 +444,16 @@ const changeItem = (event) => {
                 </div>
                 <TabView class="col-12">
                     <TabPanel header="ICMS" class="col-12">
-                        <ManutencaoConfiguracaoFiscalICMS v-model="formData.configuracaoFiscalIcms" />
+                        <ManutencaoConfiguracaoFiscalICMS v-model="formData.configuracaoFiscalIcms" :simples-nacional="formData.regimeTributarioSimplesNacional" />
                     </TabPanel>
                     <TabPanel header="IPI" class="col-12">
                         <ManutencaoConfiguracaoFiscalIPI v-model="formData.configuracaoFiscalIpi" />
                     </TabPanel>
                     <TabPanel header="PIS" class="col-12">
+                        <ManutencaoConfiguracaoFiscalPIS v-model="formData.configuracaoFiscalPis" />
                     </TabPanel>
                     <TabPanel header="COFINS" class="col-12">
+                        <ManutencaoConfiguracaoFiscalCOFINS v-model="formData.configuracaoFiscalCofins" />
                     </TabPanel>
                 </TabView>        
             </template>

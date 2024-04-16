@@ -49,7 +49,7 @@ const columns = reactive([
     },    
     {
         label: 'Ent/Sai',
-        field: 'entradaSaida',
+        field: 'indicadorOperacao',
         tipoField: 'text',
         filter: true,
         matchMode: 'contains',

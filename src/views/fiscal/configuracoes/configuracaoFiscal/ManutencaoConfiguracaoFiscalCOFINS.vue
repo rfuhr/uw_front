@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { SituacaoTributariaService, EnquadramentoService, TiposService } from '@/service';
+import { SituacaoTributariaService, TiposService } from '@/service';
 import { useFormatString } from '@/composables/useFormatString';
 
 const { truncate } = useFormatString();
@@ -18,7 +18,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const localModelValue = computed({
-    get: () => props.modelValue || {configuracaoFiscalIpi: {
+    get: () => props.modelValue || {configuracaoFiscalCofins: {
         situacaoTributariaId: undefined
     }},
     set: (value) => {
@@ -34,24 +34,10 @@ const changeSituacaoTributaria = (event) => {
         localModelValue.value.situacaoTributariaId = undefined;
         localModelValue.value.situacaoTributariaNome = undefined;
         localModelValue.value.situacaoTributariaCodigo = undefined;
-        localModelValue.value.enquadramentoId = undefined;
-        localModelValue.value.enquadramentoNome = undefined;
-        localModelValue.value.enquadramentoCodigo = undefined;
         localModelValue.value.tipoCalculo = undefined;
         localModelValue.value.aliquota = undefined;
-        localModelValue.value.codigoSelo = undefined;
-        localModelValue.value.quantidadeSelo = undefined;
-    }
-};
-
-const changeEnquadramento = (event) => {
-    if (event) {
-        localModelValue.value.enquadramentoNome = truncate(event.nome, 100);
-        localModelValue.value.enquadramentoCodigo = event.codigo;
-    } else {
-        localModelValue.value.enquadramentoId = undefined;
-        localModelValue.value.enquadramentoNome = undefined;
-        localModelValue.value.enquadramentoCodigo = undefined;
+        localModelValue.value.tipoCalculoST = undefined;
+        localModelValue.value.aliquotaST = undefined;
     }
 };
 
@@ -64,7 +50,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <UWFieldSet title="Configuração Fiscal do IPI" class="col-12">
+    <UWFieldSet title="Configuração Fiscal do COFINS" class="col-12">
         <div class="p-fluid formgrid grid">
             <UWSeletor 
                         id="seletorSituacaoTributaria" 
@@ -74,7 +60,7 @@ onMounted(async () => {
                         optionValue="id" 
                         placeholder="Selecione a Situação Tributária" 
                         :service="SituacaoTributariaService" 
-                        classContainer="col-12 md:col-6"
+                        classContainer="col-12 md:col-12"
                         @changeObject="changeSituacaoTributaria"
                         :filtersSearch="[{ field: 'codigo', matchMode: 'equals', tipoField: 'integer', fieldFilter: 'codigo', labelFilter: 'Código'},
                                         { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nome', labelFilter: 'Nome'},
@@ -90,33 +76,10 @@ onMounted(async () => {
                             </div>
                         </template>
             </UWSeletor>
-            <UWSeletor 
-                        id="seletorEnquadramento" 
-                        label="Enquadramento" 
-                        v-model="localModelValue.enquadramentoId" 
-                        optionLabel="nome" 
-                        optionValue="id" 
-                        placeholder="Selecione a Enquadramento" 
-                        :service="EnquadramentoService" 
-                        classContainer="col-12 md:col-6"
-                        @changeObject="changeEnquadramento"
-                        :filtersSearch="[{ field: 'codigo', matchMode: 'equals', tipoField: 'integer', fieldFilter: 'codigo', labelFilter: 'Código'},
-                                        { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nome', labelFilter: 'Nome'},
-                                    ]"
-                        fieldSearchDefault="nome"
-                        >
-                        <template #values> {{ localModelValue.enquadramentoCodigo }} - {{ localModelValue.enquadramentoNome }} </template>
-                        <template #options="slotProps">
-                            <div class="flex flex-column">
-                                {{ truncate(slotProps.option.nome, 100 )}} 
-                                <div class="text-700 text-sm"><span>Código:</span> {{ slotProps.option.codigo }} </div>
-                            </div>
-                        </template>
-            </UWSeletor>
-            <UWDecimal id="aliquota" label="Aliquota" maximoDigitos="3" v-model="localModelValue.aliquota" classContainer="col-12 md:col-3" />               
             <UWPickList id="tipoCalculo" label="Tipo de Cálculo" v-model="localModelValue.tipoCalculo" optionLabel="name" optionValue="value" :options="tiposCalculo" classContainer="col-12 md:col-3" />        
-            <UWInput id="codigoSelo" label="Código do Selo" uppercase v-model="localModelValue.codigoSelo" classContainer="col-12 md:col-3" />
-            <UWInteger id="quantidadeSelo" label="Quantidade Selo" maximoDigitos="3" v-model="localModelValue.quantidadeSelo" classContainer="col-12 md:col-3" />               
+            <UWDecimal id="aliquota" label="Aliquota" maximoDigitos="3" v-model="localModelValue.aliquota" classContainer="col-12 md:col-3" />               
+            <UWPickList id="tipoCalculoST" label="Tipo de Cálculo ST" v-model="localModelValue.tipoCalculoST" optionLabel="name" optionValue="value" :options="tiposCalculo" classContainer="col-12 md:col-3" />        
+            <UWDecimal id="aliquotaST" label="Aliquota ST" maximoDigitos="3" v-model="localModelValue.aliquotaST" classContainer="col-12 md:col-3" />               
         </div>
     </UWFieldSet>
 </template>

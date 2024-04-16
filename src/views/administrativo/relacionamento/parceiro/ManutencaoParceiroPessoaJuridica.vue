@@ -1,9 +1,10 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, onMounted  } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from 'primevue/usetoast';
 import _ from 'lodash';
 import ManutencaoParceiroDados from './ManutencaoParceiroDados.vue';
+import { TiposService } from '@/service';
 
 const props = defineProps({
     modelValue: {},
@@ -13,6 +14,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 const confirm = useConfirm();
 const toast = useToast();
+const indicadoresIEDestinatario = ref([]);
 
 const localModelValue = computed({
     get: () => props.modelValue,
@@ -62,6 +64,17 @@ const removerFilial = (event, data) => {
     });
 };
 
+const onChangeIndicadorIE = (event, index) => {
+    if (event.value !== '1') {
+        localModelValue.value[index].dadosPessoaJuridica.inscricaoEstadual = '';
+    }
+};
+onMounted(async () => {
+    TiposService.getIndicadorIEDestinatario().then((data) => {
+        indicadoresIEDestinatario.value = data;
+    });
+});
+
 </script>
 
 <template>
@@ -82,17 +95,32 @@ const removerFilial = (event, data) => {
                 </template>
                 <div class="p-fluid formgrid grid">
                     <UWInputMask id="cnpj" label="Cnpj" mask="99.999.999/9999-99" required v-model="local.cpfCnpj" :errors="_.get(errors.value, `locais[${index}].cpfCnpj`, null)" classContainer="col-12 md:col-2" />
-                    <UWInput id="nomeLocal" label="Identificação da Filial" uppercase required autofocus v-model="local.nomeLocal" :errors="_.get(errors.value, `locais[${index}].nomeLocal`, null)" classContainer="col-12 md:col-5" />
+                    <UWInput id="nomeLocal" label="Identificação da Filial" uppercase required autofocus v-model="local.nomeLocal" :errors="_.get(errors.value, `locais[${index}].nomeLocal`, null)" classContainer="col-12 md:col-2" />
+                    <UWPickList
+                                    id="indicadorIE"
+                                    label="Indicador IE Destinatário"
+                                    v-model="local.dadosPessoaJuridica.indicadorIE"
+                                    optionLabel="name"
+                                    optionValue="value"
+                                    required
+                                    :options="indicadoresIEDestinatario"
+                                    classContainer="col-12 md:col-2"
+                                    :errors="_.get(errors.value, `locais[${index}].dadosPessoaJuridica.indicadorIE`, null)"
+                                    @changeObject="onChangeIndicadorIE($event, index)"
+                                />
                     <UWInput
                         id="nomeLocal"
                         label="Inscrição Estadual"
                         uppercase
                         autofocus
+                        :disabled="local.dadosPessoaJuridica.indicadorIE !== '1'"
+                        :required="local.dadosPessoaJuridica.indicadorIE === '1'"
                         v-model="local.dadosPessoaJuridica.inscricaoEstadual"
                         :errors="_.get(errors.value, `locais[${index}].dadosPessoaJuridica.inscricaoEstadual`, null)"
                         classContainer="col-12 md:col-2"
                     />
-                    <UWCalendar id="dataFundacao" label="Data de Fundação" v-model="local.dadosPessoaJuridica.dataFundacao" :errors="_.get(errors.value, `locais[${index}].dadosPessoaJuridica.dataFundacao`, null)" classContainer="col-12 md:col-3" />
+                    <UWCalendar id="dataFundacao" label="Data de Fundação" v-model="local.dadosPessoaJuridica.dataFundacao" :errors="_.get(errors.value, `locais[${index}].dadosPessoaJuridica.dataFundacao`, null)" classContainer="col-12 md:col-2" />
+                    <UWInput id="suframa" label="Inscrição Suframa" v-model="local.dadosPessoaJuridica.suframa" classContainer="col-12 md:col-2" />
                     <ManutencaoParceiroDados :modelValue="local" @update:modelValue="local = $event" />
                     <Button label="Remover Filial" class="col-2 ml-auto mr-4" severity="danger" raised aria-label="Cancel" @click="removerFilial($event, local)"/>
                 </div>

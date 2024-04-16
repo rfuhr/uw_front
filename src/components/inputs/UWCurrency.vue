@@ -38,7 +38,9 @@ const emit = defineEmits(['update:modelValue']);
 const localModelValue = computed({
     get: () => props.modelValue,
     set: (value) => {
+        if (!value) value = 0;
         emit('update:modelValue', value);
+        emit('onChange')
     }
 });
 </script>
@@ -46,7 +48,9 @@ const localModelValue = computed({
 <template>
     <div :class="['field', classContainer]">
         <span class="p-float-label">
-            <InputNumber :id="id" mode="currency" currency="BRL" locale="pt-Br" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs"/>
+            <InputNumber :id="id" mode="currency" currency="BRL" locale="pt-Br" :disabled="disabled" v-model="localModelValue" 
+            :autofocus="autofocus" :class="{'text-700': true, 'w-full': true, 'p-invalid': errors }" v-bind="$attrs"
+            @blur="localModelValue = localModelValue ? parseFloat(localModelValue).toFixed(maximoDigitos) : 0" />
             <label :for="id" v-required="required">{{ label }}</label>
         </span>
         <span v-if="errors">

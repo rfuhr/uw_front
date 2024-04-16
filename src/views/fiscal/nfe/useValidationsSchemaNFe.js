@@ -210,7 +210,8 @@ export function useValidationsSchemaNFe() {
 
     const createSchemaDetalhamentoItem = () => {
         return yup.object().shape({
-            itemId: yup.string().required('Item da NF-e é obrigatório.')
+            itemId: yup.string().required('Item da NF-e é obrigatório.'),
+            cfopId: yup.number().required('CFOP é obrigatório.'),
         })
     }
 

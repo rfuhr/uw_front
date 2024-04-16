@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 import { FormWizard, TabContent } from 'vue3-form-wizard';
@@ -109,6 +109,18 @@ onMounted(async () => {
         formData.identificacaoNFe.tipoEmissao = data.tipoEmissao;
     });
 });
+
+const dadosAuxiliaresItem = computed(() => {
+    return {
+        emitenteId: formData.identificacaoNFe.emitenteId, 
+        parceiroLocalEnderecoIdDestino: formData.destinatario.enderecoId,
+        indicadorOperacaoValue: formData.identificacaoNFe.indicadorOperacao,
+        cfopId: formData.identificacaoNFe.cfopId,
+        operacaoInternaId: formData.identificacaoNFe.operacaoInternaId,
+        dataHoraEmissao: formData.identificacaoNFe.dataHoraEmissao,
+    };
+});
+
 </script>
 
 <template>
@@ -118,13 +130,13 @@ onMounted(async () => {
                 <Button type="button" class="p-button-danger ml-6" @click="onCancelar">Cancelar emissão</Button>
             </template>
             <TabContent title="Identificação da Nota Final" icon="fa fa-file-invoice" :before-change="beforeChangeIdentificacao">
-                <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe" />
+                <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe"  />
             </TabContent>
             <TabContent title="Destinatário" icon="fa fa-handshake" :before-change="beforeChangeDestinatario">
                 <DestinatarioNFe ref="destinatarioNFe" v-model="formData.destinatario"  />
             </TabContent>
             <TabContent title="Produtos" icon="fa fa-barcode" :before-change="beforeChangeProdutos">
-                <ProdutosNFe ref="produtosNFe" v-model="formData.itensNFe" />
+                <ProdutosNFe ref="produtosNFe" v-model="formData.itensNFe" :dadosAuxiliares="dadosAuxiliaresItem"/>
             </TabContent>
             <TabContent title="Totalizadores" icon="fa fa-list-ol"> Yuhuuu! This seems pretty damn simple </TabContent>
             <TabContent title="Informações do Transporte" icon="fa fa-truck"> Yuhuuu! This seems pretty damn simple </TabContent>

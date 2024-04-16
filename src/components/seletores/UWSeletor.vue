@@ -56,6 +56,10 @@ const props = defineProps({
         type: Number,
         default: 100
     },
+    maxSizeLabel: {
+        type: Number,
+        default: 90
+    },
     positionTooltip: {
         type: String,
         default: 'top'
@@ -81,7 +85,7 @@ const filterSearchAtivo = {
 
 const { truncate } = useFormatString();
 
-const montarFiltros = async () => {
+const montarFiltros = async (forceId) => {
     filters.value = {};
     filters.value[filterSearchAtivo.field] = {
         value: valorFiltro.value,
@@ -104,13 +108,14 @@ const montarFiltros = async () => {
     }
 
     if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
-    if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
+    if(forceId) lazyParams.value.id = forceId 
+    else if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
     else lazyParams.value.id = null;
 };
 
-const getLista = async () => {
+const getLista = async (forceId) => {
     try {
-        await montarFiltros();
+        await montarFiltros(forceId);
         const data = await props.service.getPageAll(lazyParams.value);
         registros.value = data.registros;
         totalRegistros.value = data.totalRegistros;
@@ -210,10 +215,19 @@ const changeFilter = () => {
 const getLabel = (value) => {
     const reg = registros.value.find(item => item[props.optionValue] === value)
     if (reg)
-        return reg[props.optionLabel];
+        return truncate(reg[props.optionLabel], props.maxSizeLabel);
     else
         return '';
 };
+
+const reload = (id) => {
+    getLista(id)
+}
+
+defineExpose({
+    reload
+});
+
 </script>
 
 <template>

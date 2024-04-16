@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import _ from 'lodash';
-import { PaisService, UfService, CidadeService } from '@/service'
+import { PaisService, UfService, CidadeService, ExternalService } from '@/service';
 const props = defineProps({
     modelValue: {
         type: Object,
@@ -16,12 +16,37 @@ const localEntregaModelValue = computed({
         emit('update:modelValue', value);
     }
 });
-
+const seletorCidade = ref(null)
 const tiposPessoa = ref([
     { name: 'Física', value: 'F' },
     { name: 'Jurídica', value: 'J' }
     // { name: 'Exterior', value: 'EX' }
 ]);
+
+const buscarEndereco = async () => {
+    if (localEntregaModelValue.value.cep) {
+        try {
+            const enderecoEncontrado = await ExternalService.getEnderecoByCep(localEntregaModelValue.value.cep);
+            if (enderecoEncontrado) {
+                localEntregaModelValue.value.endereco = enderecoEncontrado.logradouro;
+                localEntregaModelValue.value.numero = '';
+                localEntregaModelValue.value.complemento = '';
+                localEntregaModelValue.value.bairro = enderecoEncontrado.bairro;
+
+                UfService.getUfBySigla(enderecoEncontrado.uf).then((uf) => {
+                    localEntregaModelValue.value.ufId = uf.id;
+                    CidadeService.getCidadeByIbge(enderecoEncontrado.ibge * 1).then((cidade) => {
+                        localEntregaModelValue.value.cidadeId = cidade.id;
+                        emit('update:modelValue', localEntregaModelValue.value);
+                        seletorCidade.value.reload(cidade.id);
+                    });
+                });
+            }
+        } catch (error) {
+            /* empty */
+        }
+    }
+};
 </script>
 
 <template>
@@ -67,10 +92,21 @@ const tiposPessoa = ref([
                 v-model="localEntregaModelValue.inscricaoEstadual"
                 classContainer="col-12 md:col-2"
             />
-            <UWInputMask id="cep" label="Cep" :mask="'99.999-999'" required :unmask="true" v-model="localEntregaModelValue.cep" classContainer="col-12 md:col-1" :errors="_.get(props.errors.value, `localEntrega.cep`, null)" />
-            <UWInput id="endereco" label="Logradouro" uppercase required autofocus v-model="localEntregaModelValue.endereco" classContainer="col-12 md:col-11" :errors="_.get(props.errors.value, `localEntrega.endereco`, null)" />
-            <UWInput id="numero" label="Número" uppercase required autofocus v-model="localEntregaModelValue.numero" classContainer="col-12 md:col-1" :errors="_.get(props.errors.value, `localEntrega.numero`, null)" />
-            <UWInput id="complemento" label="Complemento" uppercase autofocus v-model="localEntregaModelValue.complemento" classContainer="col-12 md:col-5" />
+            <UWInputMask
+                id="cep"
+                label="Cep"
+                :mask="'99.999-999'"
+                required
+                :unmask="true"
+                v-model="localEntregaModelValue.cep"
+                :showButton="true"
+                @clickButton="buscarEndereco"
+                classContainer="col-12 md:col-2"
+                :errors="_.get(props.errors.value, `localEntrega.cep`, null)"
+            />
+            <UWInput id="endereco" label="Logradouro" uppercase required autofocus v-model="localEntregaModelValue.endereco" classContainer="col-12 md:col-10" :errors="_.get(props.errors.value, `localEntrega.endereco`, null)" />
+            <UWInput id="numero" label="Número" uppercase required autofocus v-model="localEntregaModelValue.numero" classContainer="col-12 md:col-2" :errors="_.get(props.errors.value, `localEntrega.numero`, null)" />
+            <UWInput id="complemento" label="Complemento" uppercase autofocus v-model="localEntregaModelValue.complemento" classContainer="col-12 md:col-4" />
             <UWInput id="bairro" label="Bairro" uppercase required autofocus v-model="localEntregaModelValue.bairro" classContainer="col-12 md:col-6" :errors="_.get(props.errors.value, `localEntrega.bairro`, null)" />
             <UWSeletor
                 id="pais"
@@ -98,6 +134,7 @@ const tiposPessoa = ref([
             />
             <UWSeletor
                 id="cidade"
+                ref="seletorCidade"
                 classContainer="col-12 md:col-6"
                 v-model="localEntregaModelValue.cidadeId"
                 optionLabel="nome"

@@ -249,13 +249,12 @@ defineExpose({
                                     :options="tiposPresenca"
                                     classContainer="col-12 md:col-4"
                                 />
-                                <UWInput id="codigoMunicipioFG" label="Código do Município de Ocorrência Icms" v-model="localModelValue.codigoMunicipioFG" :disabled="true" classContainer="col-12 md:col-4" />
                                 <UWSeletorCfopByOpInt
                                     id="cfop"
                                     v-model:operacaoInternaId="localModelValue.operacaoInternaId"
                                     v-model="localModelValue.cfopId"
                                     :disabled="!localModelValue.operacaoInternaId"
-                                    classContainer="col-12 md:col-8"
+                                    classContainer="col-12 md:col-12"
                                     required
                                     label="Cfop"
                                     :erros="errors.value?.cfopId"
@@ -336,6 +335,5 @@ defineExpose({
                 </div>
             </template>
         </UWForm>
-        <code>{{ localModelValue }}</code>
     </div>
 </template>

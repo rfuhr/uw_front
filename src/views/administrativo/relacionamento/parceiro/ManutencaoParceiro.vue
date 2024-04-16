@@ -82,6 +82,7 @@ const createLocalSchema = () => {
         dadosPessoaJuridica:
             formData.tipoPessoa === 'J'
                 ? yup.object().shape({
+                      indicadorIE: yup.string().required('Indicador IE é obrigatório.'),
                       inscricaoEstadual: yup.string(),
                       dataFundacao: yup.date().max(new Date(), 'Data de Fundação deve ser menor que a data atual.')
                   })

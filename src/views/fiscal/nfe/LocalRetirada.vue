@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import _ from 'lodash';
 import { PaisService, UfService, CidadeService, ExternalService } from '@/service';
+
 const props = defineProps({
     modelValue: {
         type: Object,
@@ -16,6 +17,7 @@ const localRetiradaModelValue = computed({
         emit('update:modelValue', value);
     }
 });
+const seletorCidade = ref(null)
 
 const tiposPessoa = ref([
     { name: 'Física', value: 'F' },
@@ -24,7 +26,7 @@ const tiposPessoa = ref([
 ]);
 
 const buscarEndereco = async () => {
-    if (!localRetiradaModelValue.value.cep) {
+    if (localRetiradaModelValue.value.cep) {
         try {
             const enderecoEncontrado = await ExternalService.getEnderecoByCep(localRetiradaModelValue.value.cep);
             if (enderecoEncontrado) {
@@ -33,12 +35,14 @@ const buscarEndereco = async () => {
                 localRetiradaModelValue.value.complemento = '';
                 localRetiradaModelValue.value.bairro = enderecoEncontrado.bairro;
 
-                // inscricao.value.participante.uf = enderecoEncontrado.uf;
-                // await getCidades(enderecoEncontrado.uf);
-                // ufSelecionada.value = enderecoEncontrado.uf;
-                // cidadeSelecionada.value = await getCidadeByIbge(
-                //   enderecoEncontrado.ibge * 1
-                // );
+                UfService.getUfBySigla(enderecoEncontrado.uf).then((uf) => {
+                    localRetiradaModelValue.value.ufId = uf.id;
+                    CidadeService.getCidadeByIbge(enderecoEncontrado.ibge * 1).then((cidade) => {
+                        localRetiradaModelValue.value.cidadeId = cidade.id;
+                        emit('update:modelValue', localRetiradaModelValue.value);
+                        seletorCidade.value.reload(cidade.id);
+                    });
+                });
             }
         } catch (error) { /* empty */ }
     }
@@ -99,12 +103,12 @@ const buscarEndereco = async () => {
                 :showButton="true"
                 @clickButton="buscarEndereco"
                 iconButton="pi pi-search"
-                classContainer="col-12 md:col-1"
+                classContainer="col-12 md:col-2"
                 :errors="_.get(props.errors.value, `localRetirada.cep`, null)"
             />
-            <UWInput id="endereco" label="Logradouro" uppercase required autofocus v-model="localRetiradaModelValue.endereco" classContainer="col-12 md:col-11" :errors="_.get(props.errors.value, `localRetirada.endereco`, null)" />
-            <UWInput id="numero" label="Número" uppercase required autofocus v-model="localRetiradaModelValue.numero" classContainer="col-12 md:col-1" :errors="_.get(props.errors.value, `localRetirada.numero`, null)" />
-            <UWInput id="complemento" label="Complemento" uppercase autofocus v-model="localRetiradaModelValue.complemento" classContainer="col-12 md:col-5" />
+            <UWInput id="endereco" label="Logradouro" uppercase required autofocus v-model="localRetiradaModelValue.endereco" classContainer="col-12 md:col-10" :errors="_.get(props.errors.value, `localRetirada.endereco`, null)" />
+            <UWInput id="numero" label="Número" uppercase required autofocus v-model="localRetiradaModelValue.numero" classContainer="col-12 md:col-2" :errors="_.get(props.errors.value, `localRetirada.numero`, null)" />
+            <UWInput id="complemento" label="Complemento" uppercase autofocus v-model="localRetiradaModelValue.complemento" classContainer="col-12 md:col-4" />
             <UWInput id="bairro" label="Bairro" uppercase required autofocus v-model="localRetiradaModelValue.bairro" classContainer="col-12 md:col-6" :errors="_.get(props.errors.value, `localRetirada.bairro`, null)" />
             <UWSeletor
                 id="pais"
@@ -132,6 +136,7 @@ const buscarEndereco = async () => {
             />
             <UWSeletor
                 id="cidade"
+                ref="seletorCidade"
                 classContainer="col-12 md:col-6"
                 v-model="localRetiradaModelValue.cidadeId"
                 optionLabel="nome"

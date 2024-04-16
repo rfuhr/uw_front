@@ -37,11 +37,6 @@ const props = defineProps({
     positionTooltip: {
         type: String,
         default: 'top'
-    },
-    operacaoInternaId: {
-        type: Number,
-        required: true,
-        default: 0
     }
 });
 
@@ -102,7 +97,7 @@ const montarFiltros = async () => {
 const getLista = async () => {
     try {
         await montarFiltros();
-        const data = await Service.getSeletorByOperacaoInterna(lazyParams.value, props.operacaoInternaId);
+        const data = await Service.getPageAll(lazyParams.value);
         registros.value = data.registros;
         totalRegistros.value = data.totalRegistros;
         lazyParams.value.page = data.page;
@@ -203,12 +198,6 @@ const beforeShow = () => {
     getLista();
 };
 
-watch(
-    () => props.operacaoInternaId,
-    () => {
-        getLista();
-    }
-);
 </script>
 
 <template>

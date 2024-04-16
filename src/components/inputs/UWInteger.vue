@@ -42,6 +42,7 @@ const emit = defineEmits(['update:modelValue']);
 const localModelValue = computed({
     get: () => props.modelValue,
     set: (value) => {
+        if (!value) value = 0;
         emit('update:modelValue', value);
     }
 });
@@ -56,7 +57,9 @@ const execButton = () => {
     <div :class="['field', classContainer]">
         <div class="p-inputgroup">
             <span class="p-float-label">
-                <InputNumber :id="id" :minFractionDigits=0 :maxFractionDigits=0 locale="pt-Br" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs" />
+                <InputNumber :id="id" :minFractionDigits=0 :maxFractionDigits=0 locale="pt-Br" :disabled="disabled" v-model="localModelValue" 
+                :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs" 
+                />
                 <label :for="id" v-required="required">{{ label }}</label>
             </span>
             <Button v-show="showButton" icon="pi pi-bolt" severity="help" @click.stop="execButton" />

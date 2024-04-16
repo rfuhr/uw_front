@@ -58,7 +58,19 @@ class TiposService {
         return api.get('/fiscal/tipo-documento-referenciado');
     }
 
+    getModalidadeBaseCalculoSt() {
+        return api.get('/fiscal/modalidade-base-calculo-st');
+    }
+
+    getSeloIpi() {
+        return api.get('/fiscal/selo-ipi');
+    }
+
+    getIndicadorIEDestinatario() {
+        return api.get('/fiscal/indicador-ie-destinatario');
+    }
 }
+
 
 export default new TiposService();
 

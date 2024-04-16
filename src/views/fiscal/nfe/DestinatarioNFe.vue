@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import * as yup from 'yup';
 import { ParceiroLocalService } from '@/service';
 import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 import LocalEntrega from './LocalEntrega.vue';
 import { useValidationsSchemaNFe } from './useValidationsSchemaNFe';
+import { TiposService } from '@/service';
 
 const { formatDocumento } = useFormatDocumentos();
 
@@ -23,6 +24,8 @@ const localModelValue = computed({
         emit('update:modelValue', value);
     }
 });
+
+const indicadoresIE = ref([]);
 
 const createSchemaDestinatarioNFe = (dynamicFields) => {
     const schemaObject = {
@@ -66,20 +69,24 @@ const changeParceiroLocal = (object) => {
         if (dadosParceiroLocal.value.enderecos) {
             dadosParceiroLocal.value.enderecoCompleto = getEnderecoCompleto(dadosParceiroLocal.value.enderecos[0]);
             dadosParceiroLocal.value.enderecoId = dadosParceiroLocal.value.enderecos[0].id;
+            localModelValue.value.enderecoId = dadosParceiroLocal.value.enderecos[0].id;
         }
         if (dadosParceiroLocal.value.telefones) {
             dadosParceiroLocal.value.telefone = dadosParceiroLocal.value.telefones[0];
             dadosParceiroLocal.value.telefoneFormatado = getTelefoneFormatado(dadosParceiroLocal.value.telefones[0]);
             dadosParceiroLocal.value.telefoneId = dadosParceiroLocal.value.telefones[0].id;
+            localModelValue.value.telefoneId = dadosParceiroLocal.value.telefones[0].id;
         }
         if (dadosParceiroLocal.value.emails) {
             dadosParceiroLocal.value.email = dadosParceiroLocal.value.emails[0].email;
             dadosParceiroLocal.value.emailId = dadosParceiroLocal.value.emails[0].id;
+            localModelValue.value.emailId = dadosParceiroLocal.value.emails[0].id;
         }
         if (dadosParceiroLocal.value.dadosPessoaJuridica) {
             dadosParceiroLocal.value.inscricaoEstadual = dadosParceiroLocal.value.dadosPessoaJuridica.inscricaoEstadual;
             dadosParceiroLocal.value.suframa = '';
-            dadosParceiroLocal.value.indicadorIE = 'Contribuinte ICMS ';
+            dadosParceiroLocal.value.indicadorIE = dadosParceiroLocal.value.dadosPessoaJuridica.indicadorIE;
+            dadosParceiroLocal.value.suframa = dadosParceiroLocal.value.dadosPessoaJuridica.suframa;
         }
     });
 };
@@ -89,6 +96,11 @@ const validateForm = () => {
         return formDestinatarioNFe.value.validateForm();
     }
 };
+onMounted(() => {
+    TiposService.getIndicadorIEDestinatario().then((data) => {
+        indicadoresIE.value = data;
+    });
+});
 
 defineExpose({
     validateForm
@@ -115,25 +127,19 @@ const changeOutroLocalEntrega = () => {
                                 <UWInput id="telefone" label="Telefone" disabled v-model="dadosParceiroLocal.telefoneFormatado" classContainer="col-12 md:col-3" />
                                 <UWInput id="email" label="Email" disabled v-model="dadosParceiroLocal.email" classContainer="col-12 md:col-3" />
 
-                                <UWInput
+                                <UWPickList
                                     v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'"
                                     id="indicadorIE"
-                                    label="Indicador IE"
-                                    uppercase
+                                    label="Indicador IE Destinatário"
+                                    v-model="dadosParceiroLocal.indicadorIE"
+                                    optionLabel="name"
+                                    optionValue="value"
                                     disabled
-                                    v-model="dadosParceiroLocal.inscricaoEstadual"
-                                    classContainer="col-12 md:col-3"
+                                    :options="indicadoresIE"
+                                    classContainer="col-12 md:col-2"
                                 />
-                                <UWInput
-                                    v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'"
-                                    id="inscricaoEstadual"
-                                    label="Inscrição Estadual"
-                                    uppercase
-                                    disabled
-                                    v-model="dadosParceiroLocal.inscricaoEstadual"
-                                    classContainer="col-12 md:col-3"
-                                />
-                                <UWInput v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'" id="inscricaoSuframa" label="Suframa" uppercase disabled v-model="dadosParceiroLocal.suframa" classContainer="col-12 md:col-3" />
+
+                                <UWInput v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'" id="inscricaoSuframa" label="Suframa" disabled v-model="dadosParceiroLocal.suframa" classContainer="col-12 md:col-3" />
                                 <div class="field md:col-3 pt-0">
                                     <span class="p-float-label">
                                         <ToggleButton

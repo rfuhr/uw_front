@@ -6,6 +6,15 @@ import { useValidationsSchemaNFe } from './useValidationsSchemaNFe';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
 import UWSeletorItem from '@/components/seletores/UWSeletorItem.vue';
+import UWSeletorCfopByOpInt from '@/components/seletores/UWSeletorCfopByOpInt.vue';
+import { Icms00, Icms10, Icms20, Icms30, Icms40, Icms41, Icms50, Icms51, Icms60, Icms70, Icms90, PartilhaIcms, RepasseIcms } from './tributacao';
+import { Cson101, Cson102, Cson103, Cson201, Cson202, Cson203, Cson300, Cson400, Cson500, Cson900 } from './tributacaoSimples';
+import IcmsUfOutroDestino from './IcmsUfOutroDestino.vue';
+import Ipi from './Ipi.vue';
+import II from './II.vue';
+import PIS from './PIS.vue';
+import Cofins from './Cofins.vue';
+import { ConfiguracaoFiscalService } from '@/service';
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -17,7 +26,11 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    errors: {}
+    errors: {},
+    dadosAuxiliares: {
+        type: Object,
+        required: true
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -35,7 +48,15 @@ const createSchemaItensNFe = (dynamicFields) => {
     });
 
     return yup.object().shape({
-        itens: yup.array().min(1, 'Deve ser informado pelo menos 1 item para NF-e').required('Obrigatório informar item para a NF-e').of(schemaObject)
+        itens: yup
+            .array()
+            .min(1, 'Deve ser informado pelo menos 1 item para NF-e')
+            .required('Obrigatório informar item para a NF-e')
+            .of(
+                yup.object().shape({
+                    ...schemaObject.fields
+                })
+            )
     });
 };
 
@@ -51,6 +72,18 @@ const formProdutosNFe = ref(null);
 const itemEmManutencao = ref({});
 const itemSelecionado = ref();
 const indexSelecionado = ref();
+const configuracaoFiscal = ref({});
+
+const subTotal = computed(() => {
+    return itemEmManutencao.value.detalhamentoItem.quantidade * itemEmManutencao.value.detalhamentoItem.valorUnitario || 0;
+});
+
+const valorTotal = computed(() => {
+    return (
+        subTotal.value - itemEmManutencao.value.detalhamentoItem.valorDesconto + itemEmManutencao.value.detalhamentoItem.valorFrete + itemEmManutencao.value.detalhamentoItem.valorSeguro + itemEmManutencao.value.detalhamentoItem.valorOutrasDespesas ||
+        0
+    );
+});
 
 const validateForm = () => {
     if (formProdutosNFe.value) {
@@ -60,11 +93,31 @@ const validateForm = () => {
 
 const adicionarItem = () => {
     const idLine = Math.floor(Math.random() * 100) * -1;
-    itemEmManutencao.value = { idLine: idLine };
-    if (!itensModelValue.value.itens)
-        itensModelValue.value.itens = []
-    const idx = itensModelValue.value.itens.length;
-    itensModelValue.value.itens.push(itemEmManutencao.value);
+    itemEmManutencao.value = {
+        detalhamentoItem: {
+            idLine: idLine,
+            cfopId: props.dadosAuxiliares.cfopId,
+            quantidade: 0,
+            valorUnitario: 0,
+            percentualDesconto: 0,
+            valorDesconto: 0,
+            valorFrete: 0,
+            valorSeguro: 0,
+            valorOutrasDespesas: 0
+        },
+        item: {},
+        tributacaoIcms: {},
+        ipi: {},
+        ii: {},
+        pis: {},
+        pisSt: {},
+        cofins: {},
+        cofinsSt: {}
+    };
+    if (!itensModelValue.value.itens) itensModelValue.value.itens = [itemEmManutencao];
+    else itensModelValue.value.itens.push(itemEmManutencao.value);
+
+    const idx = itensModelValue.value.itens.length === 0 ? 0 : itensModelValue.value.itens.length - 1;
     itemSelecionado.value = itemEmManutencao.value;
     indexSelecionado.value = idx;
     visibleDialog.value = true;
@@ -123,6 +176,10 @@ const handleConfirmar = () => {
     visibleDialog.value = false;
 };
 
+// const temTributacao = () => {
+//     return configuracaoFiscal.value.temIcms || configuracaoFiscal.value.temPartilhaIcms || configuracaoFiscal.value.temRepasseIcms || configuracaoFiscal.value.temIcmsParaUfDestino || configuracaoFiscal.value.temIpi || configuracaoFiscal.value.temII || configuracaoFiscal.value.temPis || configuracaoFiscal.value.temPisSt || configuracaoFiscal.value.temCofins || configuracaoFiscal.value.temCofinsSt;
+// }
+
 defineExpose({
     validateForm
 });
@@ -137,6 +194,107 @@ const temErro = (errors, str) => {
         }
     });
     return caminhoEncontrado;
+};
+
+const getConfiguracaoFiscal = async () => {
+    try {
+        configuracaoFiscal.value = await ConfiguracaoFiscalService.getConfiguracaoFiscal(
+            props.dadosAuxiliares.emitenteId,
+            props.dadosAuxiliares.parceiroLocalEnderecoIdDestino,
+            props.dadosAuxiliares.indicadorOperacao,
+            itemEmManutencao.value.detalhamentoItem.cfopId,
+            itemEmManutencao.value.detalhamentoItem.itemId,
+            props.dadosAuxiliares.operacaoInternaId,
+            props.dadosAuxiliares.dataHoraEmissao
+        );
+        if (!configuracaoFiscal.value) {
+            configuracaoFiscal.value = {
+                temIcms: false,
+                temPartilhaIcms: false,
+                temRepasseIcms: false,
+                temIcmsParaUfDestino: false,
+                temIpi: false,
+                temII: false,
+                temPis: false,
+                temPisSt: false,
+                temCofins: false,
+                temCofinsSt: false
+            };
+        } else {
+            itemEmManutencao.value.tributacaoIcms.configuracaoFiscalIcms = configuracaoFiscal.value.configuracaoFiscalIcms;
+            itemEmManutencao.value.ipi.configuracaoFiscalIpi = configuracaoFiscal.value.configuracaoFiscalIpi;
+            itemEmManutencao.value.pis.configuracaoFiscalPis = configuracaoFiscal.value.configuracaoFiscalPis;
+            itemEmManutencao.value.cofins.configuracaoFiscalCofins = configuracaoFiscal.value.configuracaoFiscalCofins;
+        }
+    } catch (error) {
+        configuracaoFiscal.value = {
+            temIcms: false,
+            temPartilhaIcms: false,
+            temRepasseIcms: false,
+            temIcmsParaUfDestino: false,
+            temIpi: false,
+            temII: false,
+            temPis: false,
+            temPisSt: false,
+            temCofins: false,
+            temCofinsSt: false
+        };
+        toast.add({ severity: 'warn', summary: 'Atenção', detail: 'Não foi encontrado configuração fiscal para o item.', life: 5000 });
+    }
+};
+
+const changeItem = async (object) => {
+    if (object) {
+        itemEmManutencao.value.item = object;
+        itemEmManutencao.value.tributacaoIcms = {};
+        await getConfiguracaoFiscal();
+    } else {
+        itemEmManutencao.value.item = {};
+        itemEmManutencao.value.tributacaoIcms = {};
+        configuracaoFiscal.value = {
+                temIcms: false,
+                temPartilhaIcms: false,
+                temRepasseIcms: false,
+                temIcmsParaUfDestino: false,
+                temIpi: false,
+                temII: false,
+                temPis: false,
+                temPisSt: false,
+                temCofins: false,
+                temCofinsSt: false
+            };
+    }
+};
+
+const changeCfop = async (object) => {
+    if (object) {
+        itemEmManutencao.value.cfop = object;
+        itemEmManutencao.value.tributacaoIcms = {};
+        await getConfiguracaoFiscal();
+    } else {
+        itemEmManutencao.value.cfop = {};
+        itemEmManutencao.value.tributacaoIcms = {};
+        configuracaoFiscal.value = {
+                temIcms: false,
+                temPartilhaIcms: false,
+                temRepasseIcms: false,
+                temIcmsParaUfDestino: false,
+                temIpi: false,
+                temII: false,
+                temPis: false,
+                temPisSt: false,
+                temCofins: false,
+                temCofinsSt: false
+            };
+    }
+};
+
+const changePercentualDesconto = () => {
+    itemEmManutencao.value.detalhamentoItem.valorDesconto = (subTotal.value * itemEmManutencao.value.detalhamentoItem.percentualDesconto) / 100;
+};
+
+const changeValorDesconto = () => {
+    itemEmManutencao.value.detalhamentoItem.percentualDesconto = (itemEmManutencao.value.detalhamentoItem.valorDesconto * 100) / subTotal.value;
 };
 </script>
 
@@ -176,23 +334,15 @@ const temErro = (errors, str) => {
                                         <i v-if="!temErro(errors?.value, `itens[${slotProps.index}]`)" class="pi pi-exclamation-circle text-green-500 text-bold" style="font-size: 1.3rem" />
                                     </template>
                                 </Column>
-                                <Column field="codigo" header="Código" style="width: 5%; text-align: left" headerClass="columnHeaderItem"> </Column>
-                                <Column field="nome" header="Nome" style="width: 2%; text-align: left" headerClass="columnHeaderItem"> </Column>
-                                <Column field="ncmCodigo" header="Ncm" style="width: 7%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="cst" header="Cst" style="width: 3%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="cfop" header="Cfop" style="width: 3%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="unidadeMedida" header="U.M." style="width: 3%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="quantidade" header="Qtde" style="width: 4%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="valorUnitario" header="Valor Unitário" style="width: 5%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="percentualDesconto" header="% Desc." style="width: 3%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="valorDesconto" header="Valor Desc." style="width: 4%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="valorTotal" header="Valor Total" style="width: 7%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="baseCalculoIcms" header="Base Calc. Icms" style="width: 5%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="aliquotaIcms" header="Aliq. Icms" style="width: 3%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="valorIcms" header="Valor do Icms" style="width: 4%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="aliquotaIpi" header="Aliq. Ipi" style="width: 3%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="valorIpi" header="Valor do Ipi" style="width: 4%" headerClass="columnHeaderItem"> </Column>
-                                <Column field="valorAproxTrib" header="Valor Aprox. Trib." style="width: 5%" headerClass="columnHeaderItem"> </Column>
+                                <Column field="item.codigo" header="Código" style="width: 5%; text-align: left" headerClass="columnHeaderItem"> </Column>
+                                <Column field="item.nome" header="Nome" style="width: 30%; text-align: left" headerClass="columnHeaderItem"> </Column>
+                                <Column field="detalhamentoItem.cfopId" header="Cfop" style="width: 3%" headerClass="columnHeaderItem"> </Column>
+                                <Column field="item.unidadeMedidaComercialNome" header="U.M." style="width: 3%" headerClass="columnHeaderItem"> </Column>
+                                <Column field="detalhamentoItem.quantidade" header="Qtde" style="width: 4%" headerClass="columnHeaderItem"> </Column>
+                                <Column field="detalhamentoItem.valorUnitario" header="Valor Unitário" style="width: 5%" headerClass="columnHeaderItem"> </Column>
+                                <Column field="detalhamentoItem.percentualDesconto" header="% Desc." style="width: 3%" headerClass="columnHeaderItem"> </Column>
+                                <Column field="detalhamentoItem.valorDesconto" header="Valor Desc." style="width: 4%" headerClass="columnHeaderItem"> </Column>
+                                <Column field="detalhamentoItem.valorTotal" header="Valor Total" style="width: 7%" headerClass="columnHeaderItem"> </Column>
                                 <Column header="" style="width: 6%">
                                     <template #body="slotProps">
                                         <Button icon="pi pi-pencil" class="p-button-info p-button-sm mr-2" @click="handleEdit(slotProps)" />
@@ -204,7 +354,7 @@ const temErro = (errors, str) => {
                     </div>
                     <div class="col-12 mb-0">
                         <Message class="col-12 p-0 m-0" :closable="false" severity="error" v-if="_.get(errors?.value, 'itens', null)">{{ _.get(errors?.value, 'itens', null) }}</Message>
-                        <Message class="col-12 p-0 m-0" :closable="false" severity="warn" v-if="temErro(errors?.value, 'itens[')">Atenção! Existem documentos referenciados com pendências nas informações informadas.</Message>
+                        <Message class="col-12 p-0 m-0" :closable="false" severity="warn" v-if="temErro(errors?.value, 'itens[')">Atenção! Existem itens da nfe com pendências nas informações informadas.</Message>
                     </div>
                 </div>
 
@@ -218,49 +368,114 @@ const temErro = (errors, str) => {
                                         <div class="p-fluid formgrid grid">
                                             <UWSeletorItem
                                                 id="produto"
-                                                v-model="itemEmManutencao.itemId"
+                                                v-model="itemEmManutencao.detalhamentoItem.itemId"
                                                 classContainer="col-12 md:col-4"
                                                 required
                                                 label="Produto / Serviço"
+                                                @changeObject="changeItem"
                                                 :erros="_.get(errors?.value, `itens[${indexSelecionado}].detalhamentoItem.itemId`, null)"
                                             />
-                                            <UWInput id="ncm" label="Ncm" uppercase disabled classContainer="col-12 md:col-2" />
-                                            <UWInput id="gtin" label="GTIN" uppercase disabled classContainer="col-12 md:col-2" />
-                                            <UWInput id="tipoProduto" label="Tipo do Produto" uppercase disabled classContainer="col-12 md:col-3" />
-                                            <UWInput id="codigoCEST" label="Código CEST" uppercase disabled classContainer="col-12 md:col-1" />
-                                            <UWSeletorCfop id="cfop" classContainer="col-12 md:col-4" required label="Cfop" />
-                                            <UWInput id="grupoTributacao" label="Grupo de Tributação" uppercase disabled classContainer="col-12 md:col-2" />
-                                            <UWInput id="unidadeMedidaComercial" label="Unidade de Medida" uppercase disabled classContainer="col-12 md:col-2" />
+                                            <UWInput id="ncm" label="Ncm" v-model="itemEmManutencao.item.ncmCodigo" disabled classContainer="col-12 md:col-1" />
+                                            <UWInput id="origemProduto" label="Origem do Produto" v-model="itemEmManutencao.item.origemNome" uppercase disabled classContainer="col-12 md:col-3" />
+                                            <UWSeletorCfopByOpInt
+                                                id="cfop"
+                                                v-model="itemEmManutencao.detalhamentoItem.cfopId"
+                                                :operacaoInternaId="props.dadosAuxiliares.operacaoInternaId"
+                                                classContainer="col-12 md:col-4"
+                                                :erros="_.get(errors?.value, `itens[${indexSelecionado}].detalhamentoItem.cfopId`, null)"
+                                                required
+                                                label="Cfop"
+                                                @changeObject="changeCfop"
+                                            />
                                         </div>
                                         <div class="col-12">
-                                            <Card style="width: 100%; background-color: whitesmoke" ref="cardDefinicaoParcelas">
-                                                <template #content>
-                                                    <div class="flex gap-0 flex-row justify-content-center align-content-end p-fluid formgrid grid">
-                                                        <UWDecimal id="quantidade" label="Quantidade" required :maximoDigitos="5" autofocus classContainer="col-12 md:col-1" />
-                                                        <UWCurrency id="valorUnitario" label="Valor Unitário" classContainer="col-12 md:col-1" />
-                                                        <UWCurrency id="valorTotalBrutoItem" label="Valor Total Bruto" disabled classContainer="col-12 md:col-2" />
-                                                        <UWDecimal id="percentualDesconto" label="% Desc." required :maximoDigitos="5" autofocus classContainer="col-12 md:col-1" />
-                                                        <UWCurrency id="valorDesconto" label="Valor Desc." classContainer="col-12 md:col-1" />
-                                                        <UWCurrency id="valorFrete" label="Valor Frete" classContainer="col-12 md:col-1" />
-                                                        <UWCurrency id="valorSeguro" label="Valor Seguro" classContainer="col-12 md:col-1" />
-                                                        <UWCurrency id="valorOutrasDespesas" label="Outras Desp." classContainer="col-12 md:col-1" />
-                                                        <UWCurrency id="valorTotalBrutoItem" label="Valor Total" disabled classContainer="col-12 md:col-2" />
-                                                    </div>
-                                                </template>
-                                            </Card>
+                                            <UWFieldSet title="Quantidade e Valores do Item" class="h-full surface-200">
+                                                <div class="flex gap-0 flex-row justify-content-center align-content-end p-fluid formgrid grid">
+                                                    <UWInput id="unidadeMedidaComercial" v-model="itemEmManutencao.item.unidadeMedidaComercialNome" label="Unidade de Medida" uppercase disabled classContainer="col-12 md:col-2" />
+                                                    <UWDecimal id="quantidade" label="Quantidade" v-model="itemEmManutencao.detalhamentoItem.quantidade" required :maximoDigitos="5" autofocus classContainer="col-12 md:col-2" />
+                                                    <UWCurrency id="valorUnitario" label="Valor Unitário" v-model="itemEmManutencao.detalhamentoItem.valorUnitario" classContainer="col-12 md:col-2" />
+                                                    <UWCurrency id="valorTotalBrutoItem" label="Valor Total Bruto" v-model="subTotal" disabled classContainer="col-12 md:col-2" />
+                                                    <UWDecimal
+                                                        id="percentualDesconto"
+                                                        v-model="itemEmManutencao.detalhamentoItem.percentualDesconto"
+                                                        label="% Desc."
+                                                        :maximoDigitos="2"
+                                                        @onChange="changePercentualDesconto()"
+                                                        autofocus
+                                                        classContainer="col-12 md:col-2"
+                                                    />
+                                                    <UWCurrency id="valorDesconto" v-model="itemEmManutencao.detalhamentoItem.valorDesconto" label="Valor Desc." classContainer="col-12 md:col-2" @onChange="changeValorDesconto()" />
+                                                    <UWCurrency id="valorFrete" label="Valor Frete" v-model="itemEmManutencao.detalhamentoItem.valorFrete" classContainer="col-12 md:col-2" />
+                                                    <UWCurrency id="valorSeguro" label="Valor Seguro" v-model="itemEmManutencao.detalhamentoItem.valorSeguro" classContainer="col-12 md:col-2" />
+                                                    <UWCurrency id="valorOutrasDespesas" label="Outras Desp." v-model="itemEmManutencao.detalhamentoItem.valorOutrasDespesas" classContainer="col-12 md:col-2" />
+                                                    <UWCurrency id="valorTotalBrutoItem" label="Valor Total" v-model="valorTotal" disabled classContainer="col-12 md:col-2" />
+                                                </div>
+                                            </UWFieldSet>
                                         </div>
+                                        <UWTextArea id="infoAdicionais" v-model="itemEmManutencao.infoAdicionais" label="Informações Adicionais do Item" uppercase classContainer="col-12 md:col-12" />
                                     </UWFieldSet>
                                 </div>
-                                <TabView class="col-12">
-                                    <TabPanel header="Tributação ICMS / ST"> </TabPanel>
-                                    <TabPanel header="ICMS para a UF de destino"> </TabPanel>
-                                    <TabPanel header="IPI"> </TabPanel>
-                                    <TabPanel header="Imposto de Importação"> </TabPanel>
-                                    <TabPanel header="PIS"> </TabPanel>
-                                    <TabPanel header="PIS ST"> </TabPanel>
-                                    <TabPanel header="COFINS"> </TabPanel>
-                                    <TabPanel header="COFINS ST"> </TabPanel>
-                                </TabView>
+                                <!-- <Accordion v-if="temTributacao()" :activeIndex="0" expandIcon="pi pi-plus" collapseIcon="pi pi-minus" class="col-12"> -->
+                                    <!-- <AccordionTab> -->
+                                        <!-- <template #header> -->
+                                            <!-- <span class="flex align-items-center gap-2 w-full"> -->
+                                                <!-- <i class="pi pi-percentage" style="font-size: 1rem"></i> -->
+                                                <!-- <span class="font-bold white-space-nowrap">Tributações</span> -->
+                                                <!-- <Badge value="3" class="ml-auto mr-2" /> -->
+                                            <!-- </span> -->
+                                        <!-- </template> -->
+                                        <TabView class="col-12">
+                                            <TabPanel header="ICMS" v-if="configuracaoFiscal.temIcms">
+                                                <Icms00 v-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 0" v-model="itemEmManutencao" />
+                                                <Icms10 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 10" v-model="itemEmManutencao" />
+                                                <Icms20 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 20" v-model="itemEmManutencao" />
+                                                <Icms30 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 30" v-model="itemEmManutencao" />
+                                                <Icms40 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 40" v-model="itemEmManutencao" />
+                                                <Icms41 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 41" v-model="itemEmManutencao" />
+                                                <Icms50 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 50" v-model="itemEmManutencao" />
+                                                <Icms51 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 51" v-model="itemEmManutencao" />
+                                                <Icms60 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 60" v-model="itemEmManutencao" />
+                                                <Icms70 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 70" v-model="itemEmManutencao" />
+                                                <Icms90 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 90" v-model="itemEmManutencao" />
+
+                                                <Cson101 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 101" v-model="itemEmManutencao" />
+                                                <Cson102 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 102" v-model="itemEmManutencao" />
+                                                <Cson103 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 103" v-model="itemEmManutencao" />
+                                                <Cson201 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 201" v-model="itemEmManutencao" />
+                                                <Cson202 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 202" v-model="itemEmManutencao" />
+                                                <Cson203 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 203" v-model="itemEmManutencao" />
+                                                <Cson300 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 300" v-model="itemEmManutencao" />
+                                                <Cson400 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 400" v-model="itemEmManutencao" />
+                                                <Cson500 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 500" v-model="itemEmManutencao" />
+                                                <Cson900 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 900" v-model="itemEmManutencao" />
+                                            </TabPanel>
+                                            <!-- <TabPanel header="Partilha de Icms" v-if="configuracaoFiscal.temPartilhaIcms">
+                                                <PartilhaIcms v-if="itemEmManutencao.tributacaoIcms.grupoTributacao === 'Partilha'" v-model="itemEmManutencao" />
+                                            </TabPanel> -->
+                                            <!-- <TabPanel header="Repasse de Icms" v-if="configuracaoFiscal.temRepasseIcms">
+                                                <RepasseIcms v-if="itemEmManutencao.tributacaoIcms.grupoTributacao === 'Repasse'" v-model="itemEmManutencao" />
+                                            </TabPanel> -->
+                                            <!-- <TabPanel header="ICMS para a UF de destino" v-if="configuracaoFiscal.temIcmsParaUfDestino">
+                                                <IcmsUfOutroDestino v-model="itemEmManutencao" />
+                                            </TabPanel> -->
+                                            <TabPanel header="IPI" v-if="configuracaoFiscal.temIpi">
+                                                <Ipi v-model="itemEmManutencao" />
+                                            </TabPanel>
+                                            <!-- <TabPanel header="Imposto de Importação" v-if="configuracaoFiscal.temII">
+                                                <II v-model="itemEmManutencao" />
+                                            </TabPanel> -->
+                                            <TabPanel header="PIS" v-if="configuracaoFiscal.temPis">
+                                                <PIS v-model="itemEmManutencao" />
+                                            </TabPanel>
+                                            <TabPanel header="COFINS" v-if="configuracaoFiscal.temCofins">
+                                                <Cofins v-model="itemEmManutencao" />
+                                            </TabPanel>
+                                            <TabPanel header="COFINS ST" v-if="configuracaoFiscal.temCofinsSt">
+                                                <CofinsST v-model="itemEmManutencao" />
+                                            </TabPanel>
+                                        </TabView>
+                                    <!-- </AccordionTab> -->
+                                <!-- </Accordion> -->
                             </div>
                         </div>
                     </div>

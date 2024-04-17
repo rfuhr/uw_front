@@ -18,7 +18,7 @@ const columns = reactive([
         filter: true,
         matchMode: 'equal',
         placeholder: '',
-        size: '5%'
+        size: '4%'
     },
     {
         label: 'Regime Tributário',
@@ -27,7 +27,7 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '10%'
+        size: '8%'
     },    
     {
         label: 'UF Orig',
@@ -63,7 +63,7 @@ const columns = reactive([
         filter: true,
         matchMode: 'equal',
         placeholder: '',
-        size: '8%'
+        size: '5%'
     },
     {
         label: 'Gr.Tribut.',
@@ -117,7 +117,7 @@ const columns = reactive([
         filter: true,
         matchMode: 'equal',
         placeholder: '',
-        size: '8%'
+        size: '5%'
     },
     {
         label: 'Início Vigência',
@@ -125,7 +125,7 @@ const columns = reactive([
         tipoField: 'maskDate',
         filter: false,
         placeholder: '',
-        size: '10%',
+        size: '8%',
         maskDate: 'dd/MM/yyyy'
     },
     {
@@ -133,10 +133,46 @@ const columns = reactive([
         field: 'dataFinalVigencia',
         filter: false,
         placeholder: '',
-        size: '10%',
+        size: '8%',
         tipoField: 'maskDate',
         maskDate: 'dd/MM/yyyy'
-    }       
+    },
+    {
+        label: 'ICMS',
+        field: 'icms',
+        tipoField: 'boolean',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '2%'
+    },           
+    {
+        label: 'IPI',
+        field: 'ipi',
+        tipoField: 'boolean',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '2%'
+    },           
+    {
+        label: 'PIS',
+        field: 'pis',
+        tipoField: 'boolean',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '2%'
+    },           
+    {
+        label: 'COFINS',
+        field: 'cofins',
+        tipoField: 'boolean',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '2%'
+    },           
 ]);
 
 const openNew = () => {

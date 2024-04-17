@@ -24,6 +24,11 @@ const schema = yup.object().shape({
 
 const indicadorOperacao = ref();
 
+const seletorCfop = ref(null);
+const seletorNcm = ref(null);
+const seletorOrigem = ref(null);
+const seletorOperacaoInterna = ref(null);
+
 const { truncate } = useFormatString();
 
 const props = defineProps({
@@ -176,6 +181,7 @@ const showModal = async () => {
         formData.origem = {};
         formData.ncm = {};
         formData.item = {};
+        formData.operacaoInterna = {};
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
@@ -201,6 +207,10 @@ const showModal = async () => {
                     configuracaoFiscalId: formData.id
                 }
             }
+            seletorCfop.value.reload(formData.cfopId);
+            seletorNcm.value.reload(formData.ncmId);
+            seletorOrigem.value.reload(formData.origemId);
+            seletorOperacaoInterna.value.reload(formData.operacaoInternaId);
         });
     }
 };
@@ -212,15 +222,36 @@ onMounted(async () => {
 });
 
 const changeCfop = (event) => {
-    formData.cfop = event;
+    if (event) {
+        formData.cfopNome = event.nome;
+        formData.cfopCodigo = event.codigo;
+    } else {
+        formData.cfopId = undefined;
+        formData.cfopNome = undefined;
+        formData.cfopCodigo = undefined;
+    }
 };
 
 const changeOrigem = (event) => {
-    formData.origem = event;
+    if (event) {
+        formData.origemNome = event.nome;
+        formData.origemCodigo = event.codigo;
+    } else {
+        formData.origemId = undefined;
+        formData.origemNome = undefined;
+        formData.origemCodigo = undefined;
+    }
 };
 
 const changeNcm = (event) => {
-    formData.ncm = event;
+    if (event) {
+        formData.ncmNome = event.nome;
+        formData.ncmCodigo = event.codigo;
+    } else {
+        formData.ncmId = undefined;
+        formData.ncmNome = undefined;
+        formData.ncmCodigo = undefined;
+    }
 };
 
 const changeItem = (event) => {
@@ -231,6 +262,17 @@ const changeItem = (event) => {
         formData.itemId = undefined;
         formData.itemNome = undefined;
         formData.itemCodigo = undefined;
+    }
+};
+
+const changeOperacaoInterna = (event) => {
+    if (event) {
+        formData.operacaoInternaNome = event.nome;
+        formData.operacaoInternaSigla = event.sigla;
+    } else {
+        formData.operacaoInternaId = undefined;
+        formData.operacaoInternaNome = undefined;
+        formData.operacaoInternaSigla = undefined;
     }
 };
 
@@ -245,7 +287,6 @@ const changeRegimeTributario = (event) => {
         formData.regimeTributarioCodigo = undefined;
         formData.regimeTributarioSimplesNacional = false;
     }
-    console.log(formData)
 };
 
 </script>
@@ -313,6 +354,7 @@ const changeRegimeTributario = (event) => {
                         <UWPickList id="indicadorOperacao" label="Entrada/Saída" v-model="formData.indicadorOperacao" optionLabel="name" optionValue="value" required :options="indicadorOperacao" classContainer="col-12 md:col-2" :erros="errors?.value?.indicadorOperacao"/>
                         <UWSeletor 
                                     id="seletorOrigem" 
+                                    ref="seletorOrigem" 
                                     label="Origem" 
                                     v-model="formData.origemId" 
                                     optionLabel="nome" 
@@ -326,7 +368,7 @@ const changeRegimeTributario = (event) => {
                                                 ]"
                                     fieldSearchDefault="nome"
                                     >
-                            <template #values> {{ formData.origem?.codigo }} - {{ formData.origem?.nome }} </template>
+                            <template #values> {{ formData.origemCodigo }} - {{ formData.origemNome }} </template>
                             <template #options="slotProps">
                                 <div class="flex flex-column">
                                     {{ truncate(slotProps.option.nome, 100 )}} 
@@ -358,6 +400,7 @@ const changeRegimeTributario = (event) => {
                         </UWSeletor>                                    
                         <UWSeletor 
                                     id="seletorOperacaoInterna" 
+                                    ref="seletorOperacaoInterna" 
                                     label="Operação Interna" 
                                     v-model="formData.operacaoInternaId" 
                                     optionLabel="nome" 
@@ -365,10 +408,23 @@ const changeRegimeTributario = (event) => {
                                     placeholder="Selecione a Operação Interna" 
                                     :service="OperacaoInternaService" 
                                     classContainer="col-12 md:col-3" 
+                                    @changeObject="changeOperacaoInterna"
+                                    :filtersSearch="[{ field: 'sigla', matchMode: 'contains', tipoField: 'text', fieldFilter: 'sigla', labelFilter: 'Sigla'},
+                                                 { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nome', labelFilter: 'Nome'},
+                                                ]"
+                                    fieldSearchDefault="nome"                                    
                                     >
+                            <template #values> {{ formData.operacaoInternaSigla }} - {{ formData.operacaoInternaNome }} </template>
+                            <template #options="slotProps">
+                                <div class="flex flex-column">
+                                    {{ truncate(slotProps.option.nome, 100 )}} 
+                                    <div class="text-700 text-sm"><span>Código:</span> {{ slotProps.option.sigla }} </div>
+                                </div>
+                            </template>                                    
                         </UWSeletor>                                       
                         <UWSeletor 
                                     id="seletorCfop" 
+                                    ref="seletorCfop" 
                                     label="Código Fiscal (CFOP)" 
                                     v-model="formData.cfopId" 
                                     optionLabel="nome" 
@@ -383,7 +439,7 @@ const changeRegimeTributario = (event) => {
                                                 ]"
                                     fieldSearchDefault="nome"
                                     >
-                            <template #values> {{ formData.cfop?.codigo }} - {{ formData.cfop?.nome }} </template>
+                            <template #values> {{ formData.cfopCodigo }} - {{ formData.cfopNome }} </template>
                             <template #options="slotProps">
                                 <div class="flex flex-column">
                                     {{ truncate(slotProps.option.nome, 100 )}} 
@@ -392,7 +448,8 @@ const changeRegimeTributario = (event) => {
                             </template>
                         </UWSeletor>
                         <UWSeletor 
-                                    id="seletorNCM" 
+                                    id="seletorNcm" 
+                                    ref="seletorNcm" 
                                     label="NCM" 
                                     v-model="formData.ncmId" 
                                     optionLabel="nome" 
@@ -407,7 +464,7 @@ const changeRegimeTributario = (event) => {
                                                 ]"
                                     fieldSearchDefault="nome"
                                     >
-                            <template #values> {{ formData.ncm?.codigo }} - {{ formData.ncm?.nome }} </template>
+                            <template #values> {{ formData.ncmCodigo }} - {{ formData.ncmNome }} </template>
                             <template #options="slotProps">
                                 <div class="flex flex-column">
                                     {{ truncate(slotProps.option.nome, 100 )}} 

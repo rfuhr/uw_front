@@ -69,6 +69,30 @@ class TiposService {
     getIndicadorIEDestinatario() {
         return api.get('/fiscal/indicador-ie-destinatario');
     }
+
+    getModalidadesFrete() {
+        return api.get('/fiscal/modalidade-frete');
+    }
+
+    getTiposTransporte() {
+        return api.get('/fiscal/tipo-transporte');
+    }
+    
+    getIndicadorFormaPagamento() {
+        return api.get('/tabela/indicador-forma-pagamento');
+    }
+    
+    getMeiosPagamento() {
+        return api.get('/fiscal/meio-pagamento');
+    }
+
+    getTiposIntegracaoPagamento() {
+        return api.get('/tabela/tipo-integracao-pagamento');
+    }
+
+    getBandeirasCartao() {
+        return api.get('/tabela/bandeira-cartao');
+    }
 }
 
 

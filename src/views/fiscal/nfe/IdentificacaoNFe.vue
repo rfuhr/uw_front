@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import * as yup from 'yup';
-
 import _ from 'lodash';
 import { useContexto } from '@/stores';
 import { DepartamentoService, OperacaoInternaService, TiposService, RegimeTributarioService, ConfigEmpresaService } from '@/service';
@@ -69,6 +68,7 @@ const changeOperacaoInterna = (value) => {
                 localModelValue.value.operacaoInterna = response;
                 localModelValue.value.indicadorOperacao = response.naturezaOperacao.indicadorOperacao;
                 localModelValue.value.naturezaOperacao = response.naturezaOperacao.nome;
+                localModelValue.value.naturezaOperacaoSigla = response.naturezaOperacao.sigla;
                 localModelValue.value.destinoOperacao = response.operacaoInternaFiscal.destinoOperacao;
                 localModelValue.value.finalidadeNfe = response.operacaoInternaFiscal.finalidadeNfe;
                 localModelValue.value.tipoConsumidor = response.operacaoInternaFiscal.tipoConsumidor;
@@ -78,6 +78,7 @@ const changeOperacaoInterna = (value) => {
                 localModelValue.value.operacaoInterna = null;
                 localModelValue.value.tipoOperacaoId = null;
                 localModelValue.value.naturezaOperacao = null;
+                localModelValue.value.naturezaOperacaoSigla = null;
                 localModelValue.value.destinoOperacao = null;
                 localModelValue.value.finalidadeNfe = null;
                 localModelValue.value.tipoConsumidor = null;
@@ -137,6 +138,9 @@ const changeOutroLocalRetirada = () => {
     localModelValue.value.localRetirada.tipoPessoa = 'J';
 };
 
+const changeDepartamento = (value) => {
+    localModelValue.value.departamento = value;
+}
 const validateForm = () => {
     if (formIdentificacaoNFe.value) {
         return formIdentificacaoNFe.value.validateForm();
@@ -210,6 +214,7 @@ defineExpose({
                                     placeholder="Selecione o departamento"
                                     :columnsFilters="[{ field: 'empresaFilial', value: contextoStore.contexto.empresaFilialId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresaFilial.id' }]"
                                     :erros="errors.value?.emitenteId"
+                                    @changeObject="changeDepartamento"
                                 />
                                 <UWSeletor
                                     id="operacaoInterna"

@@ -120,6 +120,8 @@ const getLista = async (forceId) => {
         if (!props.modelValue && totalRegistros.value === 1) {
             localFieldName.value = registros.value[0].id;
             handleChange({ value: registros.value[0].id });
+        } else if (forceId) {
+            handleChange({ value: forceId });
         }
     } catch {
         registros.value = [];

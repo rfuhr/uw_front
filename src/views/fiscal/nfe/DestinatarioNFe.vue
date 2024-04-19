@@ -59,6 +59,7 @@ const getTelefoneFormatado = (objetoTelefone) => {
 const changeParceiroLocal = (object) => {
     if (!object) {
         dadosParceiroLocal.value = {};
+        localModelValue.value.dadosParceiroLocal = {}
         return;
     }
 
@@ -88,6 +89,7 @@ const changeParceiroLocal = (object) => {
             dadosParceiroLocal.value.indicadorIE = dadosParceiroLocal.value.dadosPessoaJuridica.indicadorIE;
             dadosParceiroLocal.value.suframa = dadosParceiroLocal.value.dadosPessoaJuridica.suframa;
         }
+        localModelValue.value.dadosParceiroLocal = dadosParceiroLocal.value;
     });
 };
 

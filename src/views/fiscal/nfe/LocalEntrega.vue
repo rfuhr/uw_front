@@ -35,8 +35,10 @@ const buscarEndereco = async () => {
 
                 UfService.getUfBySigla(enderecoEncontrado.uf).then((uf) => {
                     localEntregaModelValue.value.ufId = uf.id;
+                    localEntregaModelValue.value.ufSigla = uf.sigla
                     CidadeService.getCidadeByIbge(enderecoEncontrado.ibge * 1).then((cidade) => {
                         localEntregaModelValue.value.cidadeId = cidade.id;
+                        localEntregaModelValue.value.cidadeNome = cidade.nome
                         emit('update:modelValue', localEntregaModelValue.value);
                         seletorCidade.value.reload(cidade.id);
                     });
@@ -146,6 +148,17 @@ const buscarEndereco = async () => {
                 :columnsFilters="[{ field: 'uf', value: localEntregaModelValue.ufId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'uf.id' }]"
                 :erros="_.get(props.errors.value, `localEntrega.cidadeId`, null)"
             />
+            <UWInputMask
+                id="telefone"
+                label="Telefone"
+                :mask="'(99) 99999-9999'"
+                required
+                :unmask="true"
+                v-model="localEntregaModelValue.telefone"
+                classContainer="col-12 md:col-2"
+                :errors="_.get(props.errors.value, `localEntrega.telefone`, null)"
+            />
+            <UWInput id="email" label="Email" type="email" required lowercase autofocus v-model="localEntregaModelValue.email" classContainer="col-12 md:col-10" :errors="_.get(props.errors.value, `localEntrega.email`, null)" />
         </div>
     </div>
 </template>

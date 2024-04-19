@@ -215,12 +215,127 @@ export function useValidationsSchemaNFe() {
         })
     }
 
+    const createSchemaTipoTransporte = (dadosTransporteNFe) => {
+        if (dadosTransporteNFe && dadosTransporteNFe.modalidadeFrete !== '9') {
+            return yup.string().required("Tipo de transporte é obrigatório.");
+        } else {
+            return yup.mixed().optional();
+        }
+    };
+
+    const createSchemaReboques = (dadosTransporteNFe) => {
+        if (dadosTransporteNFe && dadosTransporteNFe.possuiReboque) {
+            return yup
+                .array()
+                .required('Reboque deve ser informada')
+                .min(1, 'Pelo menos um reboque deve ser fornecida.')
+                .test('custom-validation', 'Erro de validação personalizado', function (values) {
+                    const errors = [];
+
+                    for (let i = 0; i < values.length; i++) {
+                        const { placaVeiculo, siglaUf, rntc } = values[i];
+
+                        if (!placaVeiculo) errors.push(this.createError({ message: 'Placa do veículo é obrigatório ser informado.', path: `reboques[${i}].placaVeiculo` }));
+                        if (!siglaUf) errors.push(this.createError({ message: 'Sigla UF da placa do veículo é obrigatório ser informado.', path: `reboques[${i}].siglaUf` }));
+                        if (!rntc) errors.push(this.createError({ message: 'RNTC é obrigatório ser informado.', path: `reboques[${i}].rntc` }));
+                    }
+
+                    if (errors.length > 0) {
+                        throw new yup.ValidationError(errors);
+                    }
+
+                    return true;
+                });
+        }
+        return yup.mixed().optional();
+    };   
+
+    const createSchemaVolumes = (dadosTransporteNFe) => {
+        if (dadosTransporteNFe && dadosTransporteNFe.possuiVolume) {
+            return yup
+                .array()
+                .required('Volume deve ser informada')
+                .min(1, 'Pelo menos um volume deve ser fornecida.')
+                .test('custom-validation', 'Erro de validação personalizado', function (values) {
+                    const errors = [];
+
+                    for (let i = 0; i < values.length; i++) {
+                        const { quantidade, especie } = values[i];
+
+                        if (!quantidade) errors.push(this.createError({ message: 'Quantidade é obrigatória ser informada.', path: `volumes[${i}].quantidade` }));
+                        if (!especie) errors.push(this.createError({ message: 'Espécie é obrigatória ser informada.', path: `volumes[${i}].especie` }));
+                    }
+
+                    if (errors.length > 0) {
+                        throw new yup.ValidationError(errors);
+                    }
+
+                    return true;
+                });
+        }
+        return yup.mixed().optional();
+    }; 
+    
+    const createSchemaLacres = (dadosTransporteNFe) => {
+        if (dadosTransporteNFe && dadosTransporteNFe.informarLacres) {
+            return yup
+                .array()
+                .required('Lacre deve ser informada')
+                .min(1, 'Pelo menos um lacre deve ser fornecida.');
+        }
+        return yup.mixed().optional();
+    }; 
+
+
+    const createSchemaPagamentos = (dadosFinanceiroNFe) => {
+        if (dadosFinanceiroNFe) {
+            return yup
+                .array()
+                .required('Pagamento deve ser informada')
+                .min(1, 'Pelo menos um pagamento deve ser fornecido.')
+                .test('custom-validation', 'Erro de validação personalizado', function (values) {
+                    const errors = [];
+
+                    for (let i = 0; i < values.length; i++) {
+                        const { indicadorFormaPagamento, meioPagamento, valorPagamento, grupoCartao } = values[i];
+
+                        if (!meioPagamento) errors.push(this.createError({ message: 'Meio de pagamento é obrigatório ser informado.', path: `pagamentos[${i}].meioPagamento` }));
+
+                        if (meioPagamento === '90') continue;
+
+                        if (!indicadorFormaPagamento) errors.push(this.createError({ message: 'Indicador da forma de pagamento é obrigatório ser informado.', path: `pagamentos[${i}].indicadorFormaPagamento` }));
+                        if ((valorPagamento === null || valorPagamento === undefined)) errors.push(this.createError({ message: 'Valor de pagamento é obrigatório ser informado.', path: `pagamentos[${i}].valorPagamento` }));
+                        if (valorPagamento === 0 ) errors.push(this.createError({ message: 'Valor de pagamento deve ser maior que 0.', path: `pagamentos[${i}].valorPagamento` }));
+
+                        if (meioPagamento === '03' || meioPagamento === '04') {
+                            if (!grupoCartao.tipoIntegracao) errors.push(this.createError({ message: 'Tipo de integração é obrigatório ser informado.', path: `pagamentos[${i}].grupoCartao.tipoIntegracao` }));                            
+                            if (!grupoCartao.cnpj) errors.push(this.createError({ message: 'Cnpj é obrigatório ser informado.', path: `pagamentos[${i}].grupoCartao.cnpj` }));                            
+                            if (!grupoCartao.bandeiraCartao) errors.push(this.createError({ message: 'Bandeira do Cartão é obrigatório ser informado.', path: `pagamentos[${i}].grupoCartao.bandeiraCartao` }));                            
+                            if (!grupoCartao.numeroAutorizacao) errors.push(this.createError({ message: 'Número da autorização é obrigatório ser informado.', path: `pagamentos[${i}].grupoCartao.numeroAutorizacao` }));                            
+                        }
+                    }
+
+                    if (errors.length > 0) {
+                        throw new yup.ValidationError(errors);
+                    }
+
+                    return true;
+                });
+        }
+        return yup.mixed().optional();
+    }; 
+
     return {
         createSchemaDataHoraSaidaEntrada,
         createSchemaDocumentosReferenciados,
         createSchemaLocalRetirada,
         createSchemaAutorizacoes,
         createSchemaLocalEntrega,
-        createSchemaDetalhamentoItem
+        createSchemaDetalhamentoItem,
+        createSchemaTipoTransporte,
+        createSchemaReboques,
+        createSchemaVolumes,
+        createSchemaLacres,
+        createSchemaPagamentos
     };
 }

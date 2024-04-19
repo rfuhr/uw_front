@@ -72,7 +72,7 @@ const filterSearchAtivo = {
 
 const { truncate } = useFormatString();
 
-const montarFiltros = async () => {
+const montarFiltros = async (forceId) => {
     filters.value = {};
     filters.value[filterSearchAtivo.field] = {
         value: valorFiltro.value,
@@ -95,13 +95,14 @@ const montarFiltros = async () => {
     }
 
     if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
-    if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
+    if(forceId) lazyParams.value.id = forceId 
+    else if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
     else lazyParams.value.id = null;
 };
 
-const getLista = async () => {
+const getLista = async (forceId) => {
     try {
-        await montarFiltros();
+        await montarFiltros(forceId);
         const data = await Service.getSeletorByOperacaoInterna(lazyParams.value, props.operacaoInternaId);
         registros.value = data.registros;
         totalRegistros.value = data.totalRegistros;
@@ -110,6 +111,8 @@ const getLista = async () => {
         if (!props.modelValue && totalRegistros.value === 1) {
             localFieldName.value = registros.value[0].id;
             handleChange({ value: registros.value[0].id });
+        } else if (forceId) {
+            handleChange({ value: forceId });
         }
     } catch {
         registros.value = [];
@@ -209,6 +212,15 @@ watch(
         getLista();
     }
 );
+
+const reload = (id) => {
+    getLista(id)
+}
+
+defineExpose({
+    reload
+});
+
 </script>
 
 <template>

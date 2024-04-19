@@ -45,7 +45,7 @@ const situacaoTributaria = computed(() => {
                     <div class="p-fluid formgrid grid">
                         <div class="col-12">
                             <div class="p-fluid formgrid grid">
-                                <UWInput id="origemProduto" label="Origem da Mercadoria" v-model="itemModelValue.item.origemNome" disabled classContainer="col-12 md:col-6" />
+                                <UWInput id="origemProduto" label="Origem da Mercadoria" v-model="itemModelValue.detalhamentoItem.item.origemNome" disabled classContainer="col-12 md:col-6" />
                                 <UWInput id="grupoTributacao" label="Situação Tributária" v-model="situacaoTributaria" disabled classContainer="col-12 md:col-6" />
                                 <Divider align="left" type="solid" class="ml-3 mr-3">
                                     <b>Icms</b>
@@ -57,7 +57,6 @@ const situacaoTributaria = computed(() => {
                                     disabled
                                     optionLabel="name"
                                     optionValue="value"
-                                    required
                                     :options="modalidadesBC"
                                     classContainer="col-12 md:col-4"
                                 />
@@ -83,7 +82,6 @@ const situacaoTributaria = computed(() => {
                                     disabled
                                     optionLabel="name"
                                     optionValue="value"
-                                    required
                                     :options="modalidadesBCSt"
                                     classContainer="col-12 md:col-2"
                                 />

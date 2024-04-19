@@ -37,8 +37,10 @@ const buscarEndereco = async () => {
 
                 UfService.getUfBySigla(enderecoEncontrado.uf).then((uf) => {
                     localRetiradaModelValue.value.ufId = uf.id;
+                    localRetiradaModelValue.value.ufSigla = uf.sigla
                     CidadeService.getCidadeByIbge(enderecoEncontrado.ibge * 1).then((cidade) => {
                         localRetiradaModelValue.value.cidadeId = cidade.id;
+                        localRetiradaModelValue.value.cidadeNome = cidade.nome;
                         emit('update:modelValue', localRetiradaModelValue.value);
                         seletorCidade.value.reload(cidade.id);
                     });
@@ -47,6 +49,14 @@ const buscarEndereco = async () => {
         } catch (error) { /* empty */ }
     }
 };
+
+const changeUf = (value) => {
+    localRetiradaModelValue.value.ufSigla = value.sigla;
+}
+
+const changeCidade = (value) => { 
+    localRetiradaModelValue.value.cidadeNome = value.nome;
+}
 </script>
 
 <template>
@@ -133,6 +143,7 @@ const buscarEndereco = async () => {
                 :service="UfService"
                 placeholder="Selecione a uf"
                 :erros="_.get(props.errors.value, `localRetirada.ufId`, null)"
+                @changeObject="changeUf"
             />
             <UWSeletor
                 id="cidade"
@@ -147,6 +158,7 @@ const buscarEndereco = async () => {
                 placeholder="Selecione a cidade"
                 :columnsFilters="[{ field: 'uf', value: localRetiradaModelValue.ufId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'uf.id' }]"
                 :erros="_.get(props.errors.value, `localRetirada.cidadeId`, null)"
+                @changeObject="changeCidade"
             />
             <UWInputMask
                 id="telefone"

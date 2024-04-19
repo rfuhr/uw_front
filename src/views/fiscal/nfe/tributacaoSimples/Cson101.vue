@@ -29,7 +29,7 @@ const itemModelValue = computed({
                     <div class="p-fluid formgrid grid">
                         <div class="col-12">
                             <div class="p-fluid formgrid grid">
-                                <UWInput id="origemProduto" label="Origem da Mercadoria" v-model="itemModelValue.item.origemNome" disabled classContainer="col-12 md:col-6" />
+                                <UWInput id="origemProduto" label="Origem da Mercadoria" v-model="itemModelValue.detalhamentoItem.item.origemNome" disabled classContainer="col-12 md:col-6" />
                                 <UWInput id="grupoTributacao" label="Grupo de Tributação" v-model="itemModelValue.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaNome" disabled classContainer="col-12 md:col-6" />
                                 <Divider align="left" type="solid" class="ml-3 mr-3">
                                     <b>Crédito Simples Nacional</b>

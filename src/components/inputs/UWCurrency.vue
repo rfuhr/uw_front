@@ -31,6 +31,14 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    min: {
+        type: Number,
+        default: 0
+    },
+    max: {
+        type: Number,
+        default: 999999999
+    }    
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -50,7 +58,8 @@ const localModelValue = computed({
         <span class="p-float-label">
             <InputNumber :id="id" mode="currency" currency="BRL" locale="pt-Br" :disabled="disabled" v-model="localModelValue" 
             :autofocus="autofocus" :class="{'text-700': true, 'w-full': true, 'p-invalid': errors }" v-bind="$attrs"
-            @blur="localModelValue = localModelValue ? parseFloat(localModelValue).toFixed(maximoDigitos) : 0" />
+            @blur="localModelValue = localModelValue ? parseFloat(localModelValue).toFixed(maximoDigitos) : 0" 
+            :min="min" :max="max"/>
             <label :for="id" v-required="required">{{ label }}</label>
         </span>
         <span v-if="errors">

@@ -1,14 +1,19 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
+import 'vue3-form-wizard/dist/style.css';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 import { FormWizard, TabContent } from 'vue3-form-wizard';
-import 'vue3-form-wizard/dist/style.css';
 import IdentificacaoNFe from '@/views/fiscal/nfe/IdentificacaoNFe.vue';
 import DestinatarioNFe from './DestinatarioNFe.vue';
 import ProdutosNFe from './ProdutosNFe.vue';
-import { ConfigEmpresaService } from '@/service';
+import TotalizadoresNFe from './TotalizadoresNFe.vue';
+import TransporteNFe from './TransporteNFe.vue';
+import FinanceiroNFe from './FinanceiroNFe.vue';
+import ResumoNFe from './ResumoNFe.vue';
+import InformacoesAdicionaisNFe from './InformacoesAdicionaisNFe.vue';
 import { useContexto } from '@/stores';
+import { ConfigEmpresaService } from '@/service';
 
 const contextoStore = useContexto();
 
@@ -24,19 +29,31 @@ const formData = reactive({
         documentosReferenciados: [],
         localRetirada: {},
         autorizarObterXml: false,
-        autorizacoes: []
+        autorizacoes: [],
+        departamento: {}
     },
     destinatario: {
         outroLocalEntrega: false,
-        localEntrega: {}
+        localEntrega: {},
+        dadosParceiroLocal: {}
     },
     itensNFe: {
         itens: []
+    }, 
+    transporte: {
+        reboques: [],
+        volumes: [],
+        lacres: []
+    },
+    financeiro: {
+        pagamentos: []
     }
 });
 const identificacaoNFe = ref(null);
 const destinatarioNFe = ref(null);
 const produtosNFe = ref(null);
+const transporteNFe = ref(null);
+const financeiroNFe = ref(null);
 
 const configEmpresaNFe = ref(null);
 
@@ -46,7 +63,7 @@ function onComplete() {
 
 const onCancelar = async () => {
     const result = await Swal.fire({
-        title: 'Você confirma a desistência da emissão da nfe?',
+        title: 'Você confirma a desistência da emissão da NF-e?',
         text: 'Os dados preenchidos serão perdidos.',
         icon: 'question',
         showCancelButton: true,
@@ -86,6 +103,18 @@ const validDestinatarioNFe = () => {
     }
 };
 
+const beforeChangeTransporte = async () => {
+    return validTransporteNFe();
+};
+
+const validTransporteNFe = () => {
+    if (transporteNFe.value) {
+        return transporteNFe.value.validateForm();
+    } else {
+        return true;
+    }
+};
+
 const beforeChangeDestinatario = async () => {
     return validDestinatarioNFe();
 };
@@ -100,6 +129,18 @@ const validProdutosNFe = () => {
 
 const beforeChangeProdutos = async () => {
     return validProdutosNFe();
+};
+
+const beforeChangeFinanceiro = async () => {
+    return validFinanceiroNFe();
+};
+
+const validFinanceiroNFe = () => {
+    if (financeiroNFe.value) {
+        return financeiroNFe.value.validateForm();
+    } else {
+        return true;
+    }
 };
 
 onMounted(async () => {
@@ -126,8 +167,8 @@ const dadosAuxiliaresItem = computed(() => {
 <template>
     <UWPageBase title="Emissão de NFe" subtitle="Para emissão da nfe, seguir as etapas.">
         <FormWizard @on-complete="onComplete" color="#094899" step-size="xs" nextButtonText="Próximo" backButtonText="Anterior" finishButtonText="Enviar NFe">
-            <template #custom-buttons-left>
-                <Button type="button" class="p-button-danger ml-6" @click="onCancelar">Cancelar emissão</Button>
+            <template #custom-buttons-right>
+                <Button type="button" class="p-button-danger mr-6" outlined @click="onCancelar">Cancelar emissão</Button>
             </template>
             <TabContent title="Identificação da Nota Final" icon="fa fa-file-invoice" :before-change="beforeChangeIdentificacao">
                 <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe"  />
@@ -138,11 +179,21 @@ const dadosAuxiliaresItem = computed(() => {
             <TabContent title="Produtos" icon="fa fa-barcode" :before-change="beforeChangeProdutos">
                 <ProdutosNFe ref="produtosNFe" v-model="formData.itensNFe" :dadosAuxiliares="dadosAuxiliaresItem"/>
             </TabContent>
-            <TabContent title="Totalizadores" icon="fa fa-list-ol"> Yuhuuu! This seems pretty damn simple </TabContent>
-            <TabContent title="Informações do Transporte" icon="fa fa-truck"> Yuhuuu! This seems pretty damn simple </TabContent>
-            <TabContent title="Dados do Faturamento" icon="fa fa-wallet"> Yuhuuu! This seems pretty damn simple </TabContent>
-            <TabContent title="Informações Adicionais" icon="fa fa-info"> Yuhuuu! This seems pretty damn simple </TabContent>
-            <TabContent title="Finalizar" icon="fa fa-envelope-circle-check"> Yuhuuu! This seems pretty damn simple </TabContent>
+            <TabContent title="Totalizadores" icon="fa fa-list-ol"> 
+                <TotalizadoresNFe v-model="formData.itensNFe"/>
+            </TabContent>
+            <TabContent title="Informações do Transporte" icon="fa fa-truck" :before-change="beforeChangeTransporte"> 
+                <TransporteNFe ref="transporteNFe" v-model="formData.transporte"/>    
+            </TabContent>
+            <TabContent title="Dados do Faturamento" icon="fa fa-wallet" :before-change="beforeChangeFinanceiro"> 
+                <FinanceiroNFe ref="financeiroNFe" v-model="formData.financeiro"/>    
+            </TabContent>
+            <TabContent title="Informações Adicionais" icon="fa fa-info"> 
+                <InformacoesAdicionaisNFe v-model="formData.informacoesAdicionais"/>    
+            </TabContent>
+            <TabContent title="Finalizar" icon="fa fa-envelope-circle-check"> 
+                <ResumoNFe v-model="formData"/>    
+            </TabContent>
         </FormWizard>
     </UWPageBase>
 </template>

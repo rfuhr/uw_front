@@ -52,7 +52,6 @@ onMounted(() => {
                                     disabled
                                     optionLabel="name"
                                     optionValue="value"
-                                    required
                                     :options="modalidadesBC"
                                     classContainer="col-12 md:col-4"
                                 />
@@ -78,7 +77,6 @@ onMounted(() => {
                                     disabled
                                     optionLabel="name"
                                     optionValue="value"
-                                    required
                                     :options="modalidadesBCST"
                                     classContainer="col-12 md:col-2"
                                 />

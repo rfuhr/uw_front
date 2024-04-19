@@ -12,6 +12,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    simplesNacional: {
+        type: Boolean,
+        required: true
+    },
     errors: {}
 });
 
@@ -94,6 +98,7 @@ onMounted(async () => {
                         v-model="localModelValue.situacaoTributariaId" 
                         optionLabel="nome" 
                         optionValue="id" 
+                        sortField="codigo"
                         placeholder="Selecione a Situação Tributária" 
                         :service="SituacaoTributariaService" 
                         classContainer="col-12 md:col-6"
@@ -102,7 +107,9 @@ onMounted(async () => {
                                         { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nome', labelFilter: 'Nome'},
                                     ]"
                         fieldSearchDefault="nome"
-                        :columnsFilters="[{ field: 'tipoTributo', value: 'ICMS', matchMode: 'equal', tipoField: 'text', fieldFilter: 'tipoTributo' }]"
+                        :columnsFilters="[{ field: 'tipoTributo', value: 'ICMS', matchMode: 'equal', tipoField: 'text', fieldFilter: 'tipoTributo' },
+                                          { field: 'simplesNacional', value: props.simplesNacional, matchMode: 'equal', tipoField: 'boolean', fieldFilter: 'simplesNacional'}
+                        ]"
                         >
                         <template #values> {{ localModelValue.situacaoTributariaCodigo }} - {{ localModelValue.situacaoTributariaNome }} </template>
                         <template #options="slotProps">
@@ -118,6 +125,7 @@ onMounted(async () => {
                         v-model="localModelValue.motivoDesoneracaoId" 
                         optionLabel="nome" 
                         optionValue="id" 
+                        sortField="codigo"
                         placeholder="Selecione a Motivo Desoneração" 
                         :service="MotivoDesoneracaoService" 
                         classContainer="col-12 md:col-6"
@@ -168,6 +176,7 @@ onMounted(async () => {
                         v-model="localModelValue.motivoDesoneracaoSTId" 
                         optionLabel="nome" 
                         optionValue="id" 
+                        sortField="codigo"
                         placeholder="Selecione a Motivo Desoneração ST" 
                         :service="MotivoDesoneracaoService" 
                         classContainer="col-12 md:col-6"

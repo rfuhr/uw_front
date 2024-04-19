@@ -31,7 +31,8 @@ const toast = useToast();
 
 const formData = reactive({
     nome: undefined,
-    codigo: undefined
+    codigo: undefined,
+    simplesNacional: false
 });
 
 const showDialogComputed = computed({
@@ -80,6 +81,7 @@ const showModal = async () => {
     if (props.mode === 'create') {
         formData.nome = undefined;
         formData.codigo = undefined;
+        formData.simplesNacional = false;
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
@@ -96,6 +98,24 @@ const showModal = async () => {
                     <div class="p-fluid formgrid grid">
                         <UWInput id="codigo" label="Código" required autofocus v-model="formData.codigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
                         <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
+                        <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.simplesNacional"
+                                        onLabel="Simples Nacional"
+                                        offLabel="Simples Nacional"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.simplesNacional, 'bg-red-100 border-white': !formData.simplesNacional }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>                        
                     </div>
                 </div>
             </template>

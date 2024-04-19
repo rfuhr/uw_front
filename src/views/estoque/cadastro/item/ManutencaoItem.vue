@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import Swal from 'sweetalert2';
-import { ItemService, UnidadeMedidaService, MarcaService, LinhaService, PlanoClassificacaoItemService, OrigemService, NcmService } from '@/service';
+import { ItemService, UnidadeMedidaService, MarcaService, LinhaService, PlanoClassificacaoItemService, OrigemService, NcmService, GrupoTributacaoService } from '@/service';
 import { useFormatString } from '@/composables/useFormatString';
 
 const route = useRoute();
@@ -14,6 +14,7 @@ const toast = useToast();
 const { truncate } = useFormatString();
 
 const idItem = ref();
+const seletorNcm = ref(null);
 
 const createSchema = () => {
     return yup.object().shape({
@@ -67,10 +68,12 @@ onMounted(async () => {
                 formData.quantidadeAlertaEstoque = data.quantidadeAlertaEstoque;
                 formData.origemId = data.origemId;
                 formData.ncmId = data.ncmId;
+                formData.grupoTributacaoId = data.grupoTributacaoId;
                 formData.unidadeMedidaTributavelId = data.unidadeMedidaTributavelId;
 
                 await NcmService.getById(formData.ncmId).then((data) => {
                     formData.ncm = data;
+                    seletorNcm.value.reload(formData.ncmId);
                 });
             })
             .catch(async () => {
@@ -375,6 +378,8 @@ const labelNcmSelector = computed(() => {
                                 :erros="errors?.value?.origemId"
                             />
                             <UWSeletor
+                                id="seletorNcm" 
+                                ref="seletorNcm" 
                                 classContainer="col-12 md:col-6"
                                 v-model="formData.ncmId"
                                 optionLabel="nome"
@@ -412,6 +417,7 @@ const labelNcmSelector = computed(() => {
                                 :erros="errors.value?.unidadeMedidaTributavelId"
                                 positionTooltip="right"
                             />
+                            <UWSeletor classContainer="col-12 md:col-3" v-model="formData.grupoTributacaoId" optionLabel="nome" optionValue="id" label="Grupo de Tributação" :service="GrupoTributacaoService" placeholder="Selecione o Grupo de Tributação" :erros="errors.value?.grupoTributacaoId" />
                         </div>
                     </TabPanel>
                 </TabView>

@@ -27,8 +27,17 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '60%'
-    }
+        size: '50%'
+    },
+    {
+        label: 'Simples Nacional',
+        field: 'simplesNacional',
+        tipoField: 'boolean',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '10%'
+    },        
 ]);
 
 const openNew = () => {

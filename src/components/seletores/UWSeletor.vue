@@ -21,6 +21,10 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    sortField: {
+        type: String,
+        default: ''
+    },
     placeholder: {
         type: String,
         default: ''
@@ -95,7 +99,7 @@ const montarFiltros = async (forceId) => {
     if (props.columnsFilters && props.columnsFilters.length > 0) {
         props.columnsFilters.forEach((element) => {
             filters.value[element.field] = {
-                value: element.value ? element.value : element.tipoField === 'boolean' ? null : '',
+                value: element.value ? element.value : element.tipoField === 'boolean' ? false : '',
                 matchMode: element.matchMode,
                 tipo: element.tipoField,
                 fieldFilter: element.fieldFilter
@@ -176,7 +180,7 @@ onMounted(() => {
         first: 0,
         page: 0,
         rows: 50,
-        sortField: props.optionLabel,
+        sortField: props.sortField ? props.sortField : props.optionLabel,
         sortOrder: 1,
         filters: filters.value,
         sortFilter: props.optionLabel

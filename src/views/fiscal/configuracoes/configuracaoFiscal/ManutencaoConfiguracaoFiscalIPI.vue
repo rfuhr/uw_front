@@ -44,6 +44,19 @@ const changeSituacaoTributaria = (event) => {
     }
 };
 
+const changeTipoCalculo = (event) => {
+    if (event) {
+        if (event.value == 'Q') {
+            localModelValue.value.aliquota = undefined;
+        } else if (event.value == 'A') {
+            localModelValue.value.valorUnidade = undefined;
+        }
+    } else {
+        localModelValue.value.aliquota = undefined;
+        localModelValue.value.valorUnidade = undefined;
+    }
+}
+
 const changeEnquadramento = (event) => {
     if (event) {
         localModelValue.value.enquadramentoNome = truncate(event.nome, 100);
@@ -113,10 +126,11 @@ onMounted(async () => {
                             </div>
                         </template>
             </UWSeletor>
-            <UWDecimal id="aliquota" label="Aliquota" maximoDigitos="3" v-model="localModelValue.aliquota" classContainer="col-12 md:col-3" />               
-            <UWPickList id="tipoCalculo" label="Tipo de Cálculo" v-model="localModelValue.tipoCalculo" optionLabel="name" optionValue="value" :options="tiposCalculo" classContainer="col-12 md:col-3" />        
-            <UWInput id="codigoSelo" label="Código do Selo" uppercase v-model="localModelValue.codigoSelo" classContainer="col-12 md:col-3" />
-            <UWInteger id="quantidadeSelo" label="Quantidade Selo" maximoDigitos="3" v-model="localModelValue.quantidadeSelo" classContainer="col-12 md:col-3" />               
+            <UWPickList id="tipoCalculo" label="Tipo de Cálculo" @changeObject="changeTipoCalculo" v-model="localModelValue.tipoCalculo" optionLabel="name" optionValue="value" :options="tiposCalculo" classContainer="col-12 md:col-2" />        
+            <UWDecimal id="aliquota" label="Aliquota" :disabled="localModelValue.tipoCalculo === 'Q'" maximoDigitos="3" v-model="localModelValue.aliquota" classContainer="col-12 md:col-3" />
+            <UWDecimal id="valorUnidade" label="Valor Unidade" :disabled="localModelValue.tipoCalculo === 'A'" maximoDigitos="5" v-model="localModelValue.valorUnidade" classContainer="col-12 md:col-3" />               
+            <UWInput id="codigoSelo" label="Código do Selo" uppercase v-model="localModelValue.codigoSelo" classContainer="col-12 md:col-2" />
+            <UWInteger id="quantidadeSelo" label="Quantidade Selo" maximoDigitos="3" v-model="localModelValue.quantidadeSelo" classContainer="col-12 md:col-2" />               
         </div>
     </UWFieldSet>
 </template>

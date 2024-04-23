@@ -223,6 +223,7 @@ const getConfiguracaoFiscal = async () => {
                 props.dadosAuxiliares.ufOrigemId,
                 props.dadosAuxiliares.ufDestinoId
             );
+            console.log('Configuração: ', itemEmManutencao.value.configuracaoFiscal)
         }
         if (!itemEmManutencao.value.configuracaoFiscal) {
             itemEmManutencao.value.configuracaoFiscal = {
@@ -324,7 +325,12 @@ const changeCfop = async (object) => {
 };
 
 const calcularImpostos = async () => {
-    if (itemEmManutencao.value.configuracaoFiscal) {
+    console.log('CalculoImposto: ',itemEmManutencao.value)
+    if (itemEmManutencao.value.configuracaoFiscal && itemEmManutencao.value.detalhamentoItem 
+        && itemEmManutencao.value.detalhamentoItem.itemId && itemEmManutencao.value.detalhamentoItem.itemId > 0
+        && valorTotal && valorTotal.value > 0
+    ) {
+        console.log(itemEmManutencao.value.configuracaoFiscal)
         const calculoImpostoRequest = {
             itemId: itemEmManutencao.value.detalhamentoItem.item.id,
             unidadeMedidaId: itemEmManutencao.value.detalhamentoItem.item.unidadeMedidaComercialId, 
@@ -334,12 +340,14 @@ const calcularImpostos = async () => {
             valorSeguro: itemEmManutencao.value.detalhamentoItem.valorSeguro,
             valorFrete: itemEmManutencao.value.detalhamentoItem.valorFrete,
             valorOutros: itemEmManutencao.value.detalhamentoItem.valorOutrasDespesas,
+            valorTotal: valorTotal.value,
             configuracaoFiscalIcmsId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms.id : null,
             configuracaoFiscalIpiId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi.id : null ,
             configuracaoFiscalPisId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis.id : null,
             configuracaoFiscalCofinsId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins.id : null
         }
         await ConfiguracaoFiscalService.calcularImposto(calculoImpostoRequest).then((response) => {
+            console.log('Calculo Impostos:', response)
             if (response.valoresICMS) {
                 itemEmManutencao.value.tributacaoIcms.valorBCIcms = response.valoresICMS.vBC;
                 itemEmManutencao.value.tributacaoIcms.valorIcms = response.valoresICMS.vICMS;
@@ -354,13 +362,29 @@ const calcularImpostos = async () => {
                 itemEmManutencao.value.tributacaoIcms.valorCredIcmsSN = response.valoresICMS.vCredICMSSN;
             }
             if (response.valoresIPI) {
-                
-            }
-            if (response.valoresPIS) {
-                
+                itemEmManutencao.value.ipi.tipoCalculo = response.valoresIPI.tipoCalculo;
+                itemEmManutencao.value.ipi.bcIpi = response.valoresIPI.vbc;
+                itemEmManutencao.value.ipi.quantidade = response.valoresIPI.qunid;
+                itemEmManutencao.value.ipi.valorUnidade = response.valoresIPI.vunid;
+                itemEmManutencao.value.ipi.valorIpi = response.valoresIPI.vipi;
             }
             if (response.valoresCOFINS) {
-                
+                itemEmManutencao.value.pis.tipoCalculo = response.valoresPIS.tipoCalculo;
+                itemEmManutencao.value.pis.bcPis = response.valoresPIS.vbc;
+                itemEmManutencao.value.pis.quantidadeVendida = response.valoresPIS.qbcprod;
+                itemEmManutencao.value.pis.valorUnidade = response.valoresPIS.valiqProd;
+                itemEmManutencao.value.pis.valorUnidadeST = response.valoresPIS.valiqProdST;
+                itemEmManutencao.value.pis.valorPis = response.valoresPIS.vpis;
+                itemEmManutencao.value.pis.valorPisST = response.valoresPIS.vpisst;
+            }
+            if (response.valoresCOFINS) {
+                itemEmManutencao.value.cofins.tipoCalculo = response.valoresCOFINS.tipoCalculo;
+                itemEmManutencao.value.cofins.bcCofins = response.valoresCOFINS.vbc;
+                itemEmManutencao.value.cofins.quantidadeVendida = response.valoresCOFINS.qbcprod;
+                itemEmManutencao.value.cofins.valorUnidade = response.valoresCOFINS.valiqProd;
+                itemEmManutencao.value.cofins.valorUnidadeST = response.valoresCOFINS.valiqProdST;
+                itemEmManutencao.value.cofins.valorCofins = response.valoresCOFINS.vcofins;
+                itemEmManutencao.value.cofins.valorCofinsST = response.valoresCOFINS.vcofinsst;
             }
 
         }).catch(() => {

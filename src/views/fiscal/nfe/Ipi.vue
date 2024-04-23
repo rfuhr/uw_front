@@ -22,19 +22,20 @@ const itemModelValue = computed({
 const selos = ref();
 
 const mostrarValores = () => {
+    console.log('Mostra Valores: ', itemModelValue.value)
     if (
         itemModelValue.value.ipi.configuracaoFiscalIpi.situacaoTributariaCodigo === 0 ||
         itemModelValue.value.ipi.configuracaoFiscalIpi.situacaoTributariaCodigo === 49 ||
         itemModelValue.value.ipi.configuracaoFiscalIpi.situacaoTributariaCodigo === 50 ||
         itemModelValue.value.ipi.configuracaoFiscalIpi.situacaoTributariaCodigo === 99
     ) {
+        return true;
+    } else {
         itemModelValue.value.ipi.bcIpi = 0;
         itemModelValue.value.ipi.valorIpi = 0;
         itemModelValue.value.ipi.quantidade = 0;
         itemModelValue.value.ipi.valorUnidadeTributavel = 0;
         return false;
-    } else {
-        return true;
     }
 };
 onMounted(async () => {
@@ -57,8 +58,7 @@ onMounted(async () => {
                                 <UWPickList
                                     id="selocontrole"
                                     label="Selo de Controle"
-                                    disabled
-                                    v-model="itemModelValue.ipi.configuracaoFiscalIpi.codigoSelo"
+                                    v-model="itemModelValue.ipi.codigoSelo"
                                     optionLabel="name"
                                     optionValue="value"
                                     required
@@ -86,7 +86,7 @@ onMounted(async () => {
                                     </template>
                                     <template v-if="itemModelValue.ipi.configuracaoFiscalIpi.tipoCalculo === 'V'">
                                         <UWDecimal id="qUnid" label="Quantidade na Unidade Tributável" disabled v-model="itemModelValue.ipi.quantidade" classContainer="col-12 md:col-2" />
-                                        <UWCurrency id="vUnid" label="Valor por Unidade Tributável" disabled v-model="itemModelValue.ipi.quantidade" classContainer="col-12 md:col-2" />
+                                        <UWCurrency id="vUnid" label="Valor por Unidade Tributável" disabled v-model="itemModelValue.ipi.valorUnidade" classContainer="col-12 md:col-2" />
                                     </template>
                                     <UWCurrency id="valorIpi" label="Valor do IPI" disabled v-model="itemModelValue.ipi.valorIpi" classContainer="col-12 md:col-2" />
                                 </template>

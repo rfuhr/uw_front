@@ -39,16 +39,14 @@ const changeSituacaoTributaria = (event) => {
         localModelValue.value.enquadramentoCodigo = undefined;
         localModelValue.value.tipoCalculo = undefined;
         localModelValue.value.aliquota = undefined;
-        localModelValue.value.codigoSelo = undefined;
-        localModelValue.value.quantidadeSelo = undefined;
     }
 };
 
 const changeTipoCalculo = (event) => {
     if (event) {
-        if (event.value == 'Q') {
+        if (event.value == 'V') {
             localModelValue.value.aliquota = undefined;
-        } else if (event.value == 'A') {
+        } else if (event.value == 'P') {
             localModelValue.value.valorUnidade = undefined;
         }
     } else {
@@ -127,10 +125,8 @@ onMounted(async () => {
                         </template>
             </UWSeletor>
             <UWPickList id="tipoCalculo" label="Tipo de Cálculo" @changeObject="changeTipoCalculo" v-model="localModelValue.tipoCalculo" optionLabel="name" optionValue="value" :options="tiposCalculo" classContainer="col-12 md:col-2" />        
-            <UWDecimal id="aliquota" label="Aliquota" :disabled="localModelValue.tipoCalculo === 'Q'" maximoDigitos="3" v-model="localModelValue.aliquota" classContainer="col-12 md:col-3" />
-            <UWDecimal id="valorUnidade" label="Valor Unidade" :disabled="localModelValue.tipoCalculo === 'A'" maximoDigitos="5" v-model="localModelValue.valorUnidade" classContainer="col-12 md:col-3" />               
-            <UWInput id="codigoSelo" label="Código do Selo" uppercase v-model="localModelValue.codigoSelo" classContainer="col-12 md:col-2" />
-            <UWInteger id="quantidadeSelo" label="Quantidade Selo" maximoDigitos="3" v-model="localModelValue.quantidadeSelo" classContainer="col-12 md:col-2" />               
+            <UWDecimal id="aliquota" label="Aliquota" :disabled="localModelValue.tipoCalculo === 'V'" maximoDigitos="3" v-model="localModelValue.aliquota" classContainer="col-12 md:col-3" />
+            <UWDecimal id="valorUnidade" label="Valor Unidade" :disabled="localModelValue.tipoCalculo === 'P'" maximoDigitos="5" v-model="localModelValue.valorUnidade" classContainer="col-12 md:col-3" />               
         </div>
     </UWFieldSet>
 </template>

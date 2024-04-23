@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import * as yup from 'yup';
 import _ from 'lodash';
 import { useContexto } from '@/stores';
-import { DepartamentoService, OperacaoInternaService, TiposService, RegimeTributarioService, ConfigEmpresaService } from '@/service';
+import { DepartamentoService, OperacaoInternaService, TiposService, RegimeTributarioService, ConfigEmpresaService, ParceiroLocalService } from '@/service';
 import UWSeletorCfopByOpInt from '@/components/seletores/UWSeletorCfopByOpInt.vue';
 import DocumentosReferenciados from './DocumentosReferenciados.vue';
 import AutorizacaoObterXML from './AutorizacaoObterXML.vue';
@@ -138,8 +138,20 @@ const changeOutroLocalRetirada = () => {
     localModelValue.value.localRetirada.tipoPessoa = 'J';
 };
 
-const changeDepartamento = (value) => {
-    localModelValue.value.departamento = value;
+const changeDepartamento = async (value) => {
+    if (value) {
+        localModelValue.value.departamento = value;
+        await ParceiroLocalService.getEnderecoNFe(value.parceiroLocalFilialId).then((response) => {
+            localModelValue.value.enderecoEmitente = response;
+        }).catch(() => {
+            localModelValue.value.enderecoEmitente = null;
+        });
+    } else {
+        
+        localModelValue.value.departamento = null;
+        localModelValue.value.enderecoEmititente = null;
+    }
+    
 }
 const validateForm = () => {
     if (formIdentificacaoNFe.value) {

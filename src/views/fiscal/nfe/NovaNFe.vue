@@ -30,12 +30,14 @@ const formData = reactive({
         localRetirada: {},
         autorizarObterXml: false,
         autorizacoes: [],
-        departamento: {}
+        departamento: {},
+        enderecoEmitente: {}
     },
     destinatario: {
         outroLocalEntrega: false,
         localEntrega: {},
-        dadosParceiroLocal: {}
+        dadosParceiroLocal: {},
+        endereco: {}
     },
     itensNFe: {
         itens: []
@@ -155,10 +157,13 @@ const dadosAuxiliaresItem = computed(() => {
     return {
         emitenteId: formData.identificacaoNFe.emitenteId, 
         parceiroLocalEnderecoIdDestino: formData.destinatario.enderecoId,
-        indicadorOperacaoValue: formData.identificacaoNFe.indicadorOperacao,
+        indicadorOperacao: formData.identificacaoNFe.indicadorOperacao,
         cfopId: formData.identificacaoNFe.cfopId,
         operacaoInternaId: formData.identificacaoNFe.operacaoInternaId,
         dataHoraEmissao: formData.identificacaoNFe.dataHoraEmissao,
+        regimeTributarioId: formData.identificacaoNFe.regimeTributarioId,
+        ufOrigemId: formData.identificacaoNFe.enderecoEmitente.ufId,
+        ufDestinoId: formData.destinatario.endereco.ufId
     };
 });
 

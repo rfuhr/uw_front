@@ -47,8 +47,10 @@ const localModelValue = computed({
     get: () => props.modelValue,
     set: (value) => {
         if (!value) value = 0;
-        emit('update:modelValue', value);
-        emit('onChange')
+        if (value * 1 !== props.modelValue * 1) {
+            emit('update:modelValue', value);
+            emit('onChange')
+        }
     }
 });
 </script>

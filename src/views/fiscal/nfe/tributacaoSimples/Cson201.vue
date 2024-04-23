@@ -42,7 +42,7 @@ onMounted(() => {
                                     <b>Crédito Simples Nacional</b>
                                 </Divider>
                                 <UWCurrency id="aliqCredSN" label="Alíquota aplicável de cálculo do crédito" disabled v-model="itemModelValue.configuracaoFiscalIcms.aliquotaCredito" classContainer="col-12 md:col-offset-3 md:col-3" />
-                                <UWCurrency id="valorCredSN" label="Valor Crédito do ICMS" disabled v-model="itemModelValue.tributacaoIcms.valorCredSN" classContainer="col-12 md:col-3" />
+                                <UWCurrency id="valorCredSN" label="Valor Crédito do ICMS" disabled v-model="itemModelValue.tributacaoIcms.valorCredIcmsSN" classContainer="col-12 md:col-3" />
                             </div>
                         </div>
                         <div class="col-12">

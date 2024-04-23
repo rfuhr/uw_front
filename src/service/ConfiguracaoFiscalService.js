@@ -3,18 +3,31 @@ import api from './api';
 
 class ConfiguracaoFiscalService extends CrudService {
 
-    getConfiguracaoFiscal(departamentoId, parceiroLocalEnderecoIdDestino, indicadorOperacao, cfopId, itemId, operacaoInternaId, dataBase) {
+    getConfiguracaoFiscal(departamentoId, parceiroLocalEnderecoIdDestino, indicadorOperacaoValue, cfopId, itemId, operacaoInternaId, dataBase,
+        regimeTributarioId, classificacaoOperacaoId, origemId, ufOrigemId, ufDestinoId) {
+
         const payload = {
             departamentoId,
             parceiroLocalEnderecoIdDestino,
-            indicadorOperacao,
+            indicadorOperacaoValue,
             cfopId,
             itemId,
             operacaoInternaId,
-            dataBase
+            dataBase,
+            regimeTributarioId, 
+            classificacaoOperacaoId,
+            origemId, 
+            ufOrigemId, 
+            ufDestinoId
         };
 
         return api.post(`/${this.pathService}/services/tributacao`, JSON.stringify(payload));
+    }
+
+    calcularImposto(payload) {
+
+        return api.post(`/${this.pathService}/services/calculo`, JSON.stringify(payload));
+    
     }
 }
 

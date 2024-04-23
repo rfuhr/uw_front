@@ -1,11 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import * as yup from 'yup';
-import { ParceiroLocalService } from '@/service';
+import { TiposService, ParceiroLocalService } from '@/service';
 import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 import LocalEntrega from './LocalEntrega.vue';
 import { useValidationsSchemaNFe } from './useValidationsSchemaNFe';
-import { TiposService } from '@/service';
 
 const { formatDocumento } = useFormatDocumentos();
 
@@ -56,22 +55,30 @@ const getTelefoneFormatado = (objetoTelefone) => {
     return formattedTelefone;
 };
 
-const changeParceiroLocal = (object) => {
+const changeParceiroLocal = async (object) => {
     if (!object) {
         dadosParceiroLocal.value = {};
         localModelValue.value.dadosParceiroLocal = {}
         return;
     }
 
-    ParceiroLocalService.getById(object.id).then((data) => {
+    ParceiroLocalService.getById(object.id).then(async (data) => {
         dadosParceiroLocal.value = data;
         dadosParceiroLocal.value.tipoPessoa = dadosParceiroLocal.value.cpfCnpj.length === 14 ? 'J' : 'F';
         dadosParceiroLocal.value.cpfCnpj = formatDocumento(dadosParceiroLocal.value.cpfCnpj);
-        if (dadosParceiroLocal.value.enderecos) {
-            dadosParceiroLocal.value.enderecoCompleto = getEnderecoCompleto(dadosParceiroLocal.value.enderecos[0]);
-            dadosParceiroLocal.value.enderecoId = dadosParceiroLocal.value.enderecos[0].id;
-            localModelValue.value.enderecoId = dadosParceiroLocal.value.enderecos[0].id;
-        }
+
+        await ParceiroLocalService.getEnderecoNFe(data.id).then((response) => {
+            dadosParceiroLocal.value.enderecoCompleto = getEnderecoCompleto(response);
+            dadosParceiroLocal.value.endereco = response
+            localModelValue.value.enderecoId = response.id,
+            localModelValue.value.endereco = response;
+        }).catch(() => {
+            dadosParceiroLocal.value.enderecoCompleto = null
+            dadosParceiroLocal.value.endereco = null
+            localModelValue.value.enderecoId = null    
+            localModelValue.value.endereco = null;        
+        });
+
         if (dadosParceiroLocal.value.telefones) {
             dadosParceiroLocal.value.telefone = dadosParceiroLocal.value.telefones[0];
             dadosParceiroLocal.value.telefoneFormatado = getTelefoneFormatado(dadosParceiroLocal.value.telefones[0]);

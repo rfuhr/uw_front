@@ -4,7 +4,8 @@ import { useRoute, useRouter } from 'vue-router';
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import Swal from 'sweetalert2';
-import { ItemService, UnidadeMedidaService, MarcaService, LinhaService, PlanoClassificacaoItemService, OrigemService, NcmService, GrupoTributacaoService } from '@/service';
+import { ItemService, UnidadeMedidaService, MarcaService, LinhaService, PlanoClassificacaoItemService, OrigemService, NcmService, GrupoTributacaoService,
+ClassificacaoOperacaoService } from '@/service';
 import { useFormatString } from '@/composables/useFormatString';
 
 const route = useRoute();
@@ -33,6 +34,7 @@ const createSchema = () => {
             ? yup.number().required('Quantidade Alerta é obrigatória.').min(formData.quantidadeMinimaEstoque, 'Quantidade deve ser maior que a quantidade mínima').max(formData.quantidadeMaximaEstoque, 'Quantidade deve ser menor que a quantidade máxima')
             : yup.number().notRequired(),
         origemId: yup.number().required('Origem é obrigatória.'),
+        classificacaoOperacaoId: yup.number().required('Classificação Fiscal é obrigatória.'),
         ncmId: yup.number().required('NCM é obrigatório.'),
         unidadeMedidaTributavelId: yup.number().required('Unidade Medida Tributável é obrigatória.')
     });
@@ -367,7 +369,7 @@ const labelNcmSelector = computed(() => {
                     <TabPanel header="Fiscal" class="col-12">
                         <div class="p-fluid formgrid grid">
                             <UWSeletor
-                                classContainer="col-12 md:col-12"
+                                classContainer="col-12 md:col-6"
                                 v-model="formData.origemId"
                                 optionLabel="nome"
                                 optionValue="id"
@@ -376,6 +378,17 @@ const labelNcmSelector = computed(() => {
                                 :service="OrigemService"
                                 placeholder="Selecione a origem"
                                 :erros="errors?.value?.origemId"
+                            />
+                            <UWSeletor
+                                classContainer="col-12 md:col-6"
+                                v-model="formData.classificacaoOperacaoId"
+                                optionLabel="nome"
+                                optionValue="id"
+                                required
+                                label="Classificação Fiscal"
+                                :service="ClassificacaoOperacaoService"
+                                placeholder="Selecione a classificação fiscal"
+                                :erros="errors?.value?.classificacaoOperacaoId"
                             />
                             <UWSeletor
                                 id="seletorNcm" 

@@ -207,15 +207,23 @@ const temErro = (errors, str) => {
 
 const getConfiguracaoFiscal = async () => {
     try {
-        itemEmManutencao.value.configuracaoFiscal = await ConfiguracaoFiscalService.getConfiguracaoFiscal(
-            props.dadosAuxiliares.emitenteId,
-            props.dadosAuxiliares.parceiroLocalEnderecoIdDestino,
-            props.dadosAuxiliares.indicadorOperacao,
-            itemEmManutencao.value.detalhamentoItem.cfopId,
-            itemEmManutencao.value.detalhamentoItem.itemId,
-            props.dadosAuxiliares.operacaoInternaId,
-            props.dadosAuxiliares.dataHoraEmissao
-        );
+        itemEmManutencao.value.configuracaoFiscal = null;
+        if (itemEmManutencao.value.detalhamentoItem && itemEmManutencao.value.detalhamentoItem.itemId && itemEmManutencao.value.detalhamentoItem.itemId > 0) {
+            itemEmManutencao.value.configuracaoFiscal = await ConfiguracaoFiscalService.getConfiguracaoFiscal(
+                props.dadosAuxiliares.emitenteId,
+                props.dadosAuxiliares.parceiroLocalEnderecoIdDestino,
+                props.dadosAuxiliares.indicadorOperacao,
+                itemEmManutencao.value.detalhamentoItem.cfopId,
+                itemEmManutencao.value.detalhamentoItem.itemId,
+                props.dadosAuxiliares.operacaoInternaId,
+                props.dadosAuxiliares.dataHoraEmissao,
+                props.dadosAuxiliares.regimeTributarioId,
+                itemEmManutencao.value.detalhamentoItem.item.classificacaoOperacaoId,
+                itemEmManutencao.value.detalhamentoItem.item.origemId,
+                props.dadosAuxiliares.ufOrigemId,
+                props.dadosAuxiliares.ufDestinoId
+            );
+        }
         if (!itemEmManutencao.value.configuracaoFiscal) {
             itemEmManutencao.value.configuracaoFiscal = {
                 temIcms: false,
@@ -256,22 +264,37 @@ const changeItem = async (object) => {
     if (object) {
         itemEmManutencao.value.detalhamentoItem.item = object;
         itemEmManutencao.value.tributacaoIcms = {};
-        await getConfiguracaoFiscal();
+        itemEmManutencao.value.ipi = {};
+        itemEmManutencao.value.ii = {};
+        itemEmManutencao.value.pis = {};
+        itemEmManutencao.value.pisSt = {};
+        itemEmManutencao.value.cofins = {};
+        itemEmManutencao.value.cofinsSt = {};
+
+        await getConfiguracaoFiscal().then(() => {
+            calcularImpostos();
+        })
     } else {
         itemEmManutencao.value.detalhamentoItem.item = {};
         itemEmManutencao.value.tributacaoIcms = {};
+        itemEmManutencao.value.ipi = {};
+        itemEmManutencao.value.ii = {};
+        itemEmManutencao.value.pis = {};
+        itemEmManutencao.value.pisSt = {};
+        itemEmManutencao.value.cofins = {};
+        itemEmManutencao.value.cofinsSt = {};
         itemEmManutencao.value.configuracaoFiscal = {
-                temIcms: false,
-                temPartilhaIcms: false,
-                temRepasseIcms: false,
-                temIcmsParaUfDestino: false,
-                temIpi: false,
-                temII: false,
-                temPis: false,
-                temPisSt: false,
-                temCofins: false,
-                temCofinsSt: false
-            };
+            temIcms: false,
+            temPartilhaIcms: false,
+            temRepasseIcms: false,
+            temIcmsParaUfDestino: false,
+            temIpi: false,
+            temII: false,
+            temPis: false,
+            temPisSt: false,
+            temCofins: false,
+            temCofinsSt: false
+        };
     }
 };
 
@@ -279,43 +302,124 @@ const changeCfop = async (object) => {
     if (object) {
         itemEmManutencao.value.detalhamentoItem.cfop = object;
         itemEmManutencao.value.tributacaoIcms = {};
-        await getConfiguracaoFiscal();
+        await getConfiguracaoFiscal().then(() => {
+            calcularImpostos();
+        });
     } else {
         itemEmManutencao.value.detalhamentoItem.cfop = {};
         itemEmManutencao.value.tributacaoIcms = {};
         itemEmManutencao.value.configuracaoFiscal = {
-                temIcms: false,
-                temPartilhaIcms: false,
-                temRepasseIcms: false,
-                temIcmsParaUfDestino: false,
-                temIpi: false,
-                temII: false,
-                temPis: false,
-                temPisSt: false,
-                temCofins: false,
-                temCofinsSt: false
-            };
+            temIcms: false,
+            temPartilhaIcms: false,
+            temRepasseIcms: false,
+            temIcmsParaUfDestino: false,
+            temIpi: false,
+            temII: false,
+            temPis: false,
+            temPisSt: false,
+            temCofins: false,
+            temCofinsSt: false
+        };
     }
 };
 
-const changeQuantidade = () => {
-    changePercentualDesconto();
-};
+const calcularImpostos = async () => {
+    if (itemEmManutencao.value.configuracaoFiscal) {
+        const calculoImpostoRequest = {
+            itemId: itemEmManutencao.value.detalhamentoItem.item.id,
+            unidadeMedidaId: itemEmManutencao.value.detalhamentoItem.item.unidadeMedidaComercialId, 
+            quantidade: itemEmManutencao.value.detalhamentoItem.quantidade, 
+            valorUnitario: itemEmManutencao.value.detalhamentoItem.valorUnitario,
+            valorDesconto: itemEmManutencao.value.detalhamentoItem.valorDesconto,
+            valorSeguro: itemEmManutencao.value.detalhamentoItem.valorSeguro,
+            valorFrete: itemEmManutencao.value.detalhamentoItem.valorFrete,
+            valorOutros: itemEmManutencao.value.detalhamentoItem.valorOutrasDespesas,
+            configuracaoFiscalIcmsId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms.id : null,
+            configuracaoFiscalIpiId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi.id : null ,
+            configuracaoFiscalPisId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis.id : null,
+            configuracaoFiscalCofinsId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins.id : null
+        }
+        await ConfiguracaoFiscalService.calcularImposto(calculoImpostoRequest).then((response) => {
+            if (response.valoresICMS) {
+                itemEmManutencao.value.tributacaoIcms.valorBCIcms = response.valoresICMS.vBC;
+                itemEmManutencao.value.tributacaoIcms.valorIcms = response.valoresICMS.vICMS;
+                itemEmManutencao.value.tributacaoIcms.valorBCIcmsST = response.valoresICMS.vBCST;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsST = response.valoresICMS.vICMSST;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsDesoneracao = response.valoresICMS.vICMS_Desonerado;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsOperacao = response.valoresICMS.vICMSOp;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsDiferido = response.valoresICMS.vICMSDif;
+                itemEmManutencao.value.tributacaoIcms.valorBCIcmsRetido = response.valoresICMS.vBCSTRet;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsProprioSubst = response.valoresICMS.vICMSSTRet;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsRetido = response.valoresICMS.vICMSRet;
+                itemEmManutencao.value.tributacaoIcms.valorCredIcmsSN = response.valoresICMS.vCredICMSSN;
+            }
+            if (response.valoresIPI) {
+                
+            }
+            if (response.valoresPIS) {
+                
+            }
+            if (response.valoresCOFINS) {
+                
+            }
 
-const changePercentualDesconto = () => {
-    itemEmManutencao.value.detalhamentoItem.valorDesconto = ((subTotal.value * itemEmManutencao.value.detalhamentoItem.percentualDesconto) / 100) || 0;
-};
-
-const changeValorDesconto = () => {
-    itemEmManutencao.value.detalhamentoItem.percentualDesconto = ((itemEmManutencao.value.detalhamentoItem.valorDesconto * 100) / subTotal.value) || 0;
-};
-
-const changeValorUnitario = () => {
-    changePercentualDesconto();
+        }).catch(() => {
+            
+        });
+    }
 }
+
+
+const changeQuantidade = async (calcularImposto) => {
+    await changePercentualDesconto(false);
+    if (calcularImposto) {
+        calcularImpostos();
+    }
+};
+
+const changePercentualDesconto = (calcularImposto) => {
+    itemEmManutencao.value.detalhamentoItem.valorDesconto = (subTotal.value * itemEmManutencao.value.detalhamentoItem.percentualDesconto) / 100 || 0;
+    if (calcularImposto) {
+    calcularImpostos();
+    }
+};
+
+const changeValorDesconto = (calcularImposto) => {
+    itemEmManutencao.value.detalhamentoItem.percentualDesconto = (itemEmManutencao.value.detalhamentoItem.valorDesconto * 100) / subTotal.value || 0;
+    if (calcularImposto) {
+        calcularImpostos();
+    }
+};
+
+const changeValorUnitario = async (calcularImposto) => {
+    await changePercentualDesconto(false);
+    if (calcularImposto) {
+        calcularImpostos();
+    }
+};
+
+const changeValorFrete = (calcularImposto) => {
+    if (calcularImposto) {
+        calcularImpostos();
+    }
+};
+
+const changeValorSeguro = (calcularImposto) => {
+    if (calcularImposto) {
+        calcularImpostos();
+    }
+};
+
+const changeValorOutrasDespesas = (calcularImposto) => {
+    if (calcularImposto) {
+        calcularImpostos();
+    }
+};
+
+
 const showDialog = () => {
-    seletorCfop.value.reload(itemEmManutencao.value.detalhamentoItem.cfopId)
-}
+    seletorCfop.value.reload(itemEmManutencao.value.detalhamentoItem.cfopId);
+};
 </script>
 
 <template>
@@ -356,40 +460,40 @@ const showDialog = () => {
                                 </Column>
                                 <Column field="detalhamentoItem.item.codigo" header="Código" style="width: 5%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="detalhamentoItem.item.nome" header="Nome" style="width: 30%; text-align: left" headerClass="columnHeaderItem"> </Column>
-                                <Column field="detalhamentoItem.cfop.codigo" header="Cfop" style="width: 3%" headerClass="columnHeaderItem"> 
+                                <Column field="detalhamentoItem.cfop.codigo" header="Cfop" style="width: 3%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.cfop?.codigo }}</div>
-                                    </template>template>
+                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.cfop?.codigo }}</div> </template
+                                    >template>
                                 </Column>
-                                <Column field="detalhamentoItem.item.unidadeMedidaComercialNome" header="U.M." style="width: 3%" headerClass="columnHeaderItem"> 
+                                <Column field="detalhamentoItem.item.unidadeMedidaComercialNome" header="U.M." style="width: 3%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.item.unidadeMedidaComercialNome }}</div>
-                                    </template>template>                                
+                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.item.unidadeMedidaComercialNome }}</div> </template
+                                    >template>
                                 </Column>
-                                <Column field="detalhamentoItem.quantidade" header="Qtde" style="width: 4%" headerClass="columnHeaderItem"> 
+                                <Column field="detalhamentoItem.quantidade" header="Qtde" style="width: 4%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.quantidade, 0)}}</div>
-                                    </template>template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.quantidade, 0) }}</div> </template
+                                    >template>
                                 </Column>
-                                <Column field="detalhamentoItem.valorUnitario" header="Valor Unitário" style="width: 5%" headerClass="columnHeaderItem"> 
+                                <Column field="detalhamentoItem.valorUnitario" header="Valor Unitário" style="width: 5%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorUnitario, 2)}}</div>
-                                    </template>template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorUnitario, 2) }}</div> </template
+                                    >template>
                                 </Column>
-                                <Column field="detalhamentoItem.percentualDesconto" header="% Desc." style="width: 3%" headerClass="columnHeaderItem"> 
+                                <Column field="detalhamentoItem.percentualDesconto" header="% Desc." style="width: 3%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.percentualDesconto, 2)}}</div>
-                                    </template>template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.percentualDesconto, 2) }}</div> </template
+                                    >template>
                                 </Column>
-                                <Column field="detalhamentoItem.valorDesconto" header="Valor Desc." style="width: 4%" headerClass="columnHeaderItem"> 
+                                <Column field="detalhamentoItem.valorDesconto" header="Valor Desc." style="width: 4%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorDesconto, 2)}}</div>
-                                    </template>template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorDesconto, 2) }}</div> </template
+                                    >template>
                                 </Column>
-                                <Column field="detalhamentoItem.valorTotal" header="Valor Total" style="width: 7%" headerClass="columnHeaderItem"> 
+                                <Column field="detalhamentoItem.valorTotal" header="Valor Total" style="width: 7%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{formatNumber(slotProps.data.detalhamentoItem.valorTotal, 2)}}</div>
-                                    </template>template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorTotal, 2) }}</div> </template
+                                    >template>
                                 </Column>
                                 <Column header="" style="width: 6%">
                                     <template #body="slotProps">
@@ -406,8 +510,7 @@ const showDialog = () => {
                     </div>
                 </div>
 
-                <Dialog v-model:visible="visibleDialog" :style="{ width: '90%' }" header="Detalhamento do Item" :modal="true" :closable="false"
-                @show="showDialog()">
+                <Dialog v-model:visible="visibleDialog" :style="{ width: '90%' }" header="Detalhamento do Item" :modal="true" :closable="false" @show="showDialog()">
                     <Divider class="m-0" />
                     <div class="col-12 pb-0 mb-0">
                         <div class="grid nested-grid">
@@ -443,23 +546,21 @@ const showDialog = () => {
                                             <UWFieldSet title="Quantidade e Valores do Item" class="h-full surface-200">
                                                 <div class="flex gap-0 flex-row justify-content-center align-content-end p-fluid formgrid grid">
                                                     <UWInput id="unidadeMedidaComercial" v-model="itemEmManutencao.detalhamentoItem.item.unidadeMedidaComercialNome" label="Unidade de Medida" uppercase disabled classContainer="col-12 md:col-2" />
-                                                    <UWDecimal id="quantidade" label="Quantidade" v-model="itemEmManutencao.detalhamentoItem.quantidade" :maximoDigitos="5" classContainer="col-12 md:col-2" 
-                                                    @onChange="changeQuantidade"/>
-                                                    <UWCurrency id="valorUnitario" label="Valor Unitário" v-model="itemEmManutencao.detalhamentoItem.valorUnitario" classContainer="col-12 md:col-2" 
-                                                    @onChange="changeValorUnitario"/>
+                                                    <UWDecimal id="quantidade" label="Quantidade" v-model="itemEmManutencao.detalhamentoItem.quantidade" :maximoDigitos="5" classContainer="col-12 md:col-2" @onChange="changeQuantidade(true)" />
+                                                    <UWCurrency id="valorUnitario" label="Valor Unitário" v-model="itemEmManutencao.detalhamentoItem.valorUnitario" classContainer="col-12 md:col-2" @onChange="changeValorUnitario(true)" />
                                                     <UWCurrency id="valorTotalBrutoItem" label="Valor Total Bruto" v-model="subTotal" disabled classContainer="col-12 md:col-2" />
                                                     <UWDecimal
                                                         id="percentualDesconto"
                                                         v-model="itemEmManutencao.detalhamentoItem.percentualDesconto"
                                                         label="% Desc."
                                                         :maximoDigitos="2"
-                                                        @onChange="changePercentualDesconto()"
+                                                        @onChange="changePercentualDesconto(true)"
                                                         classContainer="col-12 md:col-2"
                                                     />
-                                                    <UWCurrency id="valorDesconto" v-model="itemEmManutencao.detalhamentoItem.valorDesconto" label="Valor Desc." classContainer="col-12 md:col-2" @onChange="changeValorDesconto()" />
-                                                    <UWCurrency id="valorFrete" label="Valor Frete" v-model="itemEmManutencao.detalhamentoItem.valorFrete" classContainer="col-12 md:col-2" />
-                                                    <UWCurrency id="valorSeguro" label="Valor Seguro" v-model="itemEmManutencao.detalhamentoItem.valorSeguro" classContainer="col-12 md:col-2" />
-                                                    <UWCurrency id="valorOutrasDespesas" label="Outras Desp." v-model="itemEmManutencao.detalhamentoItem.valorOutrasDespesas" classContainer="col-12 md:col-2" />
+                                                    <UWCurrency id="valorDesconto" v-model="itemEmManutencao.detalhamentoItem.valorDesconto" label="Valor Desc." classContainer="col-12 md:col-2" @onChange="changeValorDesconto(true)" />
+                                                    <UWCurrency id="valorFrete" label="Valor Frete" v-model="itemEmManutencao.detalhamentoItem.valorFrete" classContainer="col-12 md:col-2" @onChange="changeValorFrete(true)"/>
+                                                    <UWCurrency id="valorSeguro" label="Valor Seguro" v-model="itemEmManutencao.detalhamentoItem.valorSeguro" classContainer="col-12 md:col-2" @onChange="changeValorSeguro(true)"/>
+                                                    <UWCurrency id="valorOutrasDespesas" label="Outras Desp." v-model="itemEmManutencao.detalhamentoItem.valorOutrasDespesas" classContainer="col-12 md:col-2" @onChange="changeValorOutrasDespesas(true)"/>
                                                     <UWCurrency id="valorTotalBrutoItem" label="Valor Total" v-model="valorTotal" disabled classContainer="col-12 md:col-2" />
                                                 </div>
                                             </UWFieldSet>
@@ -468,65 +569,65 @@ const showDialog = () => {
                                     </UWFieldSet>
                                 </div>
                                 <!-- <Accordion v-if="temTributacao()" :activeIndex="0" expandIcon="pi pi-plus" collapseIcon="pi pi-minus" class="col-12"> -->
-                                    <!-- <AccordionTab> -->
-                                        <!-- <template #header> -->
-                                            <!-- <span class="flex align-items-center gap-2 w-full"> -->
-                                                <!-- <i class="pi pi-percentage" style="font-size: 1rem"></i> -->
-                                                <!-- <span class="font-bold white-space-nowrap">Tributações</span> -->
-                                                <!-- <Badge value="3" class="ml-auto mr-2" /> -->
-                                            <!-- </span> -->
-                                        <!-- </template> -->
-                                        <TabView class="col-12">
-                                            <TabPanel header="ICMS" v-if="itemEmManutencao.configuracaoFiscal.temIcms">
-                                                <Icms00 v-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 0" v-model="itemEmManutencao" />
-                                                <Icms10 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 10" v-model="itemEmManutencao" />
-                                                <Icms20 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 20" v-model="itemEmManutencao" />
-                                                <Icms30 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 30" v-model="itemEmManutencao" />
-                                                <Icms40 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 40" v-model="itemEmManutencao" />
-                                                <Icms41 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 41" v-model="itemEmManutencao" />
-                                                <Icms50 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 50" v-model="itemEmManutencao" />
-                                                <Icms51 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 51" v-model="itemEmManutencao" />
-                                                <Icms60 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 60" v-model="itemEmManutencao" />
-                                                <Icms70 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 70" v-model="itemEmManutencao" />
-                                                <Icms90 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 90" v-model="itemEmManutencao" />
+                                <!-- <AccordionTab> -->
+                                <!-- <template #header> -->
+                                <!-- <span class="flex align-items-center gap-2 w-full"> -->
+                                <!-- <i class="pi pi-percentage" style="font-size: 1rem"></i> -->
+                                <!-- <span class="font-bold white-space-nowrap">Tributações</span> -->
+                                <!-- <Badge value="3" class="ml-auto mr-2" /> -->
+                                <!-- </span> -->
+                                <!-- </template> -->
+                                <TabView v-if="itemEmManutencao.configuracaoFiscal" class="col-12">
+                                    <TabPanel header="ICMS" v-if="itemEmManutencao.configuracaoFiscal.temIcms">
+                                        <Icms00 v-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 0" v-model="itemEmManutencao" />
+                                        <Icms10 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 10" v-model="itemEmManutencao" />
+                                        <Icms20 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 20" v-model="itemEmManutencao" />
+                                        <Icms30 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 30" v-model="itemEmManutencao" />
+                                        <Icms40 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 40" v-model="itemEmManutencao" />
+                                        <Icms41 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 41" v-model="itemEmManutencao" />
+                                        <Icms50 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 50" v-model="itemEmManutencao" />
+                                        <Icms51 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 51" v-model="itemEmManutencao" />
+                                        <Icms60 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 60" v-model="itemEmManutencao" />
+                                        <Icms70 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 70" v-model="itemEmManutencao" />
+                                        <Icms90 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 90" v-model="itemEmManutencao" />
 
-                                                <Cson101 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 101" v-model="itemEmManutencao" />
-                                                <Cson102 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 102" v-model="itemEmManutencao" />
-                                                <Cson103 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 103" v-model="itemEmManutencao" />
-                                                <Cson201 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 201" v-model="itemEmManutencao" />
-                                                <Cson202 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 202" v-model="itemEmManutencao" />
-                                                <Cson203 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 203" v-model="itemEmManutencao" />
-                                                <Cson300 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 300" v-model="itemEmManutencao" />
-                                                <Cson400 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 400" v-model="itemEmManutencao" />
-                                                <Cson500 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 500" v-model="itemEmManutencao" />
-                                                <Cson900 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 900" v-model="itemEmManutencao" />
-                                            </TabPanel>
-                                            <!-- <TabPanel header="Partilha de Icms" v-if="configuracaoFiscal.temPartilhaIcms">
+                                        <Cson101 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 101" v-model="itemEmManutencao" />
+                                        <Cson102 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 102" v-model="itemEmManutencao" />
+                                        <Cson103 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 103" v-model="itemEmManutencao" />
+                                        <Cson201 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 201" v-model="itemEmManutencao" />
+                                        <Cson202 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 202" v-model="itemEmManutencao" />
+                                        <Cson203 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 203" v-model="itemEmManutencao" />
+                                        <Cson300 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 300" v-model="itemEmManutencao" />
+                                        <Cson400 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 400" v-model="itemEmManutencao" />
+                                        <Cson500 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 500" v-model="itemEmManutencao" />
+                                        <Cson900 v-else-if="itemEmManutencao.tributacaoIcms.configuracaoFiscalIcms.situacaoTributariaCodigo === 900" v-model="itemEmManutencao" />
+                                    </TabPanel>
+                                    <!-- <TabPanel header="Partilha de Icms" v-if="configuracaoFiscal.temPartilhaIcms">
                                                 <PartilhaIcms v-if="itemEmManutencao.tributacaoIcms.grupoTributacao === 'Partilha'" v-model="itemEmManutencao" />
                                             </TabPanel> -->
-                                            <!-- <TabPanel header="Repasse de Icms" v-if="configuracaoFiscal.temRepasseIcms">
+                                    <!-- <TabPanel header="Repasse de Icms" v-if="configuracaoFiscal.temRepasseIcms">
                                                 <RepasseIcms v-if="itemEmManutencao.tributacaoIcms.grupoTributacao === 'Repasse'" v-model="itemEmManutencao" />
                                             </TabPanel> -->
-                                            <!-- <TabPanel header="ICMS para a UF de destino" v-if="configuracaoFiscal.temIcmsParaUfDestino">
+                                    <!-- <TabPanel header="ICMS para a UF de destino" v-if="configuracaoFiscal.temIcmsParaUfDestino">
                                                 <IcmsUfOutroDestino v-model="itemEmManutencao" />
                                             </TabPanel> -->
-                                            <TabPanel header="IPI" v-if="itemEmManutencao.configuracaoFiscal.temIpi">
-                                                <Ipi v-model="itemEmManutencao" />
-                                            </TabPanel>
-                                            <!-- <TabPanel header="Imposto de Importação" v-if="configuracaoFiscal.temII">
+                                    <TabPanel header="IPI" v-if="itemEmManutencao.configuracaoFiscal.temIpi">
+                                        <Ipi v-model="itemEmManutencao" />
+                                    </TabPanel>
+                                    <!-- <TabPanel header="Imposto de Importação" v-if="configuracaoFiscal.temII">
                                                 <II v-model="itemEmManutencao" />
                                             </TabPanel> -->
-                                            <TabPanel header="PIS" v-if="itemEmManutencao.configuracaoFiscal.temPis">
-                                                <PIS v-model="itemEmManutencao" />
-                                            </TabPanel>
-                                            <TabPanel header="COFINS" v-if="itemEmManutencao.configuracaoFiscal.temCofins">
-                                                <Cofins v-model="itemEmManutencao" />
-                                            </TabPanel>
-                                            <TabPanel header="COFINS ST" v-if="itemEmManutencao.configuracaoFiscal.temCofinsSt">
-                                                <CofinsST v-model="itemEmManutencao" />
-                                            </TabPanel>
-                                        </TabView>
-                                    <!-- </AccordionTab> -->
+                                    <TabPanel header="PIS" v-if="itemEmManutencao.configuracaoFiscal.temPis">
+                                        <PIS v-model="itemEmManutencao" />
+                                    </TabPanel>
+                                    <TabPanel header="COFINS" v-if="itemEmManutencao.configuracaoFiscal.temCofins">
+                                        <Cofins v-model="itemEmManutencao" />
+                                    </TabPanel>
+                                    <TabPanel header="COFINS ST" v-if="itemEmManutencao.configuracaoFiscal.temCofinsSt">
+                                        <CofinsST v-model="itemEmManutencao" />
+                                    </TabPanel>
+                                </TabView>
+                                <!-- </AccordionTab> -->
                                 <!-- </Accordion> -->
                             </div>
                         </div>

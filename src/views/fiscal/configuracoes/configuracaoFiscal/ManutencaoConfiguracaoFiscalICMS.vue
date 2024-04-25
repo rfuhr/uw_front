@@ -51,11 +51,13 @@ const changeSituacaoTributaria = (event) => {
         localModelValue.value.aliquotaCredito = undefined;
         localModelValue.value.diferencialAliquota = undefined;
         localModelValue.value.somaIpiBaseCalculo = false;
+        localModelValue.value.somaFreteBaseCalculo = false;
         localModelValue.value.modalidadeBaseCalculoST = undefined;
         localModelValue.value.reducaoBaseCalculoST = undefined;
         localModelValue.value.aliquotaST = undefined;
         localModelValue.value.margemValorAgregadoST = undefined;
         localModelValue.value.somaIpiBaseCalculoST = false;
+        localModelValue.value.somaFreteBaseCalculoST = false;
     }
 };
 
@@ -153,7 +155,7 @@ onMounted(async () => {
                         <ToggleButton
                             v-model="localModelValue.somaIpiBaseCalculo"
                             onLabel="Soma IPI na Base de Cálculo"
-                            offLabel="Soma IPI na Base de Cálculo"
+                            offLabel="NÃO Soma IPI na Base de Cálculo"
                             onIcon="pi pi-lock"
                             offIcon="pi pi-lock-open"
                             class="w-full"
@@ -161,6 +163,24 @@ onMounted(async () => {
                             :pt="{
                                 root: {
                                     class: [{ 'h-full': true, 'bg-green-100 border-white': localModelValue.somaIpiBaseCalculo, 'bg-red-100 border-white': !localModelValue.somaIpiBaseCalculo }]
+                                }
+                            }"
+                        />
+                    </span>
+            </div>
+            <div class="field md:col-3 pt-0">
+                    <span class="p-float-label">
+                        <ToggleButton
+                            v-model="localModelValue.somaFreteBaseCalculo"
+                            onLabel="Soma Frete na Base de Cálculo"
+                            offLabel="NÃO Soma Frete na Base de Cálculo"
+                            onIcon="pi pi-lock"
+                            offIcon="pi pi-lock-open"
+                            class="w-full"
+                            aria-label="Do you confirm"
+                            :pt="{
+                                root: {
+                                    class: [{ 'h-full': true, 'bg-green-100 border-white': localModelValue.somaFreteBaseCalculo, 'bg-red-100 border-white': !localModelValue.somaFreteBaseCalculo }]
                                 }
                             }"
                         />
@@ -203,7 +223,7 @@ onMounted(async () => {
                         <ToggleButton
                             v-model="localModelValue.somaIpiBaseCalculoST "
                             onLabel="Soma IPI na Base de Cálculo ST"
-                            offLabel="Soma IPI na Base de Cálculo ST"
+                            offLabel="NÃO Soma IPI na Base de Cálculo ST"
                             onIcon="pi pi-lock"
                             offIcon="pi pi-lock-open"
                             class="w-full"
@@ -211,6 +231,24 @@ onMounted(async () => {
                             :pt="{
                                 root: {
                                     class: [{ 'h-full': true, 'bg-green-100 border-white': localModelValue.somaIpiBaseCalculoST, 'bg-red-100 border-white': !localModelValue.somaIpiBaseCalculoST }]
+                                }
+                            }"
+                        />
+                    </span>
+            </div>
+            <div class="field md:col-3 pt-0">
+                    <span class="p-float-label">
+                        <ToggleButton
+                            v-model="localModelValue.somaFreteBaseCalculoST "
+                            onLabel="Soma Frete na Base de Cálculo ST"
+                            offLabel="NÃO Soma Frete na Base de Cálculo ST"
+                            onIcon="pi pi-lock"
+                            offIcon="pi pi-lock-open"
+                            class="w-full"
+                            aria-label="Do you confirm"
+                            :pt="{
+                                root: {
+                                    class: [{ 'h-full': true, 'bg-green-100 border-white': localModelValue.somaFreteBaseCalculoST, 'bg-red-100 border-white': !localModelValue.somaFreteBaseCalculoST }]
                                 }
                             }"
                         />

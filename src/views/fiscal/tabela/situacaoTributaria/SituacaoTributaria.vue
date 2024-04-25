@@ -66,8 +66,8 @@ const columns = reactive([
         size: '5%'
     },    
     {
-        label: 'Excluir ICMS da Base Cálculo',
-        field: 'excluirIcmsBaseCalculo',
+        label: 'Destaca ICMS',
+        field: 'destacaIcms',
         tipoField: 'boolean',
         filter: true,
         matchMode: 'equal',
@@ -84,8 +84,8 @@ const columns = reactive([
         size: '5%'
     },    
     {
-        label: 'Exige Alíquota Desonerada',
-        field: 'exigeAliquotaDesonerada',
+        label: 'Destaca ICMS Desonerada',
+        field: 'destacaIcmsDesonerada',
         tipoField: 'boolean',
         filter: true,
         matchMode: 'equal',
@@ -109,7 +109,7 @@ const columns = reactive([
         matchMode: 'equal',
         placeholder: '',
         size: '5%'
-    },    
+    },
     {
         label: 'Simples Nacional',
         field: 'simplesNacional',

@@ -16,7 +16,9 @@ import II from './II.vue';
 import PIS from './PIS.vue';
 import Cofins from './Cofins.vue';
 import { ConfiguracaoFiscalService } from '@/service';
+import { useContexto } from '@/stores';
 
+const contextoStore = useContexto();
 const toast = useToast();
 const confirm = useConfirm();
 const visibleDialog = ref(false);
@@ -328,10 +330,11 @@ const calcularImpostos = async () => {
     console.log('CalculoImposto: ',itemEmManutencao.value)
     if (itemEmManutencao.value.configuracaoFiscal && itemEmManutencao.value.detalhamentoItem 
         && itemEmManutencao.value.detalhamentoItem.itemId && itemEmManutencao.value.detalhamentoItem.itemId > 0
-        && valorTotal && valorTotal.value > 0
+        && subTotal && subTotal.value > 0
     ) {
         console.log(itemEmManutencao.value.configuracaoFiscal)
         const calculoImpostoRequest = {
+            empresaId: contextoStore.contexto.empresaId,
             itemId: itemEmManutencao.value.detalhamentoItem.item.id,
             unidadeMedidaId: itemEmManutencao.value.detalhamentoItem.item.unidadeMedidaComercialId, 
             quantidade: itemEmManutencao.value.detalhamentoItem.quantidade, 
@@ -340,7 +343,7 @@ const calcularImpostos = async () => {
             valorSeguro: itemEmManutencao.value.detalhamentoItem.valorSeguro,
             valorFrete: itemEmManutencao.value.detalhamentoItem.valorFrete,
             valorOutros: itemEmManutencao.value.detalhamentoItem.valorOutrasDespesas,
-            valorTotal: valorTotal.value,
+            valorTotal: subTotal.value,
             configuracaoFiscalIcmsId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms.id : null,
             configuracaoFiscalIpiId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi.id : null ,
             configuracaoFiscalPisId: itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis ? itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis.id : null,
@@ -349,17 +352,17 @@ const calcularImpostos = async () => {
         await ConfiguracaoFiscalService.calcularImposto(calculoImpostoRequest).then((response) => {
             console.log('Calculo Impostos:', response)
             if (response.valoresICMS) {
-                itemEmManutencao.value.tributacaoIcms.valorBCIcms = response.valoresICMS.vBC;
-                itemEmManutencao.value.tributacaoIcms.valorIcms = response.valoresICMS.vICMS;
-                itemEmManutencao.value.tributacaoIcms.valorBCIcmsST = response.valoresICMS.vBCST;
-                itemEmManutencao.value.tributacaoIcms.valorIcmsST = response.valoresICMS.vICMSST;
-                itemEmManutencao.value.tributacaoIcms.valorIcmsDesoneracao = response.valoresICMS.vICMS_Desonerado;
-                itemEmManutencao.value.tributacaoIcms.valorIcmsOperacao = response.valoresICMS.vICMSOp;
-                itemEmManutencao.value.tributacaoIcms.valorIcmsDiferido = response.valoresICMS.vICMSDif;
-                itemEmManutencao.value.tributacaoIcms.valorBCIcmsRetido = response.valoresICMS.vBCSTRet;
-                itemEmManutencao.value.tributacaoIcms.valorIcmsProprioSubst = response.valoresICMS.vICMSSTRet;
-                itemEmManutencao.value.tributacaoIcms.valorIcmsRetido = response.valoresICMS.vICMSRet;
-                itemEmManutencao.value.tributacaoIcms.valorCredIcmsSN = response.valoresICMS.vCredICMSSN;
+                itemEmManutencao.value.tributacaoIcms.valorBCIcms = response.valoresICMS.vbc;
+                itemEmManutencao.value.tributacaoIcms.valorIcms = response.valoresICMS.vicms;
+                itemEmManutencao.value.tributacaoIcms.valorBCIcmsST = response.valoresICMS.vbcst;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsST = response.valoresICMS.vicmsst;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsDesoneracao = response.valoresICMS.vicmsdeson;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsOperacao = response.valoresICMS.vicmsop;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsDiferido = response.valoresICMS.vicmsdif;
+                itemEmManutencao.value.tributacaoIcms.valorBCIcmsRetido = response.valoresICMS.vbcstret;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsProprioSubst = response.valoresICMS.vicmsstret;
+                itemEmManutencao.value.tributacaoIcms.valorIcmsRetido = response.valoresICMS.vicmsret;
+                itemEmManutencao.value.tributacaoIcms.valorCredIcmsSN = response.valoresICMS.vcredICMSSN;
             }
             if (response.valoresIPI) {
                 itemEmManutencao.value.ipi.tipoCalculo = response.valoresIPI.tipoCalculo;

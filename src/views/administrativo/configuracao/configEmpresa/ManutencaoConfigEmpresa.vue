@@ -94,6 +94,7 @@ const salvarRegistro = async () => {
 const showModal = async () => {
     if (props.mode === 'create') {
         formData.nome = undefined;
+        formData.contribuinteIpi = false;
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
@@ -174,6 +175,24 @@ const handleGerarNFe = async (data) => {
                             <div class="formgrid grid">
                             <UWSeletor classContainer="col-12 md:col-6" v-model="formData.empresaId" optionLabel="nome" optionValue="id" label="Empresa" :service="EmpresaService" placeholder="Selecione a empresa" :erros="errors.value?.empresaId" />
                             <UWSeletor classContainer="col-12 md:col-6" v-model="formData.regimeTributarioId" optionLabel="nome" optionValue="id" label="Regime Tributário" :service="RegimeTributarioService" placeholder="Selecione o regime tributário" :erros="errors.value?.regimeTributarioId" />
+                            <div class="field md:col-4 pt-0">
+                                <span class="p-float-label">
+                                    <ToggleButton
+                                        v-model="formData.contribuinteIpi"
+                                        onLabel="Contribuinte IPI"
+                                        offLabel="NÃO Contribuinte IPI"
+                                        onIcon="pi pi-lock"
+                                        offIcon="pi pi-lock-open"
+                                        class="w-full"
+                                        aria-label="Do you confirm"
+                                        :pt="{
+                                            root: {
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.contribuinteIpi, 'bg-red-100 border-white': !formData.contribuinteIpi }]
+                                            }
+                                        }"
+                                    />
+                                </span>
+                        </div>
                         </div>
                         </UWFieldSet>
                     </div>

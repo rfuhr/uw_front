@@ -18,10 +18,30 @@ const columns = reactive([
         filter: false,
         matchMode: 'contains',
         placeholder: '',
-        size: '80%',
+        size: '50%',
         sortable: true,
         sortField: 'empresa.nome'
-    }
+    },
+    {
+        label: 'Regime Tributário',
+        field: 'regimeTributarioNome',
+        tipoField: 'string',
+        filter: false,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '30%',
+        sortable: true,
+        sortField: 'regimeTributario.nome'
+    },
+    {
+        label: 'Contribuinte IPI',
+        field: 'contribuinteIpi',
+        tipoField: 'boolean',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '10%'
+    },    
 ]);
 
 const openNew = () => {

@@ -38,7 +38,7 @@ const fiscalRouter = {
                   },
                 },
                 {
-                    path: 'novo',
+                    path: 'nova',
                     component: () => import('@/views/fiscal/nfe/NovaNFe.vue'),
                     name: 'fis-nfe-nova',
                     meta: {
@@ -47,6 +47,16 @@ const fiscalRouter = {
                       operacao: 'inserir'
                     },
                   }, 
+                  {
+                    path: 'editar/:id(\\d+)',
+                    component: () => import('@/views/fiscal/nfe/NovaNFe.vue'),
+                    name: 'fis-nfe-editar',
+                    meta: {
+                      breadcrumb: [{label: 'Fiscal'}, {label: 'Nota Fiscal Eletrônica'}, {label: 'Editar'}],
+                      tag: 'nfe',
+                      operacao: 'editar'
+                    },
+                  },                   
             ]
         },
         {

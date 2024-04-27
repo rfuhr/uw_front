@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import * as yup from 'yup';
 import _ from 'lodash';
 import { useContexto } from '@/stores';
-import { DepartamentoService, OperacaoInternaService, TiposService, RegimeTributarioService, ConfigEmpresaService, ParceiroLocalService } from '@/service';
+import { DepartamentoService, OperacaoInternaService, TiposService, RegimeTributarioService } from '@/service';
 import UWSeletorCfopByOpInt from '@/components/seletores/UWSeletorCfopByOpInt.vue';
 import DocumentosReferenciados from './DocumentosReferenciados.vue';
 import AutorizacaoObterXML from './AutorizacaoObterXML.vue';
@@ -116,9 +116,6 @@ onMounted(async () => {
     TiposService.getDestinoOperacao().then((data) => {
         destinosOperacao.value = data;
     });
-    ConfigEmpresaService.getConfigByEmpresa(contextoStore.contexto.empresaId).then((data) => {
-        localModelValue.value.regimeTributarioId = data.regimeTributarioId;
-    });
 });
 
 const temErro = (errors, str) => {
@@ -141,11 +138,6 @@ const changeOutroLocalRetirada = () => {
 const changeDepartamento = async (value) => {
     if (value) {
         localModelValue.value.departamento = value;
-        await ParceiroLocalService.getEnderecoNFe(value.parceiroLocalFilialId).then((response) => {
-            localModelValue.value.enderecoEmitente = response;
-        }).catch(() => {
-            localModelValue.value.enderecoEmitente = null;
-        });
     } else {
         
         localModelValue.value.departamento = null;
@@ -169,11 +161,13 @@ defineExpose({
         <UWForm :schema="createSchema()" :values="localModelValue" ref="formIdentificacaoNFe" :visibleSave="false" :visibleCancel="false">
             <template #errors="{ errors }">
                 <div class="grid nested-grid">
-                    <div class="col-3">
+                    <div class="col-4">
                         <UWFieldSet title="Identificação da NFe" class="h-full flex flex-column justify-content-start bg-primary-50 border-solid">
                             <div class="formgrid grid">
-                                <UWInput id="modelo" label="Modelo" v-model="modeloNFe" :disabled="true" classContainer="col-12 md:col-12" />
+                                <UWInput id="numero" label="Número" v-model="localModelValue.numero" :disabled="true" classContainer="col-12 md:col-6" />
                                 <UWInput id="serie" label="Série" v-model="localModelValue.serie" :disabled="true" classContainer="col-12 md:col-6" />
+                                <UWInput id="chaveNFe" label="Chave NFe" v-model="localModelValue.chaveNFe" :disabled="true" classContainer="col-12 md:col-12" />
+                                <UWInput id="modelo" label="Modelo" v-model="modeloNFe" :disabled="true" classContainer="col-12 md:col-6" />
                                 <UWPickList
                                     id="indicadorOperacao"
                                     label="Indicador da Operação"
@@ -211,7 +205,7 @@ defineExpose({
                             </div>
                         </UWFieldSet>
                     </div>
-                    <div class="col-9">
+                    <div class="col-8">
                         <UWFieldSet title="Dados da Emissão" class="h-full">
                             <div class="formgrid grid">
                                 <UWSeletor

@@ -25,6 +25,7 @@ const localModelValue = computed({
 });
 
 const indicadoresIE = ref([]);
+const seletorDestinatario = ref(null);
 
 const createSchemaDestinatarioNFe = (dynamicFields) => {
     const schemaObject = {
@@ -105,14 +106,21 @@ const validateForm = () => {
         return formDestinatarioNFe.value.validateForm();
     }
 };
+
 onMounted(() => {
     TiposService.getIndicadorIEDestinatario().then((data) => {
         indicadoresIE.value = data;
     });
 });
 
+const reloadSeletorDestinatario = (id) => {
+    if (seletorDestinatario.value)
+        seletorDestinatario.value.reload(id);
+}
+
 defineExpose({
-    validateForm
+    validateForm,
+    reloadSeletorDestinatario
 });
 
 const changeOutroLocalEntrega = () => {
@@ -129,7 +137,7 @@ const changeOutroLocalEntrega = () => {
                     <div class="col-12">
                         <UWFieldSet title="Dados do Destinatário" class="h-full">
                             <div class="p-fluid formgrid grid">
-                                <UWParceiroLocal id="parceiroLocal" classContainer="col-12 md:col-4" v-model="localModelValue.destinatarioId" required label="Parceiro" @changeObject="changeParceiroLocal" :erros="errors.value?.destinatarioId" />
+                                <UWParceiroLocal id="parceiroLocal" ref="seletorDestinatario" classContainer="col-12 md:col-4" v-model="localModelValue.destinatarioId" required label="Parceiro" @changeObject="changeParceiroLocal" :erros="errors.value?.destinatarioId" />
                                 <UWInput id="cpfCnpj" :label="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J' ? 'Cnpj' : 'Cpf'" uppercase disabled v-model="dadosParceiroLocal.cpfCnpj" classContainer="col-12 md:col-3" />
                                 <UWInput v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'" id="nomeLocal" label="Filial" uppercase disabled v-model="dadosParceiroLocal.nomeLocal" classContainer="col-12 md:col-5" />
                                 <UWInput id="endereco" label="Endereço" uppercase disabled v-model="dadosParceiroLocal.enderecoCompleto" classContainer="col-12 md:col-6" />
@@ -177,7 +185,6 @@ const changeOutroLocalEntrega = () => {
                         </TabPanel>
                     </TabView>
                 </div>
-                <code>Erros: {{ errors.value }}</code>
             </template>
         </UWForm>
     </div>

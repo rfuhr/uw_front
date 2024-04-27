@@ -88,9 +88,9 @@ const showModal = async () => {
         formData.aliquotaZero = false;
         formData.requerMensagemFiscal = false;
         formData.destacaStSaida = false;
-	    formData.exigeAliquotaDesonerada = false;
+	    formData.destacaIcmsDesonerada = false;
 	    formData.controlaImpostoRetido = false;
-	    formData.excluirIcmsBaseCalculo = false;
+	    formData.destacaIcms = false;
 	    formData.excluirIcmsBcPiscofins = false;
 	    formData.naoExcluirIcmsEntrada = false;
     } else {
@@ -122,7 +122,7 @@ onMounted(async () => {
                                     <ToggleButton
                                         v-model="formData.aliquotaZero"
                                         onLabel="Alíquota Zero"
-                                        offLabel="Alíquota Zero"
+                                        offLabel="Alíquota MAIOR que Zero"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
@@ -140,7 +140,7 @@ onMounted(async () => {
                                     <ToggleButton
                                         v-model="formData.controlaImpostoRetido"
                                         onLabel="Controla Imposto Retido"
-                                        offLabel="Controla Imposto Retido"
+                                        offLabel="NÃO Controla Imposto Retido"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
@@ -158,7 +158,7 @@ onMounted(async () => {
                                     <ToggleButton
                                         v-model="formData.destacaStSaida"
                                         onLabel="Destaca Substituição Tributária de Saída"
-                                        offLabel="Destaca Substituição Tributária de Saída"
+                                        offLabel="NÃO Destaca Substituição Tributária de Saída"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
@@ -176,7 +176,7 @@ onMounted(async () => {
                                     <ToggleButton
                                         v-model="formData.excluirIcmsBcPiscofins"
                                         onLabel="Excluir ICMS da Base Cálculo PIS COFINS"
-                                        offLabel="Excluir ICMS da Base Cálculo PIS COFINS"
+                                        offLabel="NÃO Excluir ICMS da Base Cálculo PIS COFINS"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
@@ -192,16 +192,16 @@ onMounted(async () => {
                         <div class="field md:col-4 pt-0">
                                 <span class="p-float-label">
                                     <ToggleButton
-                                        v-model="formData.excluirIcmsBaseCalculo"
-                                        onLabel="Excluir ICMS da Base Cálculo"
-                                        offLabel="Excluir ICMS da Base Cálculo"
+                                        v-model="formData.destacaIcms"
+                                        onLabel="Destaca ICMS"
+                                        offLabel="NÃO Destaca ICMS"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
                                         aria-label="Do you confirm"
                                         :pt="{
                                             root: {
-                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.excluirIcmsBaseCalculo, 'bg-red-100 border-white': !formData.excluirIcmsBaseCalculo }]
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.destacaIcms, 'bg-red-100 border-white': !formData.destacaIcms }]
                                             }
                                         }"
                                     />
@@ -210,16 +210,16 @@ onMounted(async () => {
                         <div class="field md:col-4 pt-0">
                                 <span class="p-float-label">
                                     <ToggleButton
-                                        v-model="formData.exigeAliquotaDesonerada"
-                                        onLabel="Exige Alíquota Desonerada"
-                                        offLabel="Exige Alíquota Desonerada"
+                                        v-model="formData.destacaIcmsDesonerada"
+                                        onLabel="Destaca ICMS Desonerada"
+                                        offLabel="NÃO Destaca ICMS Desonerada"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
                                         aria-label="Do you confirm"
                                         :pt="{
                                             root: {
-                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.exigeAliquotaDesonerada, 'bg-red-100 border-white': !formData.exigeAliquotaDesonerada }]
+                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.destacaIcmsDesonerada, 'bg-red-100 border-white': !formData.destacaIcmsDesonerada }]
                                             }
                                         }"
                                     />
@@ -229,8 +229,8 @@ onMounted(async () => {
                                 <span class="p-float-label">
                                     <ToggleButton
                                         v-model="formData.naoExcluirIcmsEntrada"
-                                        onLabel="Não Excluir ICMS da Entrada"
-                                        offLabel="Não Excluir ICMS da Entrada"
+                                        onLabel="NÃO Excluir ICMS da Entrada"
+                                        offLabel="Excluir ICMS da Entrada"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
@@ -248,7 +248,7 @@ onMounted(async () => {
                                     <ToggleButton
                                         v-model="formData.requerMensagemFiscal"
                                         onLabel="Requer Mensagem Fiscal"
-                                        offLabel="Requer Mensagem Fiscal"
+                                        offLabel="NÃO Requer Mensagem Fiscal"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"
@@ -266,7 +266,7 @@ onMounted(async () => {
                                     <ToggleButton
                                         v-model="formData.simplesNacional"
                                         onLabel="Simples Nacional"
-                                        offLabel="Simples Nacional"
+                                        offLabel="NÃO é Simples Nacional"
                                         onIcon="pi pi-lock"
                                         offIcon="pi pi-lock-open"
                                         class="w-full"

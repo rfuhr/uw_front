@@ -97,6 +97,16 @@ const fiscalRouter = {
                     }
                 },
                 {
+                    path: 'mensagem-fiscal',
+                    component: () => import('../../views/fiscal/tabela/mensagemFiscal/MensagemFiscal.vue'),
+                    name: 'fis-tabela-mensagemfiscal',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Mensagem Fiscal' }],
+                        tag: 'mensagemfiscal',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'motivo-desoneracao',
                     component: () => import('../../views/fiscal/tabela/motivoDesoneracao/MotivoDesoneracao.vue'),
                     name: 'fis-tabela-motivodesoneracao',
@@ -143,6 +153,16 @@ const fiscalRouter = {
                     meta: {
                         breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Situacao Tributária' }],
                         tag: 'situacaotributaria',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'tipo-incentivo-fiscal',
+                    component: () => import('../../views/fiscal/tabela/tipoIncentivoFiscal/TipoIncentivoFiscal.vue'),
+                    name: 'fis-tabela-tipoincentivofical',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Tipo de Incentivo Fiscal' }],
+                        tag: 'tipoincentivofical',
                         operacao: 'consultar'
                     }
                 },

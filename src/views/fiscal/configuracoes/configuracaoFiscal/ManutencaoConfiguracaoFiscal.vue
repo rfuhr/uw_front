@@ -292,7 +292,7 @@ const changeRegimeTributario = (event) => {
 </script>
 
 <template>
-    <Dialog v-model:visible="showDialogComputed" :style="{ width: '90%' }" :header="mode === 'create' ? 'Novo Configuração Fiscal' : 'Alterar Configuração Fiscal'" :modal="true" :closable="false" @show="showModal">
+    <Dialog v-model:visible="showDialogComputed" :style="{ width: '95%' }" :header="mode === 'create' ? 'Novo Configuração Fiscal' : 'Alterar Configuração Fiscal'" :modal="true" :closable="false" @show="showModal">
         <UWForm :schema="schema" :values="formData" ref="formConfiguracaoFiscal" @doCancel="hideDialog" @doSubmit="salvarRegistro">
             <template #errors="{ errors }">
                 <div class="col-12">

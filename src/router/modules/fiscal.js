@@ -194,7 +194,27 @@ const fiscalRouter = {
                         tag: 'configuracaofiscal',
                         operacao: 'consultar'
                     }
-                }
+                },
+                {
+                    path: 'config-incentivo-fiscal',
+                    component: () => import('../../views/fiscal/configuracoes/configIncentivoFiscal/ConfigIncentivoFiscal.vue'),
+                    name: 'fis-configuracoes-configIncentivofiscal',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Configurações' }, { label: 'Configuração de Incentivo Fiscal' }],
+                        tag: 'configIncentivofiscal',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'config-mensagem-fiscal',
+                    component: () => import('../../views/fiscal/configuracoes/configMensagemFiscal/ConfigMensagemFiscal.vue'),
+                    name: 'fis-configuracoes-configMensagemfiscal',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Configurações' }, { label: 'Configuração da Mensagem Fiscal' }],
+                        tag: 'configMensagemfiscal',
+                        operacao: 'consultar'
+                    }
+                },
             ]
         }
     ]

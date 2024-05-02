@@ -36,7 +36,9 @@ export const menu = [
         label: 'Configurações',
         icon: 'pi pi-fw pi-pencil',
         items: [
-            {label: 'Configuração Fiscal', icon: '', to: '/fiscal/configuracoes/configuracao-fiscal'}
+            {label: 'Configuração da Mensagem Fiscal', icon: '', to: '/fiscal/configuracoes/config-mensagem-fiscal'},
+            {label: 'Configuração de Incentivo Fiscal', icon: '', to: '/fiscal/configuracoes/config-incentivo-fiscal'},
+            {label: 'Configuração Fiscal', icon: '', to: '/fiscal/configuracoes/configuracao-fiscal'},
         ]
     }
 ];

@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import ManutencaoCfop from './ManutencaoCfop.vue';
+import ManutencaoMensagemFiscal from './ManutencaoMensagemFiscal.vue';
 import { useDelete } from '@/composables/useDelete';
-import { CfopService as Service } from '@/service';
+import { MensagemFiscalService as Service } from '@/service';
 
 const { execute } = useDelete();
 const crudDialog = ref(false);
@@ -21,41 +21,41 @@ const columns = reactive([
         size: '10%'
     },
     {
+        label: 'Sigla',
+        field: 'sigla',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '10%'
+    },
+    {
         label: 'Nome',
         field: 'nome',
         tipoField: 'text',
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '45%'
+        size: '55%'
     },
     {
-        label: 'Tipo Operação',
-        field: 'tipoOperacao',
+        label: 'Código Ajuste',
+        field: 'codigoAjuste',
         tipoField: 'text',
         filter: true,
-        matchMode: 'contains',
+        matchMode: 'equal',
         placeholder: '',
         size: '10%'
     },
     {
-        label: 'Início Vigência',
-        field: 'dataInicioVigencia',
-        tipoField: 'maskDate',
-        filter: false,
+        label: 'UF',
+        field: 'ufSigla',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'equal',
         placeholder: '',
-        size: '12%',
-        maskDate: 'dd/MM/yyyy'
+        size: '10%'
     },
-    {
-        label: 'Final Vigência',
-        field: 'dataFinalVigencia',
-        filter: false,
-        placeholder: '',
-        size: '12%',
-        tipoField: 'maskDate',
-        maskDate: 'dd/MM/yyyy'
-    }
 ]);
 
 const openNew = () => {
@@ -71,9 +71,9 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão do CFOP, ${dados.codigo}, você não poderá reverter isso!`
-    const textoSucesso = `O CFOP, ${dados.codigo}, foi excluido com sucesso.`
-    const textoCancelado = "A exclusão do CFOP não foi realizada :)"
+    const textoConfirmacao = `Após a exclusão da Mensagem Fiscal, ${dados.nome}, você não poderá reverter isso!`
+    const textoSucesso = `A Mensagem Fiscal, ${dados.nome}, foi excluido com sucesso.`
+    const textoCancelado = "A exclusão da Mensagem Fiscal não foi realizado :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);
     if (result) crudlista.value.reload();
@@ -86,6 +86,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="Cfop" title="CFOP" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
-    <ManutencaoCfop :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
+    <UWPageCrud ref="crudlista" tag="MensagemFiscal" title="Mensagem Fiscal" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <ManutencaoMensagemFiscal :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

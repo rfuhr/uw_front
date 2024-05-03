@@ -107,6 +107,16 @@ const fiscalRouter = {
                     }
                 },
                 {
+                    path: 'mensagem-fiscal',
+                    component: () => import('../../views/fiscal/tabela/mensagemFiscal/MensagemFiscal.vue'),
+                    name: 'fis-tabela-mensagemfiscal',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Mensagem Fiscal' }],
+                        tag: 'mensagemfiscal',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'motivo-desoneracao',
                     component: () => import('../../views/fiscal/tabela/motivoDesoneracao/MotivoDesoneracao.vue'),
                     name: 'fis-tabela-motivodesoneracao',
@@ -157,6 +167,16 @@ const fiscalRouter = {
                     }
                 },
                 {
+                    path: 'tipo-incentivo-fiscal',
+                    component: () => import('../../views/fiscal/tabela/tipoIncentivoFiscal/TipoIncentivoFiscal.vue'),
+                    name: 'fis-tabela-tipoincentivofical',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Tabelas' }, { label: 'Tipo de Incentivo Fiscal' }],
+                        tag: 'tipoincentivofical',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'tipo-produto',
                     component: () => import('../../views/fiscal/tabela/tipoProduto/TipoProduto.vue'),
                     name: 'fis-tabela-tipoproduto',
@@ -184,7 +204,27 @@ const fiscalRouter = {
                         tag: 'configuracaofiscal',
                         operacao: 'consultar'
                     }
-                }
+                },
+                {
+                    path: 'config-incentivo-fiscal',
+                    component: () => import('../../views/fiscal/configuracoes/configIncentivoFiscal/ConfigIncentivoFiscal.vue'),
+                    name: 'fis-configuracoes-configIncentivofiscal',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Configurações' }, { label: 'Configuração de Incentivo Fiscal' }],
+                        tag: 'configIncentivofiscal',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'config-mensagem-fiscal',
+                    component: () => import('../../views/fiscal/configuracoes/configMensagemFiscal/ConfigMensagemFiscal.vue'),
+                    name: 'fis-configuracoes-configMensagemfiscal',
+                    meta: {
+                        breadcrumb: [{ label: 'Fiscal' }, { label: 'Configurações' }, { label: 'Configuração da Mensagem Fiscal' }],
+                        tag: 'configMensagemfiscal',
+                        operacao: 'consultar'
+                    }
+                },
             ]
         }
     ]

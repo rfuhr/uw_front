@@ -22,11 +22,13 @@ export const menu = [
             {label: 'Classificação da Operação', icon: '', to: '/fiscal/tabela/classificacao-operacao'},
             {label: 'Enquadramento', icon: '', to: '/fiscal/tabela/enquadramento'},
             {label: 'Grupo Tributação', icon: '', to: '/fiscal/tabela/grupo-tributacao'},
+            {label: 'Mensagem Fiscal', icon: '', to: '/fiscal/tabela/mensagem-fiscal'},
             {label: 'Motivo de Desoneração', icon: '', to: '/fiscal/tabela/motivo-desoneracao'},
             {label: 'NCM', icon: '', to: '/fiscal/tabela/ncm'},
             {label: 'Origem', icon: '', to: '/fiscal/tabela/origem'},
             {label: 'Regime Tributário', icon: '', to: '/fiscal/tabela/regime-tributario'},
             {label: 'Situação Tributária', icon: '', to: '/fiscal/tabela/situacao-tributaria'},
+            {label: 'Tipo de Incentivo Fiscal', icon: '', to: '/fiscal/tabela/tipo-incentivo-fiscal'},
             {label: 'Tipo de Produto', icon: '', to: '/fiscal/tabela/tipo-produto'},
         ]
     },  
@@ -34,7 +36,9 @@ export const menu = [
         label: 'Configurações',
         icon: 'pi pi-fw pi-pencil',
         items: [
-            {label: 'Configuração Fiscal', icon: '', to: '/fiscal/configuracoes/configuracao-fiscal'}
+            {label: 'Configuração da Mensagem Fiscal', icon: '', to: '/fiscal/configuracoes/config-mensagem-fiscal'},
+            {label: 'Configuração de Incentivo Fiscal', icon: '', to: '/fiscal/configuracoes/config-incentivo-fiscal'},
+            {label: 'Configuração Fiscal', icon: '', to: '/fiscal/configuracoes/configuracao-fiscal'},
         ]
     }
 ];

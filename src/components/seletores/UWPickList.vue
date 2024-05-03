@@ -20,6 +20,10 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    visible: {
+        type: Boolean,
+        default: true
+    },
     showClear: {
         type: Boolean,
         default: false
@@ -65,7 +69,7 @@ const handleChange = (event) => {
 </script>
 
 <template>
-    <div :class="['field', classContainer]">
+    <div v-show="visible" :class="['field', classContainer]">
         <span class="p-float-label">
             <Dropdown
                 :id="props.id"

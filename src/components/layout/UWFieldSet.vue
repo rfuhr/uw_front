@@ -9,6 +9,10 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    visible: {
+        type: Boolean,
+        default: true
+    },
     color: {
         type: String,
         default: 'transparent'
@@ -19,7 +23,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <fieldset class="fieldset-border" :class="{'disabled': props.disabled}" :style="{'background-color': props.color}">
+    <fieldset v-show="visible" class="fieldset-border" :class="{'disabled': props.disabled}" :style="{'background-color': props.color}">
         <legend class="fieldset-border" :style="{'background-color': props.color}">{{ title }}</legend>
         <slot></slot>
     </fieldset>

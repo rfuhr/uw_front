@@ -25,6 +25,10 @@ class NFeService {
     getCacheNFe(cacheId) {
         return api.get(`/fiscal/nfe/cache/${cacheId}`);
     }
+
+    enviarNFe(payload) {
+        return api.post(`/fiscal/nfe`, payload );
+    }
 }
 
 export default new NFeService();

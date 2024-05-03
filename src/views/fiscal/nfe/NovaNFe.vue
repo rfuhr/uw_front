@@ -60,31 +60,13 @@ const destinatarioNFe = ref(null);
 const produtosNFe = ref(null);
 const transporteNFe = ref(null);
 const financeiroNFe = ref(null);
+const enviandoNfe = ref(false);
 
-function onComplete() {
-    alert('Yay. Done!');
-}
+const actionsFinalizar = [
+    { label: 'Salvar e Sair', icon: 'pi pi-times', command: () => salvarSair() }
+];
 
-const onCancelar = async () => {
-    const result = await Swal.fire({
-        title: 'Você confirma a desistência da emissão da NF-e?',
-        text: 'Os dados preenchidos serão perdidos.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sim',
-        cancelButtonText: 'Não',
-        reverseButtons: true
-    });
 
-    if (result.value) {
-        router.push({ path: '/fiscal/gerenciador-nfe' });
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-        return false;
-    } else {
-        Swal.fire('Falha', 'Ocorreu uma falha no processo de desistência de emissão de nfe', 'error');
-        return false;
-    }
-};
 
 const validFormIdentificacaoNFe = async () => {
     if (identificacaoNFe.value) {
@@ -221,14 +203,72 @@ function updateFormData(formData, jsonParsed) {
     });
 }
 
+const onComplete = async () => {
+    const nfeRequest = montarNFeRequest();
+    await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
+    await NFeService.enviarNFe(nfeRequest).then((data) => {
+        Swal.fire('Sucesso', 'NFe enviada com sucesso', 'success');
+        router.push({ path: '/fiscal/gerenciador-nfe' });
+    }).catch((error) => {
+        Swal.fire('Falha', 'Ocorreu uma falha no processo de envio de nfe', 'error');
+    }).finally(() => {
+        enviandoNfe.value = false;
+    });
+}
+
+const onCancelar = async () => {
+    const result = await Swal.fire({
+        title: 'Você confirma a desistência da emissão da NF-e?',
+        text: 'A nfe ficará no status EM DIGITAÇÃO. Caso necessário, faça a inutilização do número.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não',
+        reverseButtons: true
+    });
+
+    if (result.value) {
+        router.push({ path: '/fiscal/gerenciador-nfe' });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+        return false;
+    } else {
+        Swal.fire('Falha', 'Ocorreu uma falha no processo de desistência de emissão de nfe', 'error');
+        return false;
+    }
+};
+
+const salvarSair = async () => {
+    await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
+    router.push({ path: '/fiscal/gerenciador-nfe' })
+}
+
+const montarNFeRequest = () => {
+    const nfeRequest = {
+        nfeId: formData.identificacaoNFe.nfeId,
+        identificacaoNFeRequest: {...formData.identificacaoNFe},
+        destinatarioNFeRequest: {...formData.destinatario},
+        itensNFeRequest: {...formData.itensNFe},
+        transporteNFeRequest: {...formData.transporte},
+        financeiroNFeRequest: {...formData.financeiro},
+        informacoesAdicionaisNFeRequest: {...formData.informacoesAdicionais}
+    };
+
+    return nfeRequest;
+
+}
 
 </script>
 
 <template>
     <UWPageBase title="Emissão de NFe" subtitle="Para emissão da nfe, seguir as etapas.">
-        <FormWizard @on-complete="onComplete" color="#094899" step-size="xs" nextButtonText="Próximo" backButtonText="Anterior" finishButtonText="Enviar NFe">
+        <FormWizard color="#094899" step-size="xs" nextButtonText="Próximo" backButtonText="Anterior" >
             <template #custom-buttons-right>
-                <Button type="button" class="p-button-danger mr-6" outlined @click="onCancelar">Cancelar emissão</Button>
+                <Button class="px-3 py-12 mr-3" outlined severity="danger" @click="onCancelar">Sair da Emissão</Button>
+            </template>
+            <template #prev><Button class="px-6 py-12" severity="primary">Anterior</Button></template>
+            <template #next><Button class="px-6 py-12" severity="primary">Próximo</Button></template>
+            <template #finish>
+                <SplitButton label="Enviar NFe" class="py-12" @click="onComplete" :model="actionsFinalizar" :loading="enviandoNfe" />
             </template>
             <TabContent title="Identificação da Nota Final" icon="fa fa-file-invoice" :before-change="beforeChangeIdentificacao">
                 <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe" />

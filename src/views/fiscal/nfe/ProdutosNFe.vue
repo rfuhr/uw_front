@@ -210,6 +210,7 @@ const temErro = (errors, str) => {
 const getConfiguracaoFiscal = async () => {
     try {
         itemEmManutencao.value.configuracaoFiscal = null;
+        itemEmManutencao.value.configuracaoFiscalId = null;
         if (itemEmManutencao.value.detalhamentoItem && itemEmManutencao.value.detalhamentoItem.itemId && itemEmManutencao.value.detalhamentoItem.itemId > 0) {
             itemEmManutencao.value.configuracaoFiscal = await ConfiguracaoFiscalService.getConfiguracaoFiscal(
                 props.dadosAuxiliares.emitenteId,
@@ -225,6 +226,7 @@ const getConfiguracaoFiscal = async () => {
                 props.dadosAuxiliares.ufOrigemId,
                 props.dadosAuxiliares.ufDestinoId
             );
+            itemEmManutencao.value.configuracaoFiscalId = itemEmManutencao.value.configuracaoFiscal.id;
             console.log('Configuração: ', itemEmManutencao.value.configuracaoFiscal)
         }
         if (!itemEmManutencao.value.configuracaoFiscal) {
@@ -242,9 +244,13 @@ const getConfiguracaoFiscal = async () => {
             };
         } else {
             itemEmManutencao.value.tributacaoIcms.configuracaoFiscalIcms = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms;
+            itemEmManutencao.value.tributacaoIcms.configuracaoFiscalIcmsId = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIcms.id;
             itemEmManutencao.value.ipi.configuracaoFiscalIpi = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi;
+            itemEmManutencao.value.ipi.configuracaoFiscalIpiId = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalIpi.id;
             itemEmManutencao.value.pis.configuracaoFiscalPis = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis;
+            itemEmManutencao.value.pis.configuracaoFiscalPisId = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalPis.id
             itemEmManutencao.value.cofins.configuracaoFiscalCofins = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins;
+            itemEmManutencao.value.cofins.configuracaoFiscalCofinsId = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofinsId;
         }
     } catch (error) {
         itemEmManutencao.value.configuracaoFiscal = {

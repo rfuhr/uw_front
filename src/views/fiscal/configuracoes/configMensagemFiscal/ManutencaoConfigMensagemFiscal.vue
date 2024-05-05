@@ -36,7 +36,13 @@ const formData = reactive({
     dataInicioVigencia: undefined,
     dataFinalVigencia: undefined,
     mensagemFiscalId: undefined,
-    id: undefined
+    id: undefined,
+    configMensagemFiscalConfigFiscals: [],
+    configMensagemFiscalSituacTribs: [],
+    configMensagemFiscalGrupoTribs: [],
+    configMensagemFiscalItems: [],
+    configMensagemFiscalOperInternas: [],
+    configMensagemFiscalTipoIncentFiscals: [],
 });
 
 const showDialogComputed = computed({
@@ -87,6 +93,12 @@ const showModal = async () => {
         formData.dataInicioVigencia = undefined;
         formData.dataFinalVigencia = undefined;
         formData.id = undefined;
+        formData.configMensagemFiscalConfigFiscals = [];
+        formData.configMensagemFiscalSituacTribs = [];
+        formData.configMensagemFiscalGrupoTribs = [];
+        formData.configMensagemFiscalItems = [];
+        formData.configMensagemFiscalOperInternas = [];
+        formData.configMensagemFiscalTipoIncentFiscals = [];
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);

@@ -63,7 +63,7 @@ const openEdit = (selectId) => {
 
 const openDelete = async (dados) => {
     const textoConfirmacao = `Após a exclusão da Configuração de Incentivo Fiscal, ${dados.codigo}, você não poderá reverter isso!`
-    const textoSucesso = `A Configuração de Incentivo Fiscal, ${dados.codigo}, foi excluido com sucesso.`
+    const textoSucesso = `A Configuração de Incentivo Fiscal foi excluída com sucesso.`
     const textoCancelado = "A exclusão da Configuração de Incentivo Fiscal não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);

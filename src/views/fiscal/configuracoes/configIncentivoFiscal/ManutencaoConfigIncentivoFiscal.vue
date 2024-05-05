@@ -36,7 +36,8 @@ const formData = reactive({
     dataInicioVigencia: undefined,
     dataFinalVigencia: undefined,
     tipoIncentivoFiscalId: undefined,
-    id: undefined
+    id: undefined,
+    configIncentivoFiscalParceiros: []
 });
 
 const showDialogComputed = computed({
@@ -87,6 +88,7 @@ const showModal = async () => {
         formData.dataInicioVigencia = undefined;
         formData.dataFinalVigencia = undefined;
         formData.id = undefined;
+        formData.configIncentivoFiscalParceiros = [];
     } else {
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
@@ -98,7 +100,7 @@ const showModal = async () => {
 </script>
 
 <template>
-    <Dialog v-model:visible="showDialogComputed" :style="{ width: '80%' }" :header="mode === 'create' ? 'Nova Configuração de Incentivo Fiscal' : 'Alterar Configuração de Incentivo Fiscal'" :modal="true" :closable="false" @show="showModal">
+    <Dialog v-model:visible="showDialogComputed" :style="{ width: '90%' }" :header="mode === 'create' ? 'Nova Configuração de Incentivo Fiscal' : 'Alterar Configuração de Incentivo Fiscal'" :modal="true" :closable="false" @show="showModal">
         <UWForm :schema="schema" :values="formData" ref="formConfiguracaoIncentivoFiscal" @doCancel="hideDialog" @doSubmit="salvarRegistro">
             <template #errors="{ errors }">
                 <div class="col-12">

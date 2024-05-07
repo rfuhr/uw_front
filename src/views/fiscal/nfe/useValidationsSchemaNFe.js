@@ -276,17 +276,6 @@ export function useValidationsSchemaNFe() {
         return yup.mixed().optional();
     }; 
     
-    const createSchemaLacres = (dadosTransporteNFe) => {
-        if (dadosTransporteNFe && dadosTransporteNFe.informarLacres) {
-            return yup
-                .array()
-                .required('Lacre deve ser informada')
-                .min(1, 'Pelo menos um lacre deve ser fornecida.');
-        }
-        return yup.mixed().optional();
-    }; 
-
-
     const createSchemaPagamentos = (dadosFinanceiroNFe) => {
         if (dadosFinanceiroNFe) {
             return yup
@@ -335,7 +324,6 @@ export function useValidationsSchemaNFe() {
         createSchemaTipoTransporte,
         createSchemaReboques,
         createSchemaVolumes,
-        createSchemaLacres,
         createSchemaPagamentos
     };
 }

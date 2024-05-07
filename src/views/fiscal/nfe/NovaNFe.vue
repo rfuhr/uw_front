@@ -47,7 +47,6 @@ const formData = reactive({
     transporte: {
         reboques: [],
         volumes: [],
-        lacres: []
     },
     financeiro: {
         pagamentos: []

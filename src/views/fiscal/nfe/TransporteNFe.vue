@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import * as yup from 'yup';
 import _ from 'lodash';
-import { validateCep, validateCNPJ, validateCPF, validatePhone, validateEmail } from 'validations-br';
+import { validateCNPJ, validateCPF } from 'validations-br';
 
 import { TiposService, PaisService, UfService, CidadeService, ExternalService } from '@/service';
 import Reboques from './Reboques.vue';
@@ -44,13 +44,12 @@ const createSchemaTransporteNFe = (dynamicFields) => {
 };
 
 const createSchema = () => {
-    const { createSchemaTipoTransporte, createSchemaReboques, createSchemaVolumes, createSchemaLacres } = useValidationsSchemaNFe();
+    const { createSchemaTipoTransporte, createSchemaReboques, createSchemaVolumes } = useValidationsSchemaNFe();
 
     return createSchemaTransporteNFe({
         tipoTransporte: createSchemaTipoTransporte(localModelValue.value),
         reboques: createSchemaReboques(localModelValue.value),
-        volumes: createSchemaVolumes(localModelValue.value),
-        lacres: createSchemaLacres(localModelValue.value),
+        volumes: createSchemaVolumes(localModelValue.value)
     });
 };
 
@@ -143,11 +142,9 @@ const changeModalidadeFrete = (value) => {
 
         localModelValue.value.possuiReboque = false;
         localModelValue.value.possuiVolume = false;
-        localModelValue.value.informarLacres = false;
 
         localModelValue.value.reboques = [];
         localModelValue.value.volumes = [];
-        localModelValue.value.lacres = [];
     }
 };
 
@@ -198,13 +195,6 @@ const changePossuiVolume = () => {
         localModelValue.value.volumes = [];
     }
     activeIndexTabView.value = 0;
-};
-
-const changeInformaLacres = () => {
-    if (!localModelValue.value.informarLacres) {
-        localModelValue.value.lacres = [];
-    }
-    
 };
 
 const validateForm = () => {
@@ -375,12 +365,11 @@ defineExpose({
                         <Message class="col-12 p-0 m-0" :closable="false" severity="warn" v-if="temErro(errors?.value, 'reboques[')">Atenção! Existem reboques com pendências nas informações informadas.</Message>
                         <Message class="col-12 p-0 m-0" :closable="false" severity="error" v-if="_.get(errors?.value, 'volumes', null)">{{ _.get(errors?.value, 'volumes', null) }}</Message>
                         <Message class="col-12 p-0 m-0" :closable="false" severity="warn" v-if="temErro(errors?.value, 'volumes[')">Atenção! Volumes com pendências nas informações informadas.</Message>
-                        <Message class="col-12 p-0 m-0" :closable="false" severity="error" v-if="_.get(errors?.value, 'lacres', null)">{{ _.get(errors?.value, 'lacres', null) }}</Message>
                     </div>                    
                     <div class="col-12">
                         <UWFieldSet v-if="localModelValue.modalidadeFrete && localModelValue.modalidadeFrete !== '9'" title="Especificações do Transporte" class="h-full">
                             <div class="p-fluid formgrid grid">
-                                <div class="field md:col-4 pt-0">
+                                <div class="field md:col-6 pt-0">
                                     <span class="p-float-label">
                                         <ToggleButton
                                             v-model="localModelValue.possuiReboque"
@@ -395,7 +384,7 @@ defineExpose({
                                         />
                                     </span>
                                 </div>
-                                <div class="field md:col-4 pt-0">
+                                <div class="field md:col-6 pt-0">
                                     <span class="p-float-label">
                                         <ToggleButton
                                             v-model="localModelValue.possuiVolume"
@@ -409,20 +398,6 @@ defineExpose({
                                         />
                                     </span>
                                 </div>
-                                <div class="field md:col-4 pt-0">
-                                    <span class="p-float-label">
-                                        <ToggleButton
-                                            v-model="localModelValue.informarLacres"
-                                            onLabel="Não informar lacres"
-                                            offLabel="Informar lacres"
-                                            onIcon="pi pi-lock-open"
-                                            offIcon="pi pi-lock"
-                                            class="w-full"
-                                            aria-label="Do you confirm"
-                                            @change="changeInformaLacres"
-                                        />
-                                    </span>
-                                </div>
                             </div>
                             <TabView class="col-12" v-model:activeIndex="activeIndexTabView">
                                 <TabPanel header="Reboques" v-if="localModelValue.possuiReboque">
@@ -430,19 +405,6 @@ defineExpose({
                                 </TabPanel>
                                 <TabPanel header="Volumes" v-if="localModelValue.possuiVolume">
                                     <Volumes v-model="localModelValue.volumes" :errors="errors" />
-                                </TabPanel>
-                                <TabPanel header="Lacres" v-if="localModelValue.informarLacres">
-                                    <div class="field col-12">
-                                        <span class="p-fluid p-float-label">
-                                            <Chips id="chips" v-model="localModelValue.lacres" style="width: 100%" />
-                                            <label for="chips">Lacres</label>
-                                        </span>
-                                        <!-- <span v-if="errors">
-                                            <span v-for="(error, index) of errors" :key="index">
-                                                <small class="p-error">{{ error }}</small>
-                                            </span>
-                                        </span> -->
-                                    </div>
                                 </TabPanel>
                             </TabView>
                         </UWFieldSet>

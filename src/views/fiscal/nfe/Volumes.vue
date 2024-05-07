@@ -27,8 +27,7 @@ const volumesModelValue = computed({
 });
 
 const volumeSelecionado = ref();
-const volumeEmDigitacao = ref({
-});
+const volumeEmDigitacao = ref({});
 const indexSelecionado = ref();
 
 const adicionarVolume = () => {
@@ -163,13 +162,24 @@ const temErro = (str) => {
             <div class="grid nested-grid">
                 <div class="col-12">
                     <div class="p-fluid formgrid grid">
-                        <UWInput id="quantidade" label="Quantidade" required v-model="volumeEmDigitacao.quantidade" classContainer="col-12 md:col-4" :errors="_.get(props.errors.value, `volumes[${indexSelecionado}].quantidade`, null)"/>
-                        <UWInput id="especie" label="Espécie" required v-model="volumeEmDigitacao.especie" classContainer="col-12 md:col-4" :errors="_.get(props.errors.value, `volumes[${indexSelecionado}].especie`, null)"/>
+                        <UWInput id="quantidade" label="Quantidade" required v-model="volumeEmDigitacao.quantidade" classContainer="col-12 md:col-4" :errors="_.get(props.errors.value, `volumes[${indexSelecionado}].quantidade`, null)" />
+                        <UWInput id="especie" label="Espécie" required v-model="volumeEmDigitacao.especie" classContainer="col-12 md:col-4" :errors="_.get(props.errors.value, `volumes[${indexSelecionado}].especie`, null)" />
                         <UWInput id="marca" label="Marca" v-model="volumeEmDigitacao.marca" classContainer="col-12 md:col-4" />
                         <UWInput id="numeracao" label="Numeração" v-model="volumeEmDigitacao.numeracao" classContainer="col-12 md:col-4" />
                         <UWInput id="pesoLiquido" label="Peso Líquido (kg)" v-model="volumeEmDigitacao.pesoLiquido" classContainer="col-12 md:col-4" />
                         <UWInput id="pesoBruto" label="Peso Bruto (kg)" v-model="volumeEmDigitacao.pesoBruto" classContainer="col-12 md:col-4" />
                     </div>
+                </div>
+                <div class="field col-12">
+                    <span class="p-fluid p-float-label">
+                        <Chips id="chips" v-model="volumeEmDigitacao.lacres" style="width: 100%" />
+                        <label for="chips">Lacres</label>
+                    </span>
+                    <!-- <span v-if="errors">
+                                            <span v-for="(error, index) of errors" :key="index">
+                                                <small class="p-error">{{ error }}</small>
+                                            </span>
+                                        </span> -->
                 </div>
             </div>
         </div>

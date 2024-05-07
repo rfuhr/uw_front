@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import { ItemService } from '@/service';
 import { useFormatString } from '@/composables/useFormatString';
+import moment from 'moment'
 
 const { truncate } = useFormatString();
 
@@ -33,6 +34,14 @@ const createSchema = () => {
     });
 };
 
+const formataData = (data) => {
+    if (data) {
+        moment.locale('pt-br')
+        return moment(data).format('DD/MM/YYYY')
+    }
+    return ''
+}
+
 const emit = defineEmits(['update:modelValue']);
 
 const itemsModelValue = computed({
@@ -54,11 +63,31 @@ const adicionarItem = () => {
 
 const confirmarSituacTrib = async () => {
     if (modeDialog.value === 'add') {
-        itemsModelValue.value.push({ ...formData.value });
+        const item = itemsModelValue.value.filter((item) => item.itemId === formData.value.itemId);
+        let existe = false;
+        if (item.length > 0) {
+            item.map((item) => {
+                console.log(item)
+                if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
+                    || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
+                    || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
+                {
+                    existe = true;
+                }
+            })
+            if (existe) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Não é possível incluir o Item, pois o mesmo já possui uma Configuração nesse Período.', life: 5000 });
+                return
+            }
+        }
+
+        if (!existe) {
+            itemsModelValue.value.push({ ...formData.value });
+        }
     } else {
         itemsModelValue.value[indexItemEdicao.value] = { ...formData.value };
     }
-    console.log(itemsModelValue.value)
+    emit('update:modelValue', itemsModelValue.value);
     visibleDialog.value = false;
 };
 
@@ -83,8 +112,9 @@ const handleDelete = (event, data) => {
         rejectLabel: 'Cancelar',
         acceptLabel: 'Excluir',
         accept: () => {
-            itemsModelValue.value = itemsModelValue.value.filter((item) => item !== data);
+            const listaFiltrada = itemsModelValue.value.filter((item) => item !== data);
             toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Item removido com sucesso', life: 5000 });
+            emit('update:modelValue', listaFiltrada);
         },
         reject: () => {
 
@@ -122,12 +152,12 @@ const changeItem = async (object) => {
             <Column field="itemNome" header="Item" style="width: 35%"> </Column>
             <Column header="Início Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataInicioVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataInicioVigencia) }}</span>
                 </template>
             </Column>
             <Column header="Final Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataFinalVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataFinalVigencia) }}</span>
                 </template>
             </Column>
 

@@ -4,6 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import { TipoIncentivoFiscalService } from '@/service';
+import moment from 'moment'
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -24,11 +25,19 @@ const props = defineProps({
 
 const createSchema = () => {
     return yup.object().shape({
-        tipoIncentivoFiscalId: yup.number().required('Tipo de Incentivo Fiscal é obrigatório.'),
+        tipoIncentivoFiscalId: yup.number().required('Incentivo Fiscal é obrigatório.'),
         dataInicioVigencia: yup.date().required('Data Início Vigência é obrigatório.'),
         dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.'),
     });
 };
+
+const formataData = (data) => {
+    if (data) {
+        moment.locale('pt-br')
+        return moment(data).format('DD/MM/YYYY')
+    }
+    return ''
+}
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -51,11 +60,31 @@ const adicionarTipoIncentFiscal = () => {
 
 const confirmarTipoIncentFiscal = async () => {
     if (modeDialog.value === 'add') {
-        tipoIncentFicalsModelValue.value.push({ ...formData.value });
+        const tipoIncentFiscal = tipoIncentFicalsModelValue.value.filter((item) => item.tipoIncentivoFiscalId === formData.value.tipoIncentivoFiscalId);
+        let existe = false;
+        if (tipoIncentFiscal.length > 0) {
+            tipoIncentFiscal.map((item) => {
+                console.log(item)
+                if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
+                    || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
+                    || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
+                {
+                    existe = true;
+                }
+            })
+            if (existe) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Não é possível incluir o Incentivo Fiscal, pois o mesmo já possui uma Configuração nesse Período.', life: 5000 });
+                return
+            }
+        }
+
+        if (!existe) {
+            tipoIncentFicalsModelValue.value.push({ ...formData.value });
+        }
     } else {
         tipoIncentFicalsModelValue.value[indexTipoIncentFiscalEdicao.value] = { ...formData.value };
     }
-    console.log(tipoIncentFicalsModelValue.value)
+    emit('update:modelValue', tipoIncentFicalsModelValue.value);
     visibleDialog.value = false;
 };
 
@@ -80,14 +109,26 @@ const handleDelete = (event, data) => {
         rejectLabel: 'Cancelar',
         acceptLabel: 'Excluir',
         accept: () => {
-            tipoIncentFicalsModelValue.value = tipoIncentFicalsModelValue.value.filter((item) => item !== data);
-            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Tipo de Incentivo Fiscal removido com sucesso', life: 5000 });
+            const listaFiltrada = tipoIncentFicalsModelValue.value.filter((item) => item !== data);
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Incentivo Fiscal removido com sucesso', life: 5000 });
+            emit('update:modelValue', listaFiltrada);
         },
         reject: () => {
 
         }
     });
 };
+
+const changeTipoIncentivoFiscal = async (object) => {
+    if (!object) {
+        formData.value.tipoIncentivoFiscalNome = undefined
+        formData.value.tipoIncentivoFiscalCodigo = undefined
+        return;
+    }
+    console.log(object)
+    formData.value.tipoIncentivoFiscalNome = object.nome
+    formData.value.tipoIncentivoFiscalCodigo = object.codigo
+}
 
 </script>
 
@@ -97,23 +138,23 @@ const handleDelete = (event, data) => {
         <Toolbar>
             <template v-slot:start>
                 <div>
-                    <Button label="Adicionar Tipo de Incentivo Fiscal" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarTipoIncentFiscal()" />
+                    <Button label="Adicionar Incentivo Fiscal" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarTipoIncentFiscal()" />
                 </div>
             </template>
         </Toolbar>
         <DataTable ref="dtTipoIncentFiscal" :value="tipoIncentFicalsModelValue" responsiveLayout="scroll">
-            <template #empty> Nenhum Tipo de Incentivo Fiscal informado. </template>
+            <template #empty> Nenhum Incentivo Fiscal informado. </template>
 
-            <Column field="tipoIncentivoFiscalId" header="Identificador" style="width: 12%"> </Column>
-            <Column field="tipoIncentivoFiscalNome" header="Tipo de Incentivo Fiscal" style="width: 35%"> </Column>
+            <Column field="tipoIncentivoFiscalCodigo" header="Código" style="width: 12%"> </Column>
+            <Column field="tipoIncentivoFiscalNome" header="Incentivo Fiscal" style="width: 35%"> </Column>
             <Column header="Início Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataInicioVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataInicioVigencia) }}</span>
                 </template>
             </Column>
             <Column header="Final Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataFinalVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataFinalVigencia) }}</span>
                 </template>
             </Column>
 
@@ -126,7 +167,7 @@ const handleDelete = (event, data) => {
         </DataTable>
     </div>
 
-    <Dialog v-model:visible="visibleDialog" :style="{ width: '70%' }" header="Detalhes da Tipo de Incentivo Fiscal" :modal="true">
+    <Dialog v-model:visible="visibleDialog" :style="{ width: '70%' }" header="Detalhes do Incentivo Fiscal" :modal="true">
         <UWForm :schema="createSchema()" :values="formData" visibleVoltar visibleConfirmar :visibleSave="false" :visibleCancel="false" @doVoltar="handleVoltar()" @doSubmit="confirmarTipoIncentFiscal" labelSalvar="Adicionar">
             <template #errors="{ errors }">
                 <div class="col-12">
@@ -141,6 +182,7 @@ const handleDelete = (event, data) => {
                                 :service="TipoIncentivoFiscalService" 
                                 classContainer="col-12 md:col-12"
                                 :erros="errors?.value?.tipoIncentivoFiscalId"
+                                @changeObject="changeTipoIncentivoFiscal"
                             >
                         </UWSeletor>  
                         <UWCalendar id="dataInicioVigencia" label="Data Início Vigência" required v-model="formData.dataInicioVigencia" :errors="errors.value?.dataInicioVigencia" classContainer="col-12 md:col-3" />

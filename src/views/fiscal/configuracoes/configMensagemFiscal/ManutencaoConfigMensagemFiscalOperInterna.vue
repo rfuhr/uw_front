@@ -4,6 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import { OperacaoInternaService } from '@/service';
+import moment from 'moment'
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -30,6 +31,14 @@ const createSchema = () => {
     });
 };
 
+const formataData = (data) => {
+    if (data) {
+        moment.locale('pt-br')
+        return moment(data).format('DD/MM/YYYY')
+    }
+    return ''
+}
+
 const emit = defineEmits(['update:modelValue']);
 
 const operInternasModelValue = computed({
@@ -51,11 +60,31 @@ const adicionarOperInterna = () => {
 
 const confirmarOperInterna = async () => {
     if (modeDialog.value === 'add') {
-        operInternasModelValue.value.push({ ...formData.value });
+        const operInterna = operInternasModelValue.value.filter((item) => item.operacaoInternaId === formData.value.operacaoInternaId);
+        let existe = false;
+        if (operInterna.length > 0) {
+            operInterna.map((item) => {
+                console.log(item)
+                if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
+                    || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
+                    || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
+                {
+                    existe = true;
+                }
+            })
+            if (existe) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Não é possível incluir a Operação Interna, pois a mesma já possui uma Configuração nesse Período.', life: 5000 });
+                return
+            }
+        }
+
+        if (!existe) {
+            operInternasModelValue.value.push({ ...formData.value });
+        }
     } else {
         operInternasModelValue.value[indexOperInternaEdicao.value] = { ...formData.value };
     }
-    console.log(operInternasModelValue.value)
+    emit('update:modelValue', operInternasModelValue.value);
     visibleDialog.value = false;
 };
 
@@ -80,14 +109,26 @@ const handleDelete = (event, data) => {
         rejectLabel: 'Cancelar',
         acceptLabel: 'Excluir',
         accept: () => {
-            operInternasModelValue.value = operInternasModelValue.value.filter((item) => item !== data);
+            const listaFiltrada = operInternasModelValue.value.filter((item) => item !== data);
             toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação Interna removida com sucesso', life: 5000 });
+            emit('update:modelValue', listaFiltrada);
         },
         reject: () => {
 
         }
     });
 };
+
+const changeOperacaoInterna = async (object) => {
+    if (!object) {
+        formData.value.operacaoInternaNome = undefined
+        formData.value.operacaoInternaSigla = undefined
+        return;
+    }
+    console.log(object)
+    formData.value.operacaoInternaNome = object.nome
+    formData.value.operacaoInternaSigla = object.sigla
+}
 
 </script>
 
@@ -106,14 +147,15 @@ const handleDelete = (event, data) => {
 
             <Column field="operacaoInternaId" header="Identificador" style="width: 12%"> </Column>
             <Column field="operacaoInternaNome" header="Operação Interna" style="width: 35%"> </Column>
+            <Column field="operacaoInternaSigla" header="Sigla" style="width: 15%"> </Column>
             <Column header="Início Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataInicioVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataInicioVigencia) }}</span>
                 </template>
             </Column>
             <Column header="Final Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataFinalVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataFinalVigencia) }}</span>
                 </template>
             </Column>
 
@@ -141,6 +183,7 @@ const handleDelete = (event, data) => {
                                 :service="OperacaoInternaService" 
                                 classContainer="col-12 md:col-12"
                                 :erros="errors?.value?.operacaoInternaId"
+                                @changeObject="changeOperacaoInterna"
                             >
                         </UWSeletor>  
                         <UWCalendar id="dataInicioVigencia" label="Data Início Vigência" required v-model="formData.dataInicioVigencia" :errors="errors.value?.dataInicioVigencia" classContainer="col-12 md:col-3" />

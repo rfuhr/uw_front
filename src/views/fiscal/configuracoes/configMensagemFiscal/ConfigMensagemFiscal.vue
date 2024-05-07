@@ -62,8 +62,8 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão da Configuração da Mensagem Fiscal, ${dados.codigo}, você não poderá reverter isso!`
-    const textoSucesso = `A Configuração da Mensagem Fiscal, ${dados.codigo}, foi excluido com sucesso.`
+    const textoConfirmacao = `Após a exclusão da Configuração da Mensagem Fiscal, ${dados.id}, você não poderá reverter isso!`
+    const textoSucesso = `A Configuração da Mensagem Fiscal, ${dados.id}, foi excluida com sucesso.`
     const textoCancelado = "A exclusão da Configuração da Mensagem Fiscal não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);

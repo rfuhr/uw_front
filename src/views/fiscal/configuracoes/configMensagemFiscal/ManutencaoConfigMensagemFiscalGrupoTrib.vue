@@ -4,6 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import { GrupoTributacaoService } from '@/service';
+import moment from 'moment'
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -30,6 +31,14 @@ const createSchema = () => {
     });
 };
 
+const formataData = (data) => {
+    if (data) {
+        moment.locale('pt-br')
+        return moment(data).format('DD/MM/YYYY')
+    }
+    return ''
+}
+
 const emit = defineEmits(['update:modelValue']);
 
 const grupoTribsModelValue = computed({
@@ -51,11 +60,31 @@ const adicionarGrupoTrib = () => {
 
 const confirmarGrupoTrib = async () => {
     if (modeDialog.value === 'add') {
-        grupoTribsModelValue.value.push({ ...formData.value });
+        const grupoTrib = grupoTribsModelValue.value.filter((item) => item.grupoTributacaoId === formData.value.grupoTributacaoId);
+        let existe = false;
+        if (grupoTrib.length > 0) {
+            grupoTrib.map((item) => {
+                console.log(item)
+                if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
+                    || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
+                    || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
+                {
+                    existe = true;
+                }
+            })
+            if (existe) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Não é possível incluir o Grupo de Tributação, pois o mesmo já possui uma Configuração nesse Período.', life: 5000 });
+                return
+            }
+        }
+
+        if (!existe) {
+            grupoTribsModelValue.value.push({ ...formData.value });
+        }
     } else {
         grupoTribsModelValue.value[indexGrupoTribEdicao.value] = { ...formData.value };
     }
-    console.log(grupoTribsModelValue.value)
+    emit('update:modelValue', grupoTribsModelValue.value);
     visibleDialog.value = false;
 };
 
@@ -80,14 +109,26 @@ const handleDelete = (event, data) => {
         rejectLabel: 'Cancelar',
         acceptLabel: 'Excluir',
         accept: () => {
-            grupoTribsModelValue.value = grupoTribsModelValue.value.filter((item) => item !== data);
+            const listaFiltrada = grupoTribsModelValue.value.filter((item) => item !== data);
             toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Grupo de Tributação removido com sucesso', life: 5000 });
+            emit('update:modelValue', listaFiltrada);
         },
         reject: () => {
 
         }
     });
 };
+
+const changeGrupoTributacao = async (object) => {
+    if (!object) {
+        formData.value.grupoTributacaoNome = undefined
+        formData.value.grupoTributacaoCodigo = undefined
+        return;
+    }
+    console.log(object)
+    formData.value.grupoTributacaoNome = object.nome
+    formData.value.grupoTributacaoCodigo = object.codigo
+}
 
 </script>
 
@@ -104,16 +145,16 @@ const handleDelete = (event, data) => {
         <DataTable ref="dtGrupoTrib" :value="grupoTribsModelValue" responsiveLayout="scroll">
             <template #empty> Nenhum Grupo de Tributação informado. </template>
 
-            <Column field="grupoTributacaoId" header="Identificador" style="width: 12%"> </Column>
+            <Column field="grupoTributacaoCodigo" header="Código" style="width: 12%"> </Column>
             <Column field="grupoTributacaoNome" header="Grupo de Tributação" style="width: 35%"> </Column>
             <Column header="Início Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataInicioVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataInicioVigencia) }}</span>
                 </template>
             </Column>
             <Column header="Final Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataFinalVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataFinalVigencia) }}</span>
                 </template>
             </Column>
 
@@ -141,6 +182,7 @@ const handleDelete = (event, data) => {
                                 :service="GrupoTributacaoService" 
                                 classContainer="col-12 md:col-12"
                                 :erros="errors?.value?.grupoTributacaoId"
+                                @changeObject="changeGrupoTributacao"
                             >
                         </UWSeletor>  
                         <UWCalendar id="dataInicioVigencia" label="Data Início Vigência" required v-model="formData.dataInicioVigencia" :errors="errors.value?.dataInicioVigencia" classContainer="col-12 md:col-3" />

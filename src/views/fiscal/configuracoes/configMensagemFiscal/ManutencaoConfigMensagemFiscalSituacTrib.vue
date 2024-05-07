@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import { SituacaoTributariaService } from '@/service';
 import { useFormatString } from '@/composables/useFormatString';
+import moment from 'moment'
 
 const { truncate } = useFormatString();
 
@@ -22,7 +23,7 @@ const formData = ref({
 });
 
 const props = defineProps({
-    modelValue: {}
+    modelValue: []
 });
 
 const createSchema = () => {
@@ -32,6 +33,14 @@ const createSchema = () => {
         dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.'),
     });
 };
+
+const formataData = (data) => {
+    if (data) {
+        moment.locale('pt-br')
+        return moment(data).format('DD/MM/YYYY')
+    }
+    return ''
+}
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -54,11 +63,31 @@ const adicionarSituacTrib = () => {
 
 const confirmarSituacTrib = async () => {
     if (modeDialog.value === 'add') {
-        situacTribsModelValue.value.push({ ...formData.value });
+        const situacTrib = situacTribsModelValue.value.filter((item) => item.situacaoTributariaId === formData.value.situacaoTributariaId);
+        let existe = false;
+        if (situacTrib.length > 0) {
+            situacTrib.map((item) => {
+                console.log(item)
+                if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
+                    || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
+                    || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
+                {
+                    existe = true;
+                }
+            })
+            if (existe) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Não é possível incluir a Situação Tributária, pois a mesma já possui uma Configuração nesse Período.', life: 5000 });
+                return
+            }
+        }
+
+        if (!existe) {
+            situacTribsModelValue.value.push({ ...formData.value });
+        }
     } else {
         situacTribsModelValue.value[indexSituacTribEdicao.value] = { ...formData.value };
     }
-    console.log(situacTribsModelValue.value)
+    emit('update:modelValue', situacTribsModelValue.value);
     visibleDialog.value = false;
 };
 
@@ -83,8 +112,9 @@ const handleDelete = (event, data) => {
         rejectLabel: 'Cancelar',
         acceptLabel: 'Excluir',
         accept: () => {
-            situacTribsModelValue.value = situacTribsModelValue.value.filter((item) => item !== data);
+            const listaFiltrada = situacTribsModelValue.value.filter((item) => item !== data);
             toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Situação Tributária removida com sucesso', life: 5000 });
+            emit('update:modelValue', listaFiltrada);
         },
         reject: () => {
 
@@ -120,16 +150,17 @@ const changeSituacaoTributaria = async (object) => {
         <DataTable ref="dtConfigFiscais" :value="situacTribsModelValue" responsiveLayout="scroll">
             <template #empty> Nenhuma Situação Tributária informada. </template>
 
-            <Column field="situacaoTributariaId" header="Identificador" style="width: 12%"> </Column>
+            <Column field="situacaoTributariaTipoTributo" header="Tributo" style="width: 10%"> </Column>
+            <Column field="situacaoTributariaCodigo" header="Código" style="width: 10%"> </Column>
             <Column field="situacaoTributariaNome" header="Situação Tributária" style="width: 35%"> </Column>
             <Column header="Início Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataInicioVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataInicioVigencia) }}</span>
                 </template>
             </Column>
             <Column header="Final Vigência" style="width: 15%">
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataFinalVigencia" dateFormat="dd/mm/yy" />
+                    <span>{{ formataData(slotProps.data.dataFinalVigencia) }}</span>
                 </template>
             </Column>
 

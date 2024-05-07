@@ -4,6 +4,7 @@ import { useConfirm } from "primevue/useconfirm";
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
 import { ConfiguracaoFiscalService } from '@/service';
+import moment from 'moment'
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -24,11 +25,19 @@ const props = defineProps({
 
 const createSchema = () => {
     return yup.object().shape({
-        configuracaoFiscalId: yup.number().required('Parceiro é obrigatório.'),
+        configuracaoFiscalId: yup.number().required('Configuração Fiscal é obrigatória.'),
         dataInicioVigencia: yup.date().required('Data Início Vigência é obrigatório.'),
         dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.'),
     });
 };
+
+const formataData = (data) => {
+    if (data) {
+        moment.locale('pt-br')
+        return moment(data).format('DD/MM/YYYY')
+    }
+    return ''
+}
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -51,11 +60,31 @@ const adicionarConfigFiscal = () => {
 
 const confirmarConfigFiscal = async () => {
     if (modeDialog.value === 'add') {
-        configFiscaisModelValue.value.push({ ...formData.value });
+        const configFiscal = configFiscaisModelValue.value.filter((item) => item.configuracaoFiscalId === formData.value.configuracaoFiscalId);
+        let existe = false;
+        if (configFiscal.length > 0) {
+            configFiscal.map((item) => {
+                console.log(item)
+                if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
+                    || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
+                    || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
+                {
+                    existe = true;
+                }
+            })
+            if (existe) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Não é possível incluir a Configuração Fiscal, pois a mesma já possui uma Configuração nesse Período.', life: 5000 });
+                return
+            }
+        }
+
+        if (!existe) {
+            configFiscaisModelValue.value.push({ ...formData.value });
+        }
     } else {
         configFiscaisModelValue.value[indexConfigFiscalEdicao.value] = { ...formData.value };
     }
-    console.log(configFiscaisModelValue.value)
+    emit('update:modelValue', configFiscaisModelValue.value);
     visibleDialog.value = false;
 };
 
@@ -80,8 +109,9 @@ const handleDelete = (event, data) => {
         rejectLabel: 'Cancelar',
         acceptLabel: 'Excluir',
         accept: () => {
-            configFiscaisModelValue.value = configFiscaisModelValue.value.filter((item) => item !== data);
+            const listaFiltrada = configFiscaisModelValue.value.filter((item) => item !== data);
             toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Configuração Fiscal removida com sucesso', life: 5000 });
+            emit('update:modelValue', listaFiltrada);
         },
         reject: () => {
 
@@ -91,11 +121,25 @@ const handleDelete = (event, data) => {
 
 const changeConfigFiscal = async (object) => {
     if (!object) {
-        formData.value.configuracaoFiscalRegime = ''
+        formData.value.regimeTributarioNome = ''
+        formData.value.ufOrigemSigla = ''
+        formData.value.ufDestinoSigla = ''
+        formData.value.indicadorOperacao = ''
+        formData.value.icms = undefined
+        formData.value.ipi = undefined
+        formData.value.pis = undefined
+        formData.value.cofins = undefined
         return;
     }
     console.log(object)
-    formData.value.configuracaoFiscalRegime = object.nomeRazaoSocial
+    formData.value.regimeTributarioNome = object.regimeTributarioNome
+    formData.value.ufOrigemSigla = object.ufOrigemSigla
+    formData.value.ufDestinoSigla = object.ufDestinoSigla
+    formData.value.indicadorOperacao = object.indicadorOperacao
+    formData.value.icms = object.icms
+    formData.value.ipi = object.ipi
+    formData.value.pis = object.pis
+    formData.value.cofins = object.cofins
 }
 
 </script>
@@ -111,18 +155,41 @@ const changeConfigFiscal = async (object) => {
             </template>
         </Toolbar>
         <DataTable ref="dtConfigFiscais" :value="configFiscaisModelValue" responsiveLayout="scroll">
-            <template #empty> Nenhuma configuração fiscal informada. </template>
+            <template #empty> Nenhuma Configuração Fiscal informada. </template>
 
-            <Column field="configuracaoFiscalId" header="Identificador" style="width: 12%"> </Column>
-            <Column field="configuracaoFiscalRegime" header="Regime Fiscal" style="width: 35%"> </Column>
-            <Column header="Início Vigência" style="width: 15%">
+            <Column field="configuracaoFiscalId" header="Identificador" style="width: 10%"> </Column>
+            <Column field="regimeTributarioNome" header="Regime Fiscal" style="width: 15%"> </Column>
+            <Column field="ufOrigemSigla" header="UF Orig" style="width: 8%"> </Column>
+            <Column field="ufDestinoSigla" header="UF Dest" style="width: 8%"> </Column>
+            <Column field="indicadorOperacao" header="Ent/Sai" style="width: 8%"> </Column>
+            <Column header="ICMS" style="width: 5%"> 
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataInicioVigencia" dateFormat="dd/mm/yy" />
+                    <TriStateCheckbox disabled v-model="slotProps.data.icms" />
                 </template>
             </Column>
-            <Column header="Final Vigência" style="width: 15%">
+            <Column header="IPI" style="width: 5%"> 
                 <template #body="slotProps">
-                    <Calendar v-model="slotProps.row.dataFinalVigencia" dateFormat="dd/mm/yy" />
+                    <TriStateCheckbox disabled v-model="slotProps.data.ipi" />
+                </template>
+            </Column>
+            <Column header="PIS" style="width: 5%"> 
+                <template #body="slotProps">
+                    <TriStateCheckbox disabled v-model="slotProps.data.pis" />
+                </template>
+            </Column>
+            <Column header="COFINS" style="width: 5%"> 
+                <template #body="slotProps">
+                    <TriStateCheckbox disabled v-model="slotProps.data.cofins" />
+                </template>
+            </Column>
+            <Column header="Início Vigência" style="width: 10%">
+                <template #body="slotProps">
+                    <span>{{ formataData(slotProps.data.dataInicioVigencia) }}</span>
+                </template>
+            </Column>
+            <Column header="Final Vigência" style="width: 10%">
+                <template #body="slotProps">
+                    <span>{{ formataData(slotProps.data.dataFinalVigencia) }}</span>
                 </template>
             </Column>
 
@@ -146,7 +213,7 @@ const changeConfigFiscal = async (object) => {
                                 v-model="formData.configuracaoFiscalId" 
                                 optionLabel="regimeTributarioNome" 
                                 optionValue="id" 
-                                placeholder="Selecione a Configuracao Fiscal" 
+                                placeholder="Selecione a Configuração Fiscal" 
                                 :service="ConfiguracaoFiscalService" 
                                 classContainer="col-12 md:col-12"
                                 :erros="errors?.value?.configuracaoFiscalId"

@@ -222,6 +222,7 @@ const beforeShow = () => {
 
 const labelSelector = computed(() => {
     if (parceiro.value) {
+        console.log(parceiro.value)
         return `${parceiro.value.nomeRazaoSocial}`;
     }
     return '';

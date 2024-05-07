@@ -1,8 +1,11 @@
 <script setup>
 import { computed } from 'vue';
 import ManutencaoConfigMensagemFiscalConfigFiscal from './ManutencaoConfigMensagemFiscalConfigFiscal.vue';
-// import ManutencaoParceiroDadosTelefone from './ManutencaoParceiroDadosTelefone.vue';
-// import ManutencaoParceiroDadosEmail from './ManutencaoParceiroDadosEmail.vue';
+import ManutencaoConfigMensagemFiscalSituacTrib from './ManutencaoConfigMensagemFiscalSituacTrib.vue';
+import ManutencaoConfigMensagemFiscalGrupoTrib from './ManutencaoConfigMensagemFiscalGrupoTrib.vue';
+import ManutencaoConfigMensagemFiscalItem from './ManutencaoConfigMensagemFiscalItem.vue';
+import ManutencaoConfigMensagemFiscalOperInterna from './ManutencaoConfigMensagemFiscalOperInterna.vue';
+import ManutencaoConfigMensagemFiscalTipoIncentFiscal from './ManutencaoConfigMensagemFiscalTipoIncentFiscal.vue';
 
 
 const props = defineProps({
@@ -26,19 +29,19 @@ const localModelValue = computed({
             <ManutencaoConfigMensagemFiscalConfigFiscal v-model="localModelValue.configMensagemFiscalConfigFiscals"/>
         </TabPanel>
         <TabPanel header="Situação Tributária" class="col-12">
-            <!-- <ManutencaoParceiroDadosTelefone v-model="localModelValue.telefones"/> -->
+            <ManutencaoConfigMensagemFiscalSituacTrib v-model="localModelValue.configMensagemFiscalSituacTribs"/>
         </TabPanel>
         <TabPanel header="Grupo Tributação" class="col-12">
-            <!-- <ManutencaoParceiroDadosEmail v-model="localModelValue.emails"/> -->
+            <ManutencaoConfigMensagemFiscalGrupoTrib v-model="localModelValue.configMensagemFiscalGrupoTribs"/>
         </TabPanel>
         <TabPanel header="Item" class="col-12">
-            <!-- <ManutencaoParceiroDadosEmail v-model="localModelValue.emails"/> -->
+            <ManutencaoConfigMensagemFiscalItem v-model="localModelValue.configMensagemFiscalItems"/>
         </TabPanel>
         <TabPanel header="Operação Interna" class="col-12">
-            <!-- <ManutencaoParceiroDadosEmail v-model="localModelValue.emails"/> -->
+            <ManutencaoConfigMensagemFiscalOperInterna v-model="localModelValue.configMensagemFiscalOperInternas"/>
         </TabPanel>
         <TabPanel header="Incentivo Fiscal" class="col-12">
-            <!-- <ManutencaoParceiroDadosEmail v-model="localModelValue.emails"/> -->
+            <ManutencaoConfigMensagemFiscalTipoIncentFiscal v-model="localModelValue.configMensagemFiscalTipoIncentFiscals"/>
         </TabPanel>
     </TabView>
 </template>

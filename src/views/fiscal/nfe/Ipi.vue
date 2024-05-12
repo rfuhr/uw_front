@@ -22,7 +22,6 @@ const itemModelValue = computed({
 const selos = ref();
 
 const mostrarValores = () => {
-    console.log('Mostra Valores: ', itemModelValue.value)
     if (
         itemModelValue.value.ipi.configuracaoFiscalIpi.situacaoTributariaCodigo === 0 ||
         itemModelValue.value.ipi.configuracaoFiscalIpi.situacaoTributariaCodigo === 49 ||

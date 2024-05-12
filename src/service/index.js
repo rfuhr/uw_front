@@ -52,4 +52,7 @@ export { default as MensagemFiscalService } from './MensagemFiscalService';
 export { default as TipoIncentivoFiscalService } from './TipoIncentivoFiscalService';
 export { default as ConfigIncentivoFiscalService } from './ConfigIncentivoFiscalService';
 export { default as ConfigMensagemFiscalService } from './ConfigMensagemFiscalService';
+export { default as GrupoContabilService } from './GrupoContabilService';
+export { default as TipoLocalEstoqueService } from './TipoLocalEstoqueService';
+export { default as LocalEstoqueService } from './LocalEstoqueService';
 export { default as ExternalService } from './ExternalService';

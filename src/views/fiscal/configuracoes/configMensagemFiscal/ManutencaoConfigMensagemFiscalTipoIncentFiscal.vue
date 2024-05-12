@@ -64,7 +64,6 @@ const confirmarTipoIncentFiscal = async () => {
         let existe = false;
         if (tipoIncentFiscal.length > 0) {
             tipoIncentFiscal.map((item) => {
-                console.log(item)
                 if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
                     || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
                     || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
@@ -125,7 +124,6 @@ const changeTipoIncentivoFiscal = async (object) => {
         formData.value.tipoIncentivoFiscalCodigo = undefined
         return;
     }
-    console.log(object)
     formData.value.tipoIncentivoFiscalNome = object.nome
     formData.value.tipoIncentivoFiscalCodigo = object.codigo
 }

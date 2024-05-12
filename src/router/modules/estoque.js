@@ -26,6 +26,16 @@ const estoqueRouter = {
             },
             children: [
               {
+                path: 'grupo-contabil',
+                component: () => import('../../views/estoque/cadastro/grupoContabil/GrupoContabil.vue'),
+                name: 'est-cadastro-grupo-contabil',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Cadastro'}, {label: 'Grupo Contábil'}],
+                    tag: 'grupocontabil',
+                    operacao: 'consultar'
+                },
+              },    
+              {
                 path: 'item',
                 name: 'est-cadastro-item',
                 redirect: '/estoque/cadastro/item',
@@ -87,12 +97,32 @@ const estoqueRouter = {
                 },
               },       
               {
+                path: 'local-estoque',
+                component: () => import('../../views/estoque/cadastro/localEstoque/LocalEstoque.vue'),
+                name: 'est-cadastro-local-estoque',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Cadastro'}, {label: 'Local do Estoque'}],
+                    tag: 'localestoque',
+                    operacao: 'consultar'
+                },
+              },       
+              {
                 path: 'classificacao-comercial',
                 component: () => import('../../views/estoque/cadastro/classificacaoComercial/ClassificacaoComercial.vue'),
                 name: 'est-cadastro-classificacao-comercial',
                 meta: {
                     breadcrumb: [{label: 'Estoque'}, {label: 'Cadastro'}, {label: 'Classificação Comercial'}],
                     tag: 'classificacaocomercial',
+                    operacao: 'consultar'
+                },
+              },  
+              {
+                path: 'tipo-local-estoque',
+                component: () => import('../../views/estoque/cadastro/tipoLocalEstoque/TipoLocalEstoque.vue'),
+                name: 'est-cadastro-tipo-local-estoque',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Cadastro'}, {label: 'Tipo de Local do Estoque'}],
+                    tag: 'tipolocalestoque',
                     operacao: 'consultar'
                 },
               },  

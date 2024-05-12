@@ -70,10 +70,10 @@ const createSchema = () => {
             .string()
             .required('Código é obrigatório.')
             .max(30, 'Código deve ter no máximo 30 caracteres.')
-            .matches(mascaraParaRegex(getMascaraParaConta()), 'Código inválido.')
-            .test('is-raiz', 'Estrutura do código não compatível com conta superior.', (value) => {
-                return value === '' || value.startsWith(formData.value?.contaSuperiorCodigo);
-            }),
+            .matches(mascaraParaRegex(getMascaraParaConta()), 'Código inválido.'),
+            // .test('is-raiz', 'Estrutura do código não compatível com conta superior.', (value) => {
+            //     return value === '' || value.startsWith(formData.value?.contaSuperiorCodigo);
+            // }),
         nivel: yup.number().required('Nível é obrigatório.'),
         sintetica: yup.boolean().required('Tipo de Conta é obrigatório.'),
         contaSuperiorId: formData.value.nivel > 1 ? yup.number().required('Conta Superior é obrigatória.') : yup.number().notRequired()

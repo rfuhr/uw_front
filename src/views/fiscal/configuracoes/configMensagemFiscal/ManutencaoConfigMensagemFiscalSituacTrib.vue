@@ -67,7 +67,6 @@ const confirmarSituacTrib = async () => {
         let existe = false;
         if (situacTrib.length > 0) {
             situacTrib.map((item) => {
-                console.log(item)
                 if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
                     || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
                     || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
@@ -129,7 +128,6 @@ const changeSituacaoTributaria = async (object) => {
         formData.value.situacaoTributariaTipoTributo = undefined
         return;
     }
-    console.log(object)
     formData.value.situacaoTributariaNome = object.nome
     formData.value.situacaoTributariaCodigo = object.codigo
     formData.value.situacaoTributariaTipoTributo = object.tipoTributo

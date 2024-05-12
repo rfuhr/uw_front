@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import _ from 'lodash';
 import { OperacaoInternaService as Service, NaturezaOperacaoService } from '@/service';
 import OperacaoInternaConfigFiscal from './OperacaoInternaConfigFiscal.vue';
+import OperacaoInternaConfigEstoque from './OperacaoInternaConfigEstoque.vue';
 
 const schema = yup.object().shape({
     nome: yup.string().required('Nome é obrigatório.').max(120, 'Nome deve ter no máximo 120 caracteres.'),
@@ -38,7 +39,9 @@ const initialValues = () => {
         (formData.nome = undefined),
         (formData.sigla = undefined),
         (formData.caracteristicaFiscal = false),
-        (formData.operacaoInternaFiscal = {});
+        (formData.caracteristicaEstoque = false),
+        (formData.operacaoInternaFiscal = {}),
+        (formData.operacaoInternaEstoque = {});
 };
 
 const formData = reactive({});
@@ -121,15 +124,30 @@ const showModal = async () => {
                     </UWFieldSet>
                 </div>
                 <div class="col-12 pt-0 pb-0">
-                    <UWFieldSet title="Definição de característica" class="h-full pb-0 mb-0">
+                    <UWFieldSet title="Definição de Características" class="h-full pb-0 mb-0">
                     <UWCheckBox
                         label="Tem Característica Fiscal"
                         v-model="formData.caracteristicaFiscal"
-                        classContainer="col-12 md:col-2 mb-0 p-0"
+                        classContainer="col-12 md:col-2 mb-1 p-1"
                         @change="
                             () => {
                                 activeIndexTabView = 0;
                                 formData.operacaoInternaFiscal = {};
+                            }
+                        "
+                    />
+                    <UWCheckBox
+                        label="Tem Característica de Estoque"
+                        v-model="formData.caracteristicaEstoque"
+                        classContainer="col-12 md:col-2 mb-1 p-1"
+                        @change="
+                            () => {
+                                formData.operacaoInternaEstoque = {
+                                    informaLocalEstoque: false,
+                                    informaGrupoContabil: false,
+                                    calculaCustoMedio: false
+                                };
+                                activeIndexTabView = 1;
                             }
                         "
                     />
@@ -138,8 +156,12 @@ const showModal = async () => {
                 <div class="col-12 pt-0">
                     <TabView class="col-12" v-model:activeIndex="activeIndexTabView">
                         <TabPanel header="Configuração Fiscal" class="col-12" :disabled="!formData.caracteristicaFiscal">
-                            <Message v-if="!formData.caracteristicaFiscal" severity="warn" :closable="false">Operação Interna não possui característica fiscal!</Message>
+                            <Message v-if="!formData.caracteristicaFiscal" severity="warn" :closable="false">Operação Interna não possui Característica Fiscal!</Message>
                             <OperacaoInternaConfigFiscal v-if="formData.caracteristicaFiscal" v-model="formData.operacaoInternaFiscal" />
+                        </TabPanel>
+                        <TabPanel header="Configuração Estoque" class="col-12" :disabled="!formData.caracteristicaEstoque">
+                            <Message v-if="!formData.caracteristicaEstoque" severity="warn" :closable="false">Operação Interna não possui Característica de Estoque!</Message>
+                            <OperacaoInternaConfigEstoque v-if="formData.caracteristicaEstoque" v-model="formData.operacaoInternaEstoque" />
                         </TabPanel>
                     </TabView>
                 </div>

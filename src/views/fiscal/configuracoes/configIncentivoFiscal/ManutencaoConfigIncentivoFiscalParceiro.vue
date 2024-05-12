@@ -100,7 +100,6 @@ const handleVoltar = () => {
 };
 
 const handleEdit = (slot) => {
-    console.log(slot.data)
     indexParceiroEdicao.value = slot.index;
     formData.value = { ...slot.data };
     modeDialog.value = 'edit';

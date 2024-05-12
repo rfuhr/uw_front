@@ -67,7 +67,6 @@ const confirmarSituacTrib = async () => {
         let existe = false;
         if (item.length > 0) {
             item.map((item) => {
-                console.log(item)
                 if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
                     || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
                     || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
@@ -128,7 +127,6 @@ const changeItem = async (object) => {
         formData.value.itemCodigo = undefined
         return;
     }
-    console.log(object)
     formData.value.itemNome = object.nome
     formData.value.itemCodigo = object.codigo
 }

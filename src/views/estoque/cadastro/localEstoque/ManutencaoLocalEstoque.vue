@@ -153,6 +153,7 @@ const changeFilialEspecifica = async () => {
                         <UWSeletor
                                 ref="seletorFilial"
                                 id="seletorFilial"
+                                label="Filial"
                                 classContainer="col-12 md:col-8"
                                 v-model="formData.empresaFilialId"
                                 optionLabel="nome"

@@ -128,7 +128,35 @@ const estoqueRouter = {
               },  
             ]
           },
-        
+          {
+            path: 'relatorio',
+            name: 'est-relatorio',
+            meta: {
+                breadcrumb: [{ parent: 'Estoque', label: 'Relatório' }],
+            },
+            children: [
+              {
+                path: 'posicao-fisico-financeira',
+                component: () => import('../../views/estoque/relatorio/posicaoFisicoFinanceira/PosicaoFisicoFinanceira.vue'),
+                name: 'est-relatorio-posicao-fisico-financeira',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Relatório'}, {label: 'Posição de Estoque Físico/Financeira'}],
+                    tag: 'posicaofisicofinanceira',
+                    operacao: 'consultar'
+                },
+              },    
+              {
+                path: 'razao-estoque',
+                component: () => import('../../views/estoque/relatorio/razaoEstoque/RazaoEstoque.vue'),
+                name: 'est-relatorio-razao-estoque',
+                meta: {
+                    breadcrumb: [{label: 'Estoque'}, {label: 'Relatório'}, {label: 'Razão de Estoque'}],
+                    tag: 'razaoestoque',
+                    operacao: 'consultar'
+                },
+              },    
+            ]
+          },          
     ]
 };
 

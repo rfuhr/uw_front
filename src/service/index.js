@@ -55,4 +55,6 @@ export { default as ConfigMensagemFiscalService } from './ConfigMensagemFiscalSe
 export { default as GrupoContabilService } from './GrupoContabilService';
 export { default as TipoLocalEstoqueService } from './TipoLocalEstoqueService';
 export { default as LocalEstoqueService } from './LocalEstoqueService';
+export { default as SaldoEstoqueService } from './SaldoEstoqueService';
+export { default as MovimentoEstoqueService } from './MovimentoEstoqueService';
 export { default as ExternalService } from './ExternalService';

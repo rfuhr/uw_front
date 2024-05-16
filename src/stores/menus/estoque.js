@@ -19,5 +19,13 @@ export const menu = [
             {label: 'Tipo de Local de Estoque', icon: '', to: '/estoque/cadastro/tipo-local-estoque'},
         ]
     },    
+    {
+        label: 'Relatórios', 
+        icon: 'pi pi-fw pi-print',
+        items: [
+            {label: 'Posição de Estoque Físico/Financeiro', icon: '', to: '/estoque/relatorio/posicao-fisico-financeira'},
+            {label: 'Razão do Estoque', icon: '', to: '/estoque/relatorio/razao-estoque'},
+        ]
+    },    
   
 ];

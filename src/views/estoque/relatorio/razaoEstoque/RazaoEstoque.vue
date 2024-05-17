@@ -72,7 +72,7 @@ const imprimirRazaoEstoque = async () => {
         const disposition = response.headers['content-disposition'];
         const fileNameRegex = /filename[^;=\n]=((['"]).?\2|[^;\n]*)/;
         const matches = fileNameRegex.exec(disposition);
-        const filename = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : 'nfe.pdf';
+        const filename = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : 'RazaoEstoque.pdf';
 
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -162,7 +162,11 @@ const imprimirRazaoEstoque = async () => {
             <Column field="empresaFilialId" header="Filial" style="width: 5%"> </Column>
             <Column field="localEstoqueId" header="Local Estoque" style="width: 5%"></Column>
             <Column field="grupoContabilId" header="Grupo Contábil" style="width: 5%"></Column>
-            <Column field="itemNome" header="Item" style="width: 15%"></Column>
+            <Column header="Item" style="width: 15%">
+                <template #body="slotProps">
+                    <span>{{ slotProps.data.itemCodigo }} - {{ slotProps.data.itemNome }}</span>
+                </template>
+            </Column>            
             <Column field="unidadeMedidaSigla" header="U.M." style="width: 5%"></Column>
             <Column field="tipoMovimentoEstoque" header="Tipo Movimento" style="width: 8%"></Column>
             <Column field="operacaoInternaSigla" header="Operação Interna" style="width: 8%"></Column>

@@ -10,8 +10,11 @@ import moment from 'moment';
 import { useFormatNumber } from '@/composables/useFormatNumber';
 import { useToast } from 'primevue/usetoast';
 
+
 const contextoStore = useContexto();
 const errors = reactive({});
+const loading = ref(false);
+const blocked = ref(false);
 
 const resultado = ref();
 const totalRegistros = ref();
@@ -58,37 +61,44 @@ async function validateForm () {
 };
 
 const consultaMovimentoEstoque = async () => {
-  // if (this.validateForm()) {
-    MovimentoEstoqueService.buscaMovimentoEstoque(JSON.stringify(formData)).then((data) => {
-      resultado.value = data;
-      totalRegistros.value = resultado.value.length;
-    })
-  // }
+    if (await validateForm()) {
+        loading.value = true;
+        MovimentoEstoqueService.buscaMovimentoEstoque(JSON.stringify(formData)).then((data) => {
+            resultado.value = data;
+            totalRegistros.value = resultado.value.length;
+            loading.value = false;
+        })
+    }
 }
 
 const imprimirRazaoEstoque = async () => {
-  // if (this.validateForm()) {
-    MovimentoEstoqueService.imprimirRazaoEstoque(JSON.stringify(formData)).then((response) => {
-        const disposition = response.headers['content-disposition'];
-        const fileNameRegex = /filename[^;=\n]=((['"]).?\2|[^;\n]*)/;
-        const matches = fileNameRegex.exec(disposition);
-        const filename = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : 'RazaoEstoque.pdf';
+    if (await validateForm()) {
+        blocked.value = true;
+        MovimentoEstoqueService.imprimirRazaoEstoque(JSON.stringify(formData)).then((response) => {
+            const disposition = response.headers['content-disposition'];
+            const fileNameRegex = /filename[^;=\n]=((['"]).?\2|[^;\n]*)/;
+            const matches = fileNameRegex.exec(disposition);
+            const filename = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : 'RazaoEstoque.pdf';
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-    })
-    .catch(() => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            blocked.value = false;
+        })
+        .catch(() => {
             toast.add({ severity: 'error', summary: 'Falha', detail: 'Erro ao gerar o Relatório de Razão de Estoque.', life: 5000 });
-    });
+            blocked.value = false;
+        });
+    }
 }
 
 </script>
 
 <template>
+    <BlockUI :blocked="blocked" fullScreen />      
     <UWPageBase title="Razão de Estoque">
       <div class="col-12">
         <div class="p-fluid formgrid grid">
@@ -156,6 +166,7 @@ const imprimirRazaoEstoque = async () => {
             :totalRecords="totalRegistros"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[10, 20, 50]"
+            :loading="loading"
         >
             <template #empty> Nenhum Movimento de Estoque encontrado. </template>
 

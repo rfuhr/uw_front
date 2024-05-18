@@ -8,6 +8,8 @@ import { EmpresaFilialService, LocalEstoqueService, GrupoContabilService, ItemSe
 import { SaldoEstoqueService } from '@/service';
 import moment from 'moment';
 import { useFormatNumber } from '@/composables/useFormatNumber';
+import { useToast } from 'primevue/usetoast';
+
 
 const contextoStore = useContexto();
 const errors = reactive({});
@@ -15,6 +17,9 @@ const errors = reactive({});
 const resultado = ref();
 const totalRegistros = ref();
 const { formatNumber } = useFormatNumber();
+const loading = ref(false);
+const blocked = ref(false);
+const toast = useToast();
 
 const schema = yup.object().shape({
     dataInicio: yup.date().required('Data Início é obrigatória.'),
@@ -54,17 +59,51 @@ async function validateForm () {
 };
 
 const consultaSaldoEstoque = async () => {
-  // if (this.validateForm()) {
+  if (await validateForm()) {
+    loading.value = true;
     SaldoEstoqueService.buscaSaldoEstoque(JSON.stringify(formData)).then((data) => {
       resultado.value = data;
       totalRegistros.value = resultado.value.length;
+      loading.value = false;
     })
-  // }
+  }
 }
+
+const imprimirSaldoEstoque = async () => {
+    if (await validateForm()) {
+      blocked.value = true;
+      if (formData.dataInicio.getDate() !== formData.dataFinal.getDate()) {
+        toast.add({ severity: 'error', summary: 'Falha', detail: 'Para gerar o Relatório de Posição Físico Financeiro é necessário que a Data Inicial e Final sejam iguais.', life: 5000 });
+        blocked.value = false;
+      } else {
+        blocked.value = true;
+        SaldoEstoqueService.imprimirSaldoEstoque(JSON.stringify(formData)).then((response) => {
+            const disposition = response.headers['content-disposition'];
+            const fileNameRegex = /filename[^;=\n]=((['"]).?\2|[^;\n]*)/;
+            const matches = fileNameRegex.exec(disposition);
+            const filename = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : 'PosicaoFisicoFinanceiro.pdf';
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            blocked.value = false;
+        })
+        .catch(() => {
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Erro ao gerar o Relatório de Razão de Estoque.', life: 5000 });
+            blocked.value = false;
+        });
+      }
+    }  
+}
+
 
 </script>
 
 <template>
+    <BlockUI :blocked="blocked" fullScreen />
     <UWPageBase title="Posição de Estoque Físico/Financeira">
       <div class="col-12">
         <div class="p-fluid formgrid grid">
@@ -113,7 +152,7 @@ const consultaSaldoEstoque = async () => {
             <Button label="Consultar" class="px-3 py-12 mr-3" icon="pi pi-fw pi-search" outlined severity="success" @click="consultaSaldoEstoque" />
           </div>      
           <div class="col-3">
-            <Button label="Imprimir Relatório" class="px-3 py-12 mr-3" icon="pi pi-fw pi-print" outlined severity="secundary" @click="validateForm" />
+            <Button label="Imprimir Relatório" class="px-3 py-12 mr-3" icon="pi pi-fw pi-print" outlined severity="secundary" @click="imprimirSaldoEstoque" />
           </div>         
         </div>
       </div>
@@ -122,6 +161,7 @@ const consultaSaldoEstoque = async () => {
             :totalRecords="totalRegistros"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[10, 20, 50]"
+            :loading="loading"
         >
             <template #empty> Nenhum Saldo de Estoque encontrado. </template>
 

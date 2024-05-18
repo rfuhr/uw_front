@@ -93,6 +93,7 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import Editor from 'primevue/editor';
+import BlockUI from 'primevue/blockui';
 
 import BlockViewer from '@/components/BlockViewer.vue';
 
@@ -344,6 +345,7 @@ app.component('TreeSelect', TreeSelect);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('Editor', Editor);
+app.component('BlockUI', BlockUI);
 
 app.component('BlockViewer', BlockViewer);
 

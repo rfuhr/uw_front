@@ -308,6 +308,16 @@ const adminRouter = {
             },
           },
           {
+            path: 'historico-padrao',
+            component: () => import('../../views/administrativo/tabela/historicoPadrao/HistoricoPadrao.vue'),
+            name: 'admin-tabela-historicoPadrao',
+            meta: {
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Gerais'}, { label: 'Histórico Padrão' }],
+              tag: 'historicopadrao',
+              operacao: 'consultar'
+            },
+          },
+          {
             path: 'natureza-operacao',
             component: () => import('../../views/administrativo/tabela/naturezaOperacao/NaturezaOperacao.vue'),
             name: 'admin-tabela-natureza-operacao',

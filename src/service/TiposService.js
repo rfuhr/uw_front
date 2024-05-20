@@ -14,7 +14,7 @@ class TiposService {
         return api.get('/fiscal/tipo-tributo');
     }
 
-    getFinalidadeNfe() {
+    getFinalidadeNFe() {
         return api.get('/fiscal/finalidade-nfe');
     }
 

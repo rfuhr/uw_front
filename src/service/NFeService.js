@@ -26,8 +26,12 @@ class NFeService {
         return api.get(`/fiscal/nfe/cache/${cacheId}`);
     }
 
-    enviarNFe(payload) {
+    emitirNFe(payload) {
         return api.post(`/fiscal/nfe`, payload );
+    }
+
+    enviarNFe(nfeId) {
+        return api.get(`/fiscal/nfe/${nfeId}/enviar` );
     }
 }
 

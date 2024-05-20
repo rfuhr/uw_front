@@ -137,7 +137,7 @@ const preventEnterSubmit = (event) => {
             <slot />
         </slot>
 
-        <div class="col-12" v-if="visibleCancel || visibleVoltar || visibleSave || visibleConfirmar">
+        <div class="col-12" >
             <Divider />
             <div class="flex justify-content-end flex-wrap gap-2">
                 <slot name="buttons" />

@@ -35,6 +35,12 @@ const openEdit = (selectId) => {
     }})
 };
 
+const enviarNFe = (selectId) => {
+    NFeService.enviarNFe(selectId).then(() => {
+        
+    });
+};
+
 </script>
 
 <template>
@@ -91,6 +97,7 @@ const openEdit = (selectId) => {
             <Column style="width: 10%">
                 <template #body="slotProps">
                     <Button icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="openEdit(slotProps.data.nfeId)" />
+                    <Button icon="pi pi-send" class="p-button-success p-button-sm mr-2" @click="enviarNFe(slotProps.data.nfeId)" />
                 </template>
             </Column>
         </DataTable>

@@ -53,16 +53,6 @@ const valorTotalNota = computed(() => {
     } else return 0;
 });
 
-// const baseCalculoIcms = computed(() => {
-//     if (itensModelValue.value) {
-//         let total = 0;
-//         itensModelValue.value.itens.array.forEach(item => {
-//             return total += item.detalhamentoItem.baseCalculoIcms;
-//         });
-
-//     } else return 0;
-// });
-
 </script>
 
 <template>

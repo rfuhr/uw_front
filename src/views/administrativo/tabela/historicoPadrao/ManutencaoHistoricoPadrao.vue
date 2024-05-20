@@ -1,14 +1,15 @@
 <script setup>
-import { reactive, computed, defineProps } from 'vue';
+import { ref, reactive, computed, defineProps } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import _ from 'lodash';
-import { FatoGeradorService as Service } from '@/service';
+import { HistoricoPadraoService as Service } from '@/service';
 
 const schema = yup.object().shape({
     nome: yup.string().required('Nome é obrigatório.').max(120, 'Nome deve ter no máximo 120 caracteres.'),
     codigo: yup.number().required('Código é obrigatório.'),
     sigla: yup.string().required('Sigla é obrigatório.').max(3, 'Sigla deve ter no máximo 3 caracteres.'),
+    informaDocumento: yup.string().required('Informar complemento é obrigatório.')
 });
 
 const props = defineProps({
@@ -34,12 +35,19 @@ const formData = reactive({
     nome: undefined
 });
 
+const tipoObrigatoriedade = ref([
+    { name: 'Não Informa', value: 'N' },
+    { name: 'Obrigatório', value: 'S' },
+    { name: 'Opcional', value: 'O' }
+]);
+
 const showDialogComputed = computed({
     get: () => props.showDialog,
     set: (value) => {
         emit('update:showDialog', value);
     }
 });
+
 
 const hideDialog = () => {
     emit('closeDialog');
@@ -48,11 +56,11 @@ const hideDialog = () => {
 const criarRegistro = () => {
     Service.create(formData)
         .then(() => {
-            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Fato gerador criado com sucesso', life: 5000 });
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Histórico padrão criado com sucesso', life: 5000 });
             emit('closeDialog');
         })
         .catch(() => {
-            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível criar o fato gerador.', life: 5000 });
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível criar o histórico padrão.', life: 5000 });
         });
 };
 
@@ -60,11 +68,11 @@ const alterarRegistro = () => {
     formData.id = props.id;
     Service.update(formData)
         .then(() => {
-            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Fato gerador alterado com sucesso', life: 5000 });
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Histórico padrão alterado com sucesso', life: 5000 });
             emit('closeDialog');
         })
         .catch(() => {
-            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível alterar o fato gerador.', life: 5000 });
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível alterar o histórico padrão.', life: 5000 });
         });
 };
 
@@ -98,14 +106,15 @@ const getProximoCodigo = () => {
 </script>
 
 <template>
-    <Dialog v-model:visible="showDialogComputed" :style="{ width: '40%' }" :header="mode === 'create' ? 'Novo Fato Gerador' : 'Alterar Fato Gerador'" :modal="true" :closable="false" @show="showModal">
-        <UWForm :schema="schema" :values="formData" ref="formFatoGerador" @doCancel="hideDialog" @doSubmit="salvarRegistro">
+    <Dialog v-model:visible="showDialogComputed" :style="{ width: '40%' }" :header="mode === 'create' ? 'Novo Histórico Padrão' : 'Alterar Histórico Padrão'" :modal="true" :closable="false" @show="showModal">
+        <UWForm :schema="schema" :values="formData" ref="formHistoricoPadrao" @doCancel="hideDialog" @doSubmit="salvarRegistro">
             <template #errors="{ errors }">
                 <div class="col-12">
                     <div class="p-fluid formgrid grid">
                         <UWInteger id="codigo" label="Código" required autofocus v-model="formData.codigo" :showButton="true" @clickButton="getProximoCodigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
                         <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
                         <UWInput id="sigla" label="Sigla" required v-model="formData.sigla" :errors="errors.value?.sigla" classContainer="col-12 md:col-3" />
+                        <UWPickList id="tipoObrigatoriedade" label="Informar complemento" v-model="formData.informaDocumento" optionLabel="name" optionValue="value" required :options="tipoObrigatoriedade" :errors="errors.value?.tipoObrigatoriedade" classContainer="col-12 md:col-5" />
                     </div>
                 </div>
             </template>

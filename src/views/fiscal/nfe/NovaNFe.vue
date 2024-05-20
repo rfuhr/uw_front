@@ -15,8 +15,10 @@ import ResumoNFe from './ResumoNFe.vue';
 import InformacoesAdicionaisNFe from './InformacoesAdicionaisNFe.vue';
 import { useContexto } from '@/stores';
 import { NFeService } from '@/service';
+import { useFormatDate } from '@/composables/useFormatDate';
 
 const contextoStore = useContexto();
+const { formatToUTC } = useFormatDate();
 
 const router = useRouter();
 const route = useRoute();
@@ -205,7 +207,7 @@ function updateFormData(formData, jsonParsed) {
 const onComplete = async () => {
     const nfeRequest = montarNFeRequest();
     await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
-    await NFeService.enviarNFe(nfeRequest).then((data) => {
+    await NFeService.emitirNFe(nfeRequest).then((data) => {
         Swal.fire('Sucesso', 'NFe enviada com sucesso', 'success');
         router.push({ path: '/fiscal/gerenciador-nfe' });
     }).catch((error) => {
@@ -244,7 +246,9 @@ const salvarSair = async () => {
 const montarNFeRequest = () => {
     const nfeRequest = {
         nfeId: formData.identificacaoNFe.nfeId,
-        identificacaoNFeRequest: {...formData.identificacaoNFe},
+        identificacaoNFeRequest: {...formData.identificacaoNFe, dataHoraEmissao: formatToUTC(formData.identificacaoNFe.dataHoraEmissao), 
+            dataHoraSaidaEntrada: formatToUTC(formData.identificacaoNFe.dataHoraSaidaEntrada)
+        },
         destinatarioNFeRequest: {...formData.destinatario},
         itensNFeRequest: {...formData.itensNFe},
         transporteNFeRequest: {...formData.transporte},

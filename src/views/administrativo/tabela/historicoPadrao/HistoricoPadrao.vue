@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import ManutencaoGrupoFinanceiro from './ManutencaoGrupoFinanceiro.vue';
+import ManutencaoHistoricoPadrao from './ManutencaoHistoricoPadrao.vue';
 import { useDelete } from '@/composables/useDelete';
-import { GrupoFinanceiroService as Service } from '@/service';
+import { HistoricoPadraoService as Service } from '@/service';
 
 const { execute } = useDelete();
 const crudDialog = ref(false);
@@ -52,9 +52,9 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão do grupo financeiro, ${dados.nome}, você não poderá reverter isso!`
-    const textoSucesso = `O grupo financeiro, ${dados.nome}, foi excluido com sucesso.`
-    const textoCancelado = "A exclusão do grupo financeiro não foi realizada :)"
+    const textoConfirmacao = `Após a exclusão do histórico padrão, ${dados.nome}, você não poderá reverter isso!`
+    const textoSucesso = `O histórico padrão, ${dados.nome}, foi excluido com sucesso.`
+    const textoCancelado = "A exclusão do histórico padrão não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);
     if (result) crudlista.value.reload();
@@ -67,6 +67,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="grupofinanceiro" title="Grupo Financeiro" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
-    <ManutencaoGrupoFinanceiro :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
+    <UWPageCrud ref="crudlista" tag="historicopadrao" title="Histórico Padrão" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <ManutencaoHistoricoPadrao :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

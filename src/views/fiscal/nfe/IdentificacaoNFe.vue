@@ -70,7 +70,7 @@ const changeOperacaoInterna = (value) => {
                 localModelValue.value.naturezaOperacao = response.naturezaOperacao.nome;
                 localModelValue.value.naturezaOperacaoSigla = response.naturezaOperacao.sigla;
                 localModelValue.value.destinoOperacao = response.operacaoInternaFiscal.destinoOperacao;
-                localModelValue.value.finalidadeNfe = response.operacaoInternaFiscal.finalidadeNfe;
+                localModelValue.value.finalidadeNFe = response.operacaoInternaFiscal.finalidadeNfe;
                 localModelValue.value.tipoConsumidor = response.operacaoInternaFiscal.tipoConsumidor;
                 localModelValue.value.tipoPresencaComprador = response.operacaoInternaFiscal.tipoPresencaComprador;
             })
@@ -80,7 +80,7 @@ const changeOperacaoInterna = (value) => {
                 localModelValue.value.naturezaOperacao = null;
                 localModelValue.value.naturezaOperacaoSigla = null;
                 localModelValue.value.destinoOperacao = null;
-                localModelValue.value.finalidadeNfe = null;
+                localModelValue.value.finalidadeNFe = null;
                 localModelValue.value.tipoConsumidor = null;
                 localModelValue.value.tipoPresencaComprador = null;
                 localModelValue.value.cfopId = null;
@@ -90,7 +90,7 @@ const changeOperacaoInterna = (value) => {
         localModelValue.value.tipoOperacaoId = null;
         localModelValue.value.naturezaOperacao = null;
         localModelValue.value.destinoOperacao = null;
-        localModelValue.value.finalidadeNfe = null;
+        localModelValue.value.finalidadeNFe = null;
         localModelValue.value.tipoConsumidor = null;
         localModelValue.value.tipoPresencaComprador = null;
         localModelValue.value.cfopId = null;
@@ -107,7 +107,7 @@ onMounted(async () => {
     TiposService.getTipoEmissao().then((data) => {
         tiposEmissao.value = data;
     });
-    TiposService.getFinalidadeNfe().then((data) => {
+    TiposService.getFinalidadeNFe().then((data) => {
         finalidadesNfe.value = data;
     });
     TiposService.getTipoPresencaComprador().then((data) => {
@@ -248,7 +248,7 @@ defineExpose({
                                     classContainer="col-12 md:col-4"
                                 />
                                 <UWPickList id="tipoEmissao" label="Tipo de Emissão" v-model="localModelValue.tipoEmissao" disabled optionLabel="name" optionValue="value" :options="tiposEmissao" classContainer="col-12 md:col-4" />
-                                <UWPickList id="finalidadeNfe" label="Finalidade da NFe" v-model="localModelValue.finalidadeNfe" disabled optionLabel="name" optionValue="value" :options="finalidadesNfe" classContainer="col-12 md:col-4" />
+                                <UWPickList id="finalidadeNFe" label="Finalidade da NFe" v-model="localModelValue.finalidadeNFe" disabled optionLabel="name" optionValue="value" :options="finalidadesNfe" classContainer="col-12 md:col-4" />
                                 <UWPickList id="tipoConsumidor" label="Tipo do Consumidor" v-model="localModelValue.tipoConsumidor" disabled optionLabel="name" optionValue="value" :options="tiposConsumidor" classContainer="col-12 md:col-4" />
                                 <UWPickList
                                     id="tipoPresenca"

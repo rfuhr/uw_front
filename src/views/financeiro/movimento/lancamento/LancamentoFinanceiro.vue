@@ -1,18 +1,20 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 import { useContexto } from '@/stores';
-import { UsuarioService, DepartamentoService, TipoTituloService, CaracteristicaMovimentoFinanceiroService, GrupoFinanceiroService, FatoGeradorService, CarteiraFinanceiraService, ParceiroLocalService, HistoricoPadraoService } from '@/service';
+import { TituloService, UsuarioService, EmpresaFilialService, DepartamentoService, TipoTituloService, CaracteristicaMovimentoFinanceiroService, GrupoFinanceiroService, FatoGeradorService, CarteiraFinanceiraService, ParceiroLocalService, HistoricoPadraoService } from '@/service';
 import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
+import { useFormatDate } from '@/composables/useFormatDate';
 import * as yup from 'yup';
 import _ from 'lodash';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 
 const { formatDocumento } = useFormatDocumentos();
+const { formatToUTC } = useFormatDate();
+
 const confirm = useConfirm();
 const toast = useToast();
-const router = useRouter();
 
 const formData = ref({
     dataMovimento: new Date(),
@@ -21,6 +23,8 @@ const formData = ref({
     parcelas: [],
     historicoPadrao: {}
 });
+
+const enviandoTitulo = ref(false);
 
 const itemsReorganizar = [
     {
@@ -34,6 +38,7 @@ const itemsReorganizar = [
 const createSchema = () => {
     return yup.object().shape({
         dataMovimento: yup.date().required('Data de movimento é obrigatória').max(new Date(), 'Data de Movimento deve ser menor que a data atual.'),
+        empresaFilialId: yup.number().required('Filial é obrigatório'),
         departamentoId: yup.number().required('Departamento é obrigatório'),
         tipoTituloId: yup.number().required('Tipo de Título é obrigatório'),
         caracteristicaMovimentoFinanceiroId: yup.number().required('Característica de Movimento é obrigatória'),
@@ -77,7 +82,7 @@ const getEnderecoCompleto = (objetoEndereco) => {
     return `${objetoEndereco.endereco}, ${objetoEndereco.numero}, ${objetoEndereco.bairro}, ${objetoEndereco.cidadeNome} - ${objetoEndereco.ufSigla}, ${objetoEndereco.paisNome}, CEP: ${objetoEndereco.cep.replace(/^(\d{2})(\d{3})(\d{3})$/, '$1.$2-$3')}`;
 };
 
-const valorTotal = computed(() => {
+const valorLiquido = computed(() => {
     return formData.value.valorTitulo - formData.value.valorRetencoes;
 });
 
@@ -87,7 +92,7 @@ const valorTotalParcelas = computed(() => {
 });
 
 const valorDiferencaParcelas = computed(() => {
-    return valorTotal.value - valorTotalParcelas.value;
+    return valorLiquido.value - valorTotalParcelas.value;
 });
 
 const changeHistoricoPadrao = (object) => {
@@ -113,6 +118,7 @@ onMounted(() => {
     UsuarioService.checkAutonomia(contextoStore.contexto.empresaId, contextoStore.contexto.empresaFilialId, 'ALTDTMOVLCTOFIN').then((data) => {
         temAutonomiaDataMovimento.value = data;
     });
+    formData.value.empresaFilialId = contextoStore.contexto.empresaFilialId;
 });
 
 const handleDeleteParcela = (event, data) => {
@@ -151,8 +157,8 @@ const limparParcelas = (event) => {
 
 const gerarParcelas = () => {
     formData.value.parcelas = [];
-    if (formData.value.quantidadeParcelas && formData.value.dataPrimeiroVencimento && valorTotal) {
-        const valorParcela = (valorTotal.value / formData.value.quantidadeParcelas).toFixed(2);
+    if (formData.value.quantidadeParcelas && formData.value.dataPrimeiroVencimento && valorLiquido) {
+        const valorParcela = (valorLiquido.value / formData.value.quantidadeParcelas).toFixed(2);
         let dataVencimento = new Date(formData.value.dataPrimeiroVencimento);
         for (let i = 0; i < formData.value.quantidadeParcelas; i++) {
             formData.value.parcelas.push({
@@ -180,7 +186,7 @@ const reogarnizarParcelas = () => {
 
 const reogarnizarValoresParcelas = () => {
     if (formData.value.parcelas.length > 0) {
-        const valorParcela = valorTotal.value / formData.value.parcelas.length;
+        const valorParcela = valorLiquido.value / formData.value.parcelas.length;
         formData.value.parcelas.forEach((parcela) => {
             parcela.valorParcela = valorParcela;
         });
@@ -210,6 +216,48 @@ const cancelar = () => {
         reject: () => {}
     });
 };
+
+const salvarRegistro = async () => {
+    enviandoTitulo.value = true;
+    const tituloRequest = montarLancamentoTituloRequest();
+    await TituloService.incluirTitulo(tituloRequest).then(() => {
+        Swal.fire('Sucesso', 'Título gerado com sucesso', 'success');
+        window.location.reload();
+    }).catch(() => {
+        Swal.fire('Falha', 'Ocorreu uma falha no processo de lançamento de título', 'error');
+    }).finally(() => {
+        enviandoTitulo.value = false;
+    });
+};
+
+const montarLancamentoTituloRequest = () => {
+    return {
+        dataMovimento: formatToUTC(formData.value.dataMovimento),
+        empresaFilialId: formData.value.empresaFilialId,
+        departamentoId: formData.value.departamentoId,
+        tipoTituloId: formData.value.tipoTituloId,
+        caracteristicaMovimentoFinanceiroId: formData.value.caracteristicaMovimentoFinanceiroId,
+        grupoFinanceiroId: formData.value.grupoFinanceiroId,
+        fatoGeradorId: formData.value.fatoGeradorId,
+        carteiraFinanceiraId: formData.value.carteiraFinanceiraId,
+        parceiroLocalId: formData.value.parceiroLocalId,
+        historicoPadraoId: formData.value.historicoPadraoId,
+        documento: formData.value.documento,
+        dataDocumento: formData.value.dataDocumento? formatToUTC(formData.value.dataDocumento) : null,
+        complemento: formData.value.complemento,
+        valorTitulo: formData.value.valorTitulo,
+        valorLiquido: valorLiquido.value,
+        observacao: formData.value.observacao,
+        parcelas: formData.value.parcelas.map(parcela => {
+            return {
+                numeroParcela: parcela.numeroParcela,
+                dataVencimento: formatToUTC(parcela.dataVencimento),
+                valorParcela: parcela.valorParcela
+            };
+        })
+    }
+}
+
 </script>
 
 <template>
@@ -221,7 +269,21 @@ const cancelar = () => {
                     <div class="col-12">
                         <UWFieldSet title="Classificação do Título" class="h-full">
                             <div class="p-fluid formgrid grid">
-                                <UWCalendar id="dataMovimento" label="Data de Movimento" :disabled="!temAutonomiaDataMovimento" required v-model="formData.dataMovimento" :errors="errors.value?.dataMovimento" classContainer="col-12 md:col-3" />
+                                <UWCalendar id="dataMovimento" label="Data de Movimento" dateFormat="dd/mm/yy" :disabled="!temAutonomiaDataMovimento" required v-model="formData.dataMovimento" :errors="errors.value?.dataMovimento" classContainer="col-12 md:col-3" />
+                                <UWSeletor
+                                    :id="empresaFilial"
+                                    classContainer="col-12 md:col-3"
+                                    v-model="formData.empresaFilialId"
+                                    optionLabel="nome"
+                                    optionValue="id"
+                                    required
+                                    disabled
+                                    label="Filial"
+                                    :service="EmpresaFilialService"
+                                    placeholder="Selecione a filial"
+                                    :erros="errors.value?.empresaFilialId"
+                                    :columnsFilters="[{ field: 'empresa', value: contextoStore.empresaId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresa.id' }]"
+                                />
                                 <UWSeletor
                                     :id="departamento"
                                     classContainer="col-12 md:col-3"
@@ -233,7 +295,7 @@ const cancelar = () => {
                                     :service="DepartamentoService"
                                     placeholder="Selecione o departamento"
                                     :erros="errors.value?.departamentoId"
-                                    :columnsFilters="[{ field: 'empresaFilial', value: contextoStore.empresaFilialId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresaFilial.id' }]"
+                                    :columnsFilters="[{ field: 'empresaFilial', value: formData.empresaFilialId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresaFilial.id' }]"
                                 />
                                 <UWSeletor
                                     id="tipoTitulo"
@@ -303,7 +365,7 @@ const cancelar = () => {
                             <div class="p-fluid formgrid grid">
                                 <UWParceiroLocal id="parceiroLocal" classContainer="col-12 md:col-3" v-model="formData.parceiroLocalId" required label="Parceiro" :erros="errors.value?.parceiroLocalId" @changeObject="changeParceiroLocal" />
                                 <UWInput id="cpfCnpj" :label="dadosParceiroLocal.tipoPessoa === 'J' ? 'Cnpj' : 'Cpf'" uppercase disabled v-model="dadosParceiroLocal.cpfCnpj" classContainer="col-12 md:col-2" />
-                                <UWInput v-if="dadosParceiroLocal.tipoPessoa" id="nomeLocal" label="Filial" uppercase disabled v-model="dadosParceiroLocal.nomeLocal" classContainer="col-12 md:col-3" />
+                                <UWInput v-if="dadosParceiroLocal.tipoPessoa === 'J'" id="nomeLocal" label="Filial" uppercase disabled v-model="dadosParceiroLocal.nomeLocal" classContainer="col-12 md:col-3" />
                                 <UWInput
                                     id="endereco"
                                     label="Endereço"
@@ -360,7 +422,7 @@ const cancelar = () => {
                             <div class="p-fluid formgrid grid">
                                 <UWCurrency id="valorTitulo" label="Valor do Título" required v-model="formData.valorTitulo" :errors="errors.value?.valorTitulo" classContainer="col-12 md:col-4" />
                                 <UWCurrency id="valorRetencoes" disabled label="Valor das Retenções" required v-model="formData.valorRetencoes" :errors="errors.value?.valorRetencoes" classContainer="col-12 md:col-4" />
-                                <UWCurrency id="valorTotal" disabled label="Valor Líquido" v-model="valorTotal" classContainer="col-12 md:col-4" />
+                                <UWCurrency id="valorLiquido" disabled label="Valor Líquido" v-model="valorLiquido" classContainer="col-12 md:col-4" />
                             </div>
                         </UWFieldSet>
                     </div>
@@ -430,7 +492,7 @@ const cancelar = () => {
                                     <Card style="width: 100%; background-color: whitesmoke" ref="cardDefinicaoParcelas">
                                         <template #content>
                                             <div class="flex gap-2 flex-column align-items-center align-content-center p-fluid formgrid grid">
-                                                <UWCurrency id="valorParcela" label="Quantidade Parcelas" v-model="formData.quantidadeParcelas" classContainer="col-12 md:col-6" />
+                                                <UWInteger id="valorParcela" label="Quantidade Parcelas" v-model="formData.quantidadeParcelas" classContainer="col-12 md:col-6" />
                                                 <UWCalendar id="dataVencimento" label="Primeiro Vencimento" v-model="formData.dataPrimeiroVencimento" classContainer="col-12 md:col-6" />
                                                 <UWCurrency id="valorTotalParcela" label="Total das Parcelas" disabled v-model="valorTotalParcelas" classContainer="col-12 md:col-6" />
                                                 <UWCurrency id="valorDiferença" label="Diferença das Parcelas" disabled v-model="valorDiferencaParcelas" classContainer="col-12 md:col-6" />

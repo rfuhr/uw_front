@@ -27,7 +27,16 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '60%'
+        size: '55%'
+    },
+    {
+        label: 'Sigla',
+        field: 'sigla',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '20%'
     }
 ]);
 

@@ -62,7 +62,8 @@ export const menu = [
                 label: 'Gerais',
                 items: [
                     {label: 'Tipo de Documento', icon: '', to: '/admin/tabela/tipo-documento'},
-                    {label: 'Unidade de Medida', icon: '', to: '/admin/tabela/unidade-medida'}
+                    {label: 'Unidade de Medida', icon: '', to: '/admin/tabela/unidade-medida'},
+                    {label: 'Histórico Padrão', icon: '', to: '/admin/tabela/historico-padrao'}
                 ]
             },
             

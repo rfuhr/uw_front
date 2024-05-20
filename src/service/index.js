@@ -53,3 +53,4 @@ export { default as TipoIncentivoFiscalService } from './TipoIncentivoFiscalServ
 export { default as ConfigIncentivoFiscalService } from './ConfigIncentivoFiscalService';
 export { default as ConfigMensagemFiscalService } from './ConfigMensagemFiscalService';
 export { default as ExternalService } from './ExternalService';
+export { default as TituloService } from './TituloService';

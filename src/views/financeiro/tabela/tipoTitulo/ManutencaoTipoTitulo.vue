@@ -85,6 +85,17 @@ const showModal = async () => {
         });
     }
 };
+
+const getProximoCodigo = () => {
+    Service.getProximoCodigo()
+        .then((data) => {
+            formData.codigo = data;
+        })
+        .catch(() => {
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível obter o próximo código.', life: 5000 });
+        });
+};
+
 </script>
 
 <template>
@@ -93,7 +104,7 @@ const showModal = async () => {
             <template #errors="{ errors }">
                 <div class="col-12">
                     <div class="p-fluid formgrid grid">
-                        <UWInput id="codigo" label="Código" required autofocus v-model="formData.codigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
+                        <UWInteger id="codigo" label="Código" required autofocus v-model="formData.codigo" :showButton="true" @clickButton="getProximoCodigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-3" />
                         <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
                         <UWInput id="sigla" label="Sigla" required v-model="formData.sigla" :errors="errors.value?.sigla" classContainer="col-12 md:col-3" />
                     </div>

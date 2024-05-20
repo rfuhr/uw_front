@@ -64,7 +64,6 @@ const confirmarConfigFiscal = async () => {
         let existe = false;
         if (configFiscal.length > 0) {
             configFiscal.map((item) => {
-                console.log(item)
                 if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
                     || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
                     || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
@@ -131,7 +130,6 @@ const changeConfigFiscal = async (object) => {
         formData.value.cofins = undefined
         return;
     }
-    console.log(object)
     formData.value.regimeTributarioNome = object.regimeTributarioNome
     formData.value.ufOrigemSigla = object.ufOrigemSigla
     formData.value.ufDestinoSigla = object.ufDestinoSigla

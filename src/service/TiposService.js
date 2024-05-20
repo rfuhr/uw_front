@@ -93,6 +93,10 @@ class TiposService {
     getBandeirasCartao() {
         return api.get('/tabela/bandeira-cartao');
     }
+
+    getOperacaoEstoque() {
+        return api.get('/estoque/operacao-estoque');
+    }
 }
 
 

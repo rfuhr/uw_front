@@ -64,7 +64,6 @@ const confirmarOperInterna = async () => {
         let existe = false;
         if (operInterna.length > 0) {
             operInterna.map((item) => {
-                console.log(item)
                 if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
                     || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
                     || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
@@ -125,7 +124,6 @@ const changeOperacaoInterna = async (object) => {
         formData.value.operacaoInternaSigla = undefined
         return;
     }
-    console.log(object)
     formData.value.operacaoInternaNome = object.nome
     formData.value.operacaoInternaSigla = object.sigla
 }

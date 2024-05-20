@@ -268,7 +268,6 @@ const mostrarInformacoesST = computed(() => {
     }
 })
 const showModal = async () => {
-    console.log(localModelValue.value)
     seletorSituacaoTributaria.value.reload(localModelValue.value.situacaoTributariaId);
     seletorMotivoDesoneracao.value.reload(localModelValue.value.motivoDesoneracaoId);
 }
@@ -277,7 +276,6 @@ onMounted(async () => {
     await TiposService.getModalidadeBaseCalculo().then((data) => {
         modalidadesBaseCalculo.value = data;
     });
-    console.log(localModelValue.value)
     seletorSituacaoTributaria.value.reload(localModelValue.value.situacaoTributariaId);
     seletorMotivoDesoneracao.value.reload(localModelValue.value.motivoDesoneracaoId);
 });

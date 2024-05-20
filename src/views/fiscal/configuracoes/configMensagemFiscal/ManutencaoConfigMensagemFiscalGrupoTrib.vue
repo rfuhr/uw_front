@@ -64,7 +64,6 @@ const confirmarGrupoTrib = async () => {
         let existe = false;
         if (grupoTrib.length > 0) {
             grupoTrib.map((item) => {
-                console.log(item)
                 if ((formData.value.dataInicioVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataInicioVigencia <= new Date(item.dataFinalVigencia))
                     || (formData.value.dataFinalVigencia >= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia <= new Date(item.dataFinalVigencia)) 
                     || (formData.value.dataInicioVigencia <= new Date(item.dataInicioVigencia) && formData.value.dataFinalVigencia >= new Date(item.dataFinalVigencia)))
@@ -125,7 +124,6 @@ const changeGrupoTributacao = async (object) => {
         formData.value.grupoTributacaoCodigo = undefined
         return;
     }
-    console.log(object)
     formData.value.grupoTributacaoNome = object.nome
     formData.value.grupoTributacaoCodigo = object.codigo
 }

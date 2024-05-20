@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useAuth } from '../stores'
+import { useAuth, useContexto } from '../stores'
 import Swal from 'sweetalert2'
 import router from '../router/index';
 
@@ -81,9 +81,12 @@ const instance = axios.create({
 instance.interceptors.request.use(
     (config) => {
         const store = useAuth()
+        const contexto = useContexto()
 
         config.headers["Authorization"] = 'Bearer ' + store.token
         config.headers["X-TENANT-ID"] = store.tenant
+        config.headers["X-EMPRESA-ID"] = contexto.contexto.empresaId
+        config.headers["X-EMPRESA-FILIAL-ID"] = contexto.contexto.empresaFilialId
         return config;
     }
 )

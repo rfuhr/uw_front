@@ -1,9 +1,9 @@
 <script setup>
-import { reactive, computed, defineProps } from 'vue';
+import { ref, reactive, computed, defineProps, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import _ from 'lodash';
-import { NcmService as Service } from '@/service';
+import { NcmService as Service, TiposService } from '@/service';
 import { parseISO } from 'date-fns';
 
 const schema = yup.object().shape({
@@ -31,6 +31,8 @@ const props = defineProps({
 const emit = defineEmits(['closeDialog']);
 
 const toast = useToast();
+
+const tiposSinteticoAnalitico = ref();
 
 const formData = reactive({
     nome: undefined,
@@ -93,6 +95,13 @@ const showModal = async () => {
         });
     }
 };
+
+onMounted(async () => {
+    await TiposService.getTipoSinteticoAnalitico().then((data) => {
+        tiposSinteticoAnalitico.value = data;
+    });
+});
+
 </script>
 
 <template>
@@ -103,6 +112,7 @@ const showModal = async () => {
                     <div class="p-fluid formgrid grid">
                         <UWInput id="codigo" label="Código" required autofocus v-model="formData.codigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
                         <UWTextArea id="nome" label="Nome" rows="5" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
+                        <UWPickList id="tipoSinteticoAnalitico" label="Tipo" v-model="formData.tipoSinteticoAnalitico" optionLabel="name" optionValue="value" required :options="tiposSinteticoAnalitico" classContainer="col-12 md:col-4" />
                         <UWCalendar id="dataInicioVigencia" label="Data Início Vigência" required v-model="formData.dataInicioVigencia" :errors="errors.value?.dataInicioVigencia" classContainer="col-12 md:col-4" />
                         <UWCalendar id="dataFinalVigencia" label="Data Final Vigência" required v-model="formData.dataFinalVigencia" :errors="errors.value?.dataFinalVigencia" classContainer="col-12 md:col-4" />
                     </div>

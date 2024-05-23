@@ -97,6 +97,10 @@ class TiposService {
     getOperacaoEstoque() {
         return api.get('/estoque/operacao-estoque');
     }
+
+    getTipoSinteticoAnalitico() {
+        return api.get('/tabela/tipo-sintetico-analitico');
+    }
 }
 
 

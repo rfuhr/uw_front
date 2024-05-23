@@ -27,7 +27,16 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '45%'
+        size: '35%'
+    },
+    {
+        label: 'Tipo',
+        field: 'tipoSinteticoAnaliticoName',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '10%'
     },
     {
         label: 'Início Vigência',

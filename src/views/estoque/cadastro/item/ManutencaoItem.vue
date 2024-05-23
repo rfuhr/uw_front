@@ -72,6 +72,7 @@ onMounted(async () => {
                 formData.ncmId = data.ncmId;
                 formData.grupoTributacaoId = data.grupoTributacaoId;
                 formData.unidadeMedidaTributavelId = data.unidadeMedidaTributavelId;
+                formData.classificacaoOperacaoId = data.classificacaoOperacaoId;
 
                 await NcmService.getById(formData.ncmId).then((data) => {
                     formData.ncm = data;
@@ -408,6 +409,8 @@ const labelNcmSelector = computed(() => {
                                     { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nome', labelFilter: 'Nome' }
                                 ]"
                                 fieldSearchDefault="nome"
+                                :columnsFilters="[{ field: 'tipoSinteticoAnalitico', value: '2', matchMode: 'equal', tipoField: 'text', fieldFilter: 'tipoSinteticoAnalitico' },
+                                ]"
                             >
                                 <template #values> {{ labelNcmSelector }} </template>
 

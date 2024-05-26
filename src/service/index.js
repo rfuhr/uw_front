@@ -59,3 +59,8 @@ export { default as SaldoEstoqueService } from './SaldoEstoqueService';
 export { default as MovimentoEstoqueService } from './MovimentoEstoqueService';
 export { default as ExternalService } from './ExternalService';
 export { default as TituloService } from './TituloService';
+export { default as TipoPrecoService } from './TipoPrecoService';
+export { default as IndiceMarkupService } from './IndiceMarkupService';
+export { default as ConfigMarkupPlanoItemService } from './ConfigMarkupPlanoItemService';
+export { default as ConfigMarkupItemService } from './ConfigMarkupItemService';
+export { default as ConfigCalculoPrecoService } from './ConfigCalculoPrecoService';

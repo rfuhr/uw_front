@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useContexto } from './ContextoStore'
 
 import { menu as menuAdmin } from './menus/admin'
+import { menu as menuComercial } from './menus/comercial'
 import { menu as menuFinanceiro } from './menus/financeiro'
 import { menu as menuFiscal } from './menus/fiscal'
 import { menu as menuEstoque } from './menus/estoque'
@@ -13,6 +14,9 @@ export const useMenu = defineStore('menu', () => {
     const getMenuByModulo = () => {
         if (contexto.getPathModuloSelecionado === 'admin') {
             return menuAdmin;
+        }
+        if (contexto.getPathModuloSelecionado === 'comercial') {
+            return menuComercial;
         }
         if (contexto.getPathModuloSelecionado === 'financeiro') {
             return menuFinanceiro;

@@ -27,6 +27,7 @@ export const menu = [
         label: 'Movimentações', 
         icon: 'pi pi-fw pi-pencil',
         items: [
+            {label: 'Tabela de Preço', icon: '', to: '/comercial/movimentacoes/tabela-preco'},
         ]
     },    
 ];

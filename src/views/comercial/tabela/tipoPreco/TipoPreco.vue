@@ -27,11 +27,20 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '50%'
+        size: '40%'
     },
     {
         label: 'Transferência',
         field: 'transferencia',
+        tipoField: 'boolean',
+        filter: true,
+        matchMode: 'equal',
+        placeholder: '',
+        size: '10%'
+    },   
+    {
+        label: 'Promocional',
+        field: 'promocional',
         tipoField: 'boolean',
         filter: true,
         matchMode: 'equal',

@@ -115,6 +115,24 @@ const showModal = async () => {
                                 />
                             </span>
                         </div>                      
+                        <div class="field md:col-4 pt-0">
+                            <span class="p-float-label">
+                                <ToggleButton
+                                    v-model="formData.promocional"
+                                    onLabel="Promocional"
+                                    offLabel="NÃO é Promocional"
+                                    onIcon="pi pi-lock"
+                                    offIcon="pi pi-lock-open"
+                                    class="w-full"
+                                    aria-label="Do you confirm"
+                                    :pt="{
+                                        root: {
+                                            class: [{ 'h-full': true, 'bg-green-100 border-white': formData.promocional, 'bg-red-100 border-white': !formData.promocional }]
+                                        }
+                                    }"
+                                />
+                            </span>
+                        </div>                      
                     </div>
                 </div>
             </template>

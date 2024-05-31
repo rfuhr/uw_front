@@ -87,12 +87,23 @@ const comercialRouter = {
             ]
         },
         {
-            path: 'movimento',
-            name: 'comercial-movimentos',
+            path: 'movimentacoes',
+            name: 'comercial-movimentacoes',
             meta: {
-                breadcrumb: [{ parent: 'Comercial', label: 'Movimentação' }]
+                breadcrumb: [{ parent: 'Comercial', label: 'Movimentações' }]
             },
-            children: []
+            children: [
+                {
+                    path: 'tabela-preco',
+                    component: () => import('../../views/comercial/movimentacoes/tabelaPreco/TabelaPreco.vue'),
+                    name: 'comercial-movimentacoes-tabelaPreco',
+                    meta: {
+                        breadcrumb: [{ label: 'Comercial' }, { label: 'Movimentações' }, { label: 'Tabela de Preço' }],
+                        tag: 'tabelapreco',
+                        operacao: 'consultar'
+                    }
+                },
+            ]
         }
     ]
 };

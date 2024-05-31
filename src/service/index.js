@@ -64,3 +64,4 @@ export { default as IndiceMarkupService } from './IndiceMarkupService';
 export { default as ConfigMarkupPlanoItemService } from './ConfigMarkupPlanoItemService';
 export { default as ConfigMarkupItemService } from './ConfigMarkupItemService';
 export { default as ConfigCalculoPrecoService } from './ConfigCalculoPrecoService';
+export { default as TabelaPrecoService } from './TabelaPrecoService';

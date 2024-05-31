@@ -3,7 +3,7 @@ import { reactive, computed, defineProps } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import _ from 'lodash';
-import { ConfigCalculoPrecoService as Service, TipoPrecoService, OperacaoInternaService } from '@/service';
+import { ConfigCalculoPrecoService as Service, TipoPrecoService, OperacaoInternaService, EmpresaFilialService, GrupoContabilService } from '@/service';
 import { parseISO } from 'date-fns';
 import  ManutencaoConfigCalculoPrecoOperInterna from './ManutencaoConfigCalculoPrecoOperInterna.vue';
 
@@ -11,6 +11,8 @@ const schema = yup.object().shape({
     dataInicioVigencia: yup.date().required('Data Início Vigência é obrigatório.'),
     dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.'),
     tipoPrecoId: yup.number().required('Tipo de Preço é obrigatório.'),
+    grupoContabilId: yup.number().required('Grupo Contábil é obrigatório.'),
+    empresaFilialId: yup.number().required('Filial da Empresa é obrigatória.'),
     operacaoInternaId: yup.number().required('Operação Interna é obrigatória.'),
     diasBuscaPrecos: yup.number().required('Dias Busca de Preço é obrigatório.'),
     // percentual: yup.number().test('custom-validation', 'Erro de validação personalizado', function (value) {
@@ -45,6 +47,8 @@ const formData = reactive({
     dataFinalVigencia: undefined,
     tipoPrecoId: undefined,
     operacaoInternaId: undefined,
+    empresaFilialId: undefined,
+    grupoContabilId: undefined,
     id: undefined,
     diasBuscaPrecos: undefined,
     aplicaIndicesMarkup: false,
@@ -88,7 +92,9 @@ const alterarRegistro = () => {
 };
 
 const salvarRegistro = async () => {
-    if (props.mode === 'create') {
+    if (formData.configCalculoPrecoOperInternas.length === 0) {
+        toast.add({ severity: 'error', summary: 'Falha', detail: 'Não é possível incluir/alterar a Configuração do Cálculo de Preços, pois não foi informado nenhuma Operação Interna.', life: 5000 });
+    } else if (props.mode === 'create') {
         criarRegistro();
     } else {
         alterarRegistro();
@@ -99,6 +105,8 @@ const showModal = async () => {
     if (props.mode === 'create') {
         formData.tipoPrecoId = undefined;
         formData.operacaoInternaId = undefined;
+        formData.empresaFilialId = undefined;
+        formData.grupoContabilId = undefined;
         formData.dataInicioVigencia = undefined;
         formData.dataFinalVigencia = undefined;
         formData.id = undefined;
@@ -125,6 +133,19 @@ const showModal = async () => {
                     <div class="p-fluid formgrid grid">
                         <UWInput id="identificador" label="Identificador" disabled autofocus v-model="formData.id" classContainer="col-12 md:col-3" />
                         <UWSeletor 
+                                id="seletorEmpresaFilial" 
+                                label="Filial" 
+                                v-model="formData.empresaFilialId" 
+                                required
+                                optionLabel="nome" 
+                                optionValue="id" 
+                                placeholder="Selecione a Filial da Empresa" 
+                                :service="EmpresaFilialService" 
+                                classContainer="col-12 md:col-5"
+                                :erros="errors?.value?.empresaFilialId"
+                            >
+                        </UWSeletor>   
+                        <UWSeletor 
                                 id="seletorTipoPreco" 
                                 label="Tipo de Preço" 
                                 v-model="formData.tipoPrecoId" 
@@ -138,6 +159,19 @@ const showModal = async () => {
                             >
                         </UWSeletor>   
                         <UWSeletor 
+                                id="seletorGrupoContabil" 
+                                label="Grupo Contábil para Busca de Preços nas NFes" 
+                                v-model="formData.grupoContabilId" 
+                                required
+                                optionLabel="nome" 
+                                optionValue="id" 
+                                placeholder="Selecione o Grupo Contábil para Busca de Preços nas NFes" 
+                                :service="GrupoContabilService" 
+                                classContainer="col-12 md:col-6"
+                                :erros="errors?.value?.grupoContabilId"
+                            >
+                        </UWSeletor>   
+                        <UWSeletor 
                                 id="seletorOperacaoInterna" 
                                 label="Operação Interna para Busca de Impostos" 
                                 v-model="formData.operacaoInternaId" 
@@ -146,13 +180,15 @@ const showModal = async () => {
                                 optionValue="id" 
                                 placeholder="Selecione a Operação Interna para Busca de Impostos" 
                                 :service="OperacaoInternaService" 
-                                classContainer="col-12 md:col-5"
+                                classContainer="col-12 md:col-6"
                                 :erros="errors?.value?.operacaoInternaId"
                                 @changeObject="changeOperacao"
                             >
                         </UWSeletor>  
-                        <UWInput id="diasBuscaPrecos" label="Dias Busca de Preços" required autofocus v-model="formData.diasBuscaPrecos" :errors="errors.value?.diasBuscaPrecos" classContainer="col-12 md:col-3" />
-                        <div class="field md:col-3 pt-0">
+                        <UWInput id="diasBuscaPrecos" label="Dias Busca de Preços" required autofocus v-model="formData.diasBuscaPrecos" :errors="errors.value?.diasBuscaPrecos" classContainer="col-12 md:col-4" />
+                        <UWCalendar id="dataInicioVigencia" label="Data Início Vigência" required v-model="formData.dataInicioVigencia" :errors="errors.value?.dataInicioVigencia" classContainer="col-12 md:col-4" />
+                        <UWCalendar id="dataFinalVigencia" label="Data Final Vigência" required v-model="formData.dataFinalVigencia" :errors="errors.value?.dataFinalVigencia" classContainer="col-12 md:col-4" />
+                        <div class="field md:col-4 pt-0">
                             <span class="p-float-label">
                                 <ToggleButton
                                     v-model="formData.aplicaIndicesMarkup"
@@ -170,7 +206,7 @@ const showModal = async () => {
                                 />
                             </span>
                         </div>   
-                        <div class="field md:col-3 pt-0">
+                        <div class="field md:col-4 pt-0">
                             <span class="p-float-label">
                                 <ToggleButton
                                     v-model="formData.aplicaPercentualFixo"
@@ -188,9 +224,7 @@ const showModal = async () => {
                                 />
                             </span>
                         </div>   
-                        <UWDecimal id="percentual" label="Percentual" maximoDigitos="3" :disabled="!formData.aplicaPercentualFixo" :required="formData.aplicaPercentualFixo" v-model="formData.percentual" :errors="errors.value?.percentual" classContainer="col-12 md:col-3" />
-                        <UWCalendar id="dataInicioVigencia" label="Data Início Vigência" required v-model="formData.dataInicioVigencia" :errors="errors.value?.dataInicioVigencia" classContainer="col-12 md:col-4" />
-                        <UWCalendar id="dataFinalVigencia" label="Data Final Vigência" required v-model="formData.dataFinalVigencia" :errors="errors.value?.dataFinalVigencia" classContainer="col-12 md:col-4" />
+                        <UWDecimal id="percentual" label="Percentual" maximoDigitos="3" :disabled="!formData.aplicaPercentualFixo" :required="formData.aplicaPercentualFixo" v-model="formData.percentual" :errors="errors.value?.percentual" classContainer="col-12 md:col-4" />
                     </div>
                     <TabView class="col-12">
                         <TabPanel header="Operações Internas" class="col-12">

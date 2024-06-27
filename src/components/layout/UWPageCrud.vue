@@ -47,6 +47,21 @@ const props = defineProps({
         type: Boolean,
         required: false,
         default: true
+    },
+    showButtonEdit: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
+    showButtonDelete: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
+    showAcoes: {
+        type: Boolean,
+        required: false,
+        default: true
     }
 });
 
@@ -201,20 +216,21 @@ defineExpose({
                 <template #filter="{ filterModel, filterCallback }" v-if="column.filter">
                     <Dropdown v-if="column.filterSeletor" :options="column.filterValues" optionLabel="label" optionValue="value" :placeholder="column.placeholder" showClear v-model="filterModel.value" @change="filterCallback()"/>
                     <TriStateCheckbox v-else-if="column.tipoField === 'boolean'" type="text" v-model="filterModel.value" @change="filterCallback()" />
+                    <InputNumber v-else-if="column.tipoField === 'decimal'" v-model="filterModel.value" mode="decimal" minFractionDigits="0" maxFractionDigits="5" locale="pt-Br" @keydown.enter="filterCallback()" class="p-column-filter" :placeholder="column.placeholder" />
                     <InputText v-else type="text" v-model="filterModel.value" @keydown.enter="filterCallback()" class="p-column-filter" :placeholder="column.placeholder" />
                 </template>
                 <template #body="slotProps">
-                    <span v-if="column.format" v-html="column.format(_.get(slotProps.data, slotProps.field))" />
+                    <div v-if="column.format" v-html="column.format(_.get(slotProps.data, slotProps.field))" :class="{'text-right pr-5': column.tipoField === 'decimal'}" />
                     <i v-else-if="column.tipoField === 'boolean'" class="pi" :class="{ 'font-bold text-green-600 pi-check-circle': _.get(slotProps.data, slotProps.field), 'font-bold text-red-600 pi pi-times-circle': !_.get(slotProps.data, slotProps.field) }"></i>
                     <span v-else-if="column.tipoField === 'maskDate'" >{{ formatDate(slotProps.data[slotProps.field], column.maskDate) }} </span>
                     <span v-else>{{ _.get(slotProps.data, slotProps.field) }} </span>
                 </template>
             </Column>
-            <Column header="Ações" style="width: 10%">
+            <Column v-if="props.showAcoes" header="Ações" style="width: 10%">
                 <template #body="slotProps">
                     <slot name="tableActions" v-bind="slotProps"></slot>
-                    <Button icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="handleEdit(slotProps.data.id)" />
-                    <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete(slotProps.data)" />
+                    <Button v-if="props.showButtonEdit" icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="handleEdit(slotProps.data.id)" />
+                    <Button v-if="props.showButtonDelete" icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete(slotProps.data)" />
                 </template>
             </Column>
         </DataTable>

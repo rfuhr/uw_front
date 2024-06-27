@@ -106,6 +106,11 @@ const getProximoCodigo = () => {
                         <UWInteger id="codigo" label="Código" required autofocus v-model="formData.codigo" :showButton="true" @clickButton="getProximoCodigo" :errors="errors.value?.codigo" classContainer="col-12 md:col-4" />
                         <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />
                         <UWInput id="sigla" label="Sigla" required v-model="formData.sigla" :errors="errors.value?.sigla" classContainer="col-12 md:col-3" />
+                        <UWCheckBox
+                        label="Informa dados bancário"
+                        v-model="formData.informaBanco"
+                        classContainer="col-12 md:col-4 mb-1 p-1"
+                    />
                     </div>
                 </div>
             </template>

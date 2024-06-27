@@ -59,3 +59,17 @@ export { default as SaldoEstoqueService } from './SaldoEstoqueService';
 export { default as MovimentoEstoqueService } from './MovimentoEstoqueService';
 export { default as ExternalService } from './ExternalService';
 export { default as TituloService } from './TituloService';
+export { default as OperacaoAcessoriaFinanceiraService } from './OperacaoAcessoriaFinanceiraService';
+export { default as MotivoEstornoFinanceiroService } from './MotivoEstornoFinanceiroService';
+export { default as BancoService } from './BancoService';
+export { default as AgenciaService } from './AgenciaService';
+export { default as ContaService } from './ContaService';
+export { default as TipoContaCxBcoService } from './TipoContaCxBcoService';
+export { default as OperacaoCaixaBancoService } from './OperacaoCaixaBancoService';
+export { default as MovimentoCaixaBancoService } from './MovimentoCaixaBancoService';   
+export { default as SaldoCaixaBancoService } from './SaldoCaixaBancoService';
+export { default as OperacaoMovimentacaoFinanceiroService } from './OperacaoMovimentoFinanceiroService';
+export { default as NegociacaoService } from './NegociacaoService'
+export { default as ConfigSistemaService } from './ConfigSistemaService'
+export { default as PlanoClassificacaoFinanceiraService } from './PlanoClassificacaoFinanceiraService'
+export { default as ParametroFinanceiroService } from './ParametroFinanceiroService'

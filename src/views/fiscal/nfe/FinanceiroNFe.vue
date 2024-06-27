@@ -220,18 +220,18 @@ defineExpose({
                                         <i v-if="!temErro(errors?.value, `pagamentos[${slotProps.index}]`)" class="pi pi-exclamation-circle text-green-500 text-bold" style="font-size: 1.3rem" />
                                     </template>
                                 </Column>
-                                <Column field="aux.meioPagamento.name" header="Maio de Pagamento" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
+                                <Column field="aux.meioPagamento.name" header="Meio de Pagamento" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="aux.indicadorFormaPagamento.name" header="Forma de Pagamento" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="valorPagamento" header="Valor do Pagamento" style="width: 10%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
                                         <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.valorPagamento, 2) }}</div> </template
-                                    >template>
+                                    >
                                 </Column>
                                 <Column field="aux.tipoIntegracao.name" header="Tipo de Integração" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="grupoCartao.cnpj" header="Cnpj Instituição Pagamento" style="width: 10%; text-align: left" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
                                         <div class="w-full text-center pr-2">{{ formatDocumento(slotProps.data.grupoCartao.cnpj, 2) }}</div> </template
-                                    >template>
+                                    >
                                 </Column>
                                 <Column field="aux.bandeiraCartao.name" header="Bandeira do Cartão" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="grupoCartao.numeroAutorizacao" header="Número da Autorização" style="width: 20%; text-align: left" headerClass="columnHeaderItem"> </Column>

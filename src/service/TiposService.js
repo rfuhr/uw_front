@@ -97,6 +97,10 @@ class TiposService {
     getOperacaoEstoque() {
         return api.get('/estoque/operacao-estoque');
     }
+
+    getIndicadorDC() {
+        return api.get('/tabela/indicador-dc');
+    }
 }
 
 

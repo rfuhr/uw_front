@@ -347,6 +347,16 @@ const adminRouter = {
         },
         children: [
           {
+            path: 'sistema',
+            component: () => import('../../views/administrativo/configuracao/configSistema/ManutencaoConfigSistema.vue'),
+            name: 'admin-configuracao-sistema',
+            meta: {
+                breadcrumb: [{label: 'Administrativo'}, {label: 'Configurações'}, {label: 'Sistema'}],
+                tag: 'configsistema',
+                operacao: 'consultar'
+            },
+          },
+          {
             path: 'empresa',
             component: () => import('../../views/administrativo/configuracao/configEmpresa/ConfigEmpresa.vue'),
             name: 'admin-configuracao-empresa',

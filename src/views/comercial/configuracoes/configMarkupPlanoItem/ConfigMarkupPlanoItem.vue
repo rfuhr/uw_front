@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import ManutencaoNcm from './ManutencaoNcm.vue';
+import ManutencaoConfigMarkupPlanoItem from './ManutencaoConfigMarkupPlanoItem.vue';
 import { useDelete } from '@/composables/useDelete';
-import { NcmService as Service } from '@/service';
+import { ConfigMarkupPlanoItemService as Service } from '@/service';
 
 const { execute } = useDelete();
 const crudDialog = ref(false);
@@ -12,31 +12,22 @@ const crudlista = ref();
 
 const columns = reactive([
     {
-        label: 'Código',
-        field: 'codigo',
-        tipoField: 'text',
+        label: 'Identificador',
+        field: 'id',
+        tipoField: 'integer',
         filter: true,
         matchMode: 'contains',
         placeholder: '',
         size: '15%'
     },
     {
-        label: 'Nome',
-        field: 'nome',
+        label: 'Plano Classificação Item',
+        field: 'planoClassificacaoItemNome',
         tipoField: 'text',
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '35%'
-    },
-    {
-        label: 'Tipo',
-        field: 'tipoSinteticoAnaliticoName',
-        tipoField: 'text',
-        filter: true,
-        matchMode: 'contains',
-        placeholder: '',
-        size: '10%'
+        size: '45%'
     },
     {
         label: 'Início Vigência',
@@ -71,9 +62,9 @@ const openEdit = (selectId) => {
 
 
 const openDelete = async (dados) => {
-    const textoConfirmacao = `Após a exclusão do NCM, ${dados.codigo}, você não poderá reverter isso!`
-    const textoSucesso = `O NCM, ${dados.codigo}, foi excluido com sucesso.`
-    const textoCancelado = "A exclusão do NCM não foi realizada :)"
+    const textoConfirmacao = `Após a exclusão da Configuração do Mark Up do Plano de Classificação do Item, ${dados.codigo}, você não poderá reverter isso!`
+    const textoSucesso = `A Configuração do Mark Up do Plano de Classificação do Item foi excluída com sucesso.`
+    const textoCancelado = "A exclusão da Configuração do Mark Up do Plano de Classificação do Item não foi realizada :)"
     
     const result = await execute(Service, dados.id, textoConfirmacao, textoSucesso, textoCancelado);
     if (result) crudlista.value.reload();
@@ -86,6 +77,6 @@ const closeDialog = () => {
 </script>
 
 <template>
-    <UWPageCrud ref="crudlista" tag="ncm" title="NCM" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
-    <ManutencaoNcm :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
+    <UWPageCrud ref="crudlista" tag="configMarkupPlanoItem" title="Configuração do Mark Up do Plano de Classificação do Item" :columns="columns" :service="Service" @openNew="openNew" @openEdit="openEdit" @openDelete="openDelete" />
+    <ManutencaoConfigMarkupPlanoItem :id="id" :showDialog="crudDialog" :mode="mode" @closeDialog="closeDialog" />
 </template>

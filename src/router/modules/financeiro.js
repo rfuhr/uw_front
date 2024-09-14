@@ -308,7 +308,76 @@ const financeiroRouter = {
                 },
               },
             ]
-          },   
+        },   
+        {
+            path: 'relatorio',
+            name: 'financeiro-relatorios',
+            meta: {
+                breadcrumb: [{ parent: 'Financeiro', label: 'Relatório' }]
+            },
+            children: [
+                {
+                    path: 'posicao-titulo-aberto',
+                    component: () => import('../../views/financeiro/relatorio/posicaoTituloAberto/PosicaoTituloAberto.vue'),
+                    name: 'financeiro-relatorio-posicao-titulo-aberto',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Relatório' }, { label: 'Contas Pagar e Receber' }, { label: 'Posição de Títulos' }, { label: 'Aberto' }],
+                        tag: 'relatorioposicaotituloaberto',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'adiantamento-devolucao-aberto',
+                    component: () => import('../../views/financeiro/relatorio/adiantamentoDevolucaoAberto/AdiantamentoDevolucaoAberto.vue'),
+                    name: 'financeiro-relatorio-adiantamento-devolucao-aberto',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Relatório' }, { label: 'Contas Pagar e Receber' }, { label: 'Posição de Títulos' }, { label: 'Adiantamento / Devoluções em Aberto' }],
+                        tag: 'relatorioadiantamentodevolucaoaberto',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'posicao-titulo-baixados',
+                    component: () => import('../../views/financeiro/relatorio/posicaoTituloBaixados/PosicaoTituloBaixados.vue'),
+                    name: 'financeiro-relatorio-posicao-titulo-baixados',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Relatório' }, { label: 'Contas Pagar e Receber' }, { label: 'Posição de Títulos' }, { label: 'Baixados' }],
+                        tag: 'relatorioposicaotitulobaixados',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'posicao-titulo-aberto-vencimento',
+                    component: () => import('../../views/financeiro/relatorio/posicaoTituloAbertoVencimento/PosicaoTituloAbertoVencimento.vue'),
+                    name: 'financeiro-relatorio-posicao-titulo-aberto-vencimento',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Relatório' }, { label: 'Contas Pagar e Receber' }, { label: 'Posição de Títulos' }, { label: 'Vencimento' }],
+                        tag: 'relatorioposicaotituloabertovencimento',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'sintetico-geral',
+                    component: () => import('../../views/financeiro/relatorio/sinteticoGeral/SinteticoGeral.vue'),
+                    name: 'financeiro-relatorio-sintetico-geral',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Relatório' }, { label: 'Contas Pagar e Receber' }, { label: 'Posição de Títulos' }, { label: 'Sintético Geral' }],
+                        tag: 'relatoriosinteticogeral',
+                        operacao: 'consultar'
+                    }
+                },
+                {
+                    path: 'sintetico-vencer',
+                    // component: () => import('../../views/financeiro/relatorio/sinteticoAberto/SinteticoAberto.vue'),
+                    name: 'financeiro-relatorio-sintetico-aberto',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Relatório' }, { label: 'Contas Pagar e Receber' }, { label: 'Posição de Títulos' }, { label: 'Sintético Aberto' }],
+                        tag: 'relatoriosinteticoaberto',
+                        operacao: 'consultar'
+                    }
+                },
+            ]
+        },        
     ]
 };
 

@@ -136,7 +136,8 @@ const changeTipoPessoa = () => {
             dadosPessoaJuridica: {},
             enderecos: [],
             telefones: [],
-            emails: []
+            emails: [],
+            propriedades: []
         });
     }
 };

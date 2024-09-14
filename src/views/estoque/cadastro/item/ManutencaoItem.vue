@@ -73,7 +73,9 @@ onMounted(async () => {
                 formData.grupoTributacaoId = data.grupoTributacaoId;
                 formData.unidadeMedidaTributavelId = data.unidadeMedidaTributavelId;
                 formData.classificacaoOperacaoId = data.classificacaoOperacaoId;
-
+                formData.informaPesagemAgricola = data.informaPesagemAgricola;
+                formData.usaClassificacaoAgricola = data.usaClassificacaoAgricola;
+                
                 await NcmService.getById(formData.ncmId).then((data) => {
                     formData.ncm = data;
                     seletorNcm.value.reload(formData.ncmId);
@@ -255,11 +257,6 @@ const labelNcmSelector = computed(() => {
                                         class="w-full"
                                         aria-label="Do you confirm"
                                         @change="changeControlaEstoque"
-                                        :pt="{
-                                            root: {
-                                                class: [{ 'h-full': true, 'bg-green-100 border-white': formData.controlaEstoque, 'bg-red-100 border-white': !formData.controlaEstoque }]
-                                            }
-                                        }"
                                     />
                                 </span>
                             </div>
@@ -436,6 +433,28 @@ const labelNcmSelector = computed(() => {
                             <UWSeletor classContainer="col-12 md:col-3" v-model="formData.grupoTributacaoId" optionLabel="nome" optionValue="id" label="Grupo de Tributação" :service="GrupoTributacaoService" placeholder="Selecione o Grupo de Tributação" :erros="errors.value?.grupoTributacaoId" />
                         </div>
                     </TabPanel>
+                    <TabPanel header="Agrícola" class="col-12">
+                        <div class="p-fluid formgrid grid">
+                            <UWToggleButton
+                                id="informaPesagemAgricola"
+                                classContainer="col-12 md:col-3"
+                                v-model="formData.informaPesagemAgricola"
+                                onLabel="Informa na Pesagem"
+                                offLabel="Não Informa na Pesagem"
+                                onIcon="pi pi-thumbs-up"
+                                offIcon="pi pi-thumbs-down"
+                            />
+                            <UWToggleButton
+                                id="usaClassificacaoAgricola"
+                                classContainer="col-12 md:col-3"
+                                v-model="formData.usaClassificacaoAgricola"
+                                onLabel="Usa Classificação"
+                                offLabel="Não Usa Classificação"
+                                onIcon="pi pi-thumbs-up"
+                                offIcon="pi pi-thumbs-down"
+                            />
+                        </div>
+                    </TabPanel>                    
                 </TabView>
             </template>
         </UWForm>

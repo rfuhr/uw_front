@@ -39,7 +39,7 @@
                 </UWForm>
             </div>
         </div>
-        <div :style="{ backgroundImage: 'url(/erp/images/pages/login-bg.jpg)' }" class="hidden lg:flex flex-1 align-items-center justify-content-center bg-cover">
+        <div :style="{ backgroundImage: 'url(/erp/images/pages/login-bgs.jpg)' }" class="hidden lg:flex flex-1 align-items-center justify-content-center bg-cover">
             <img src="/layout/images/logo/logo-login.png" alt="" />
         </div>
     </div>

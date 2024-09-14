@@ -6,6 +6,10 @@ class ParceiroLocalService extends CrudService {
     getEnderecoNFe(parceiroLocalId) {
         return api.get(`/${this.pathService}/${parceiroLocalId}/endereco/nfe`);
     }
+
+    getPropriedades(parceiroLocalId, filtros) {
+        return api.post(`/${this.pathService}/${parceiroLocalId}/propriedade`, JSON.stringify(filtros));
+    }
 }
 
 

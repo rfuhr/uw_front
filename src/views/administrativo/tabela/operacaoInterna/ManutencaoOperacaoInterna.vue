@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { OperacaoInternaService as Service, NaturezaOperacaoService } from '@/service';
 import OperacaoInternaConfigFiscal from './OperacaoInternaConfigFiscal.vue';
 import OperacaoInternaConfigEstoque from './OperacaoInternaConfigEstoque.vue';
+import OperacaoInternaConfigAgricola from './OperacaoInternaConfigAgricola.vue';
 
 const schema = yup.object().shape({
     nome: yup.string().required('Nome é obrigatório.').max(120, 'Nome deve ter no máximo 120 caracteres.'),
@@ -40,8 +41,10 @@ const initialValues = () => {
         (formData.sigla = undefined),
         (formData.caracteristicaFiscal = false),
         (formData.caracteristicaEstoque = false),
+        (formData.caracteristicaAgricola = false),
         (formData.operacaoInternaFiscal = {}),
-        (formData.operacaoInternaEstoque = {});
+        (formData.operacaoInternaEstoque = {}),
+        (formData.operacaoInternaAgricola = {});
 };
 
 const formData = reactive({});
@@ -124,7 +127,8 @@ const showModal = async () => {
                     </UWFieldSet>
                 </div>
                 <div class="col-12 pt-0 pb-0">
-                    <UWFieldSet title="Definição de Características" class="h-full pb-0 mb-0">
+                    <UWFieldSet title="Definição de Características" class="h-full pb-0 mb-0 w-full">
+                        <div class="p-fluid formgrid grid col-12">
                     <UWCheckBox
                         label="Tem Característica Fiscal"
                         v-model="formData.caracteristicaFiscal"
@@ -151,7 +155,21 @@ const showModal = async () => {
                             }
                         "
                     />
-                    </UWFieldSet>
+                    <UWCheckBox
+                        label="Tem Característica Agrícola"
+                        v-model="formData.caracteristicaAgricola"
+                        classContainer="col-12 md:col-2 mb-1 p-1"
+                        @change="
+                            () => {
+                                formData.operacaoInternaAgricola = {
+                                    selecionaPesagem: false
+                                };
+                                activeIndexTabView = 2;
+                            }
+                        "
+                    />
+                </div>
+                </UWFieldSet>
                 </div>
                 <div class="col-12 pt-0">
                     <TabView class="col-12" v-model:activeIndex="activeIndexTabView">
@@ -162,6 +180,10 @@ const showModal = async () => {
                         <TabPanel header="Configuração Estoque" class="col-12" :disabled="!formData.caracteristicaEstoque">
                             <Message v-if="!formData.caracteristicaEstoque" severity="warn" :closable="false">Operação Interna não possui Característica de Estoque!</Message>
                             <OperacaoInternaConfigEstoque v-if="formData.caracteristicaEstoque" v-model="formData.operacaoInternaEstoque" />
+                        </TabPanel>
+                        <TabPanel header="Configuração Agrícola" class="col-12" :disabled="!formData.caracteristicaAgricola">
+                            <Message v-if="!formData.caracteristicaAgricola" severity="warn" :closable="false">Operação Interna não possui Característica Agrícola!</Message>
+                            <OperacaoInternaConfigAgricola v-if="formData.caracteristicaAgricola" v-model="formData.operacaoInternaAgricola" />
                         </TabPanel>
                     </TabView>
                 </div>

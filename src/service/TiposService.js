@@ -106,6 +106,9 @@ class TiposService {
         return api.get('/tabela/indicador-dc');
     }
 
+    getSituacaoPesagem() {
+        return api.get('/agricola/situacao-pesagem');
+    }
 
 }
 

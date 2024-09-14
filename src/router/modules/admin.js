@@ -375,7 +375,8 @@ const adminRouter = {
                 tag: 'certificado',
                 operacao: 'consultar'
             },
-          }
+          },
+          
         ]
       },    
     ]

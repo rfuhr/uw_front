@@ -10,11 +10,13 @@
 }
 
 .p-togglebutton .p-button {
-    background-color: rgb(215, 243, 215);
+    background: #e9cdf7;
+    border-color: #e9cdf7;
 }
 
 .p-togglebutton.p-highlight .p-button {
-    background: #e9cdf7;
-    border-color: #e9cdf7;
+    background: rgb(215, 243, 215);
+    border-color: rgb(215, 243, 215);
     color: rgba(0, 0, 0, 0.87);
 }
+

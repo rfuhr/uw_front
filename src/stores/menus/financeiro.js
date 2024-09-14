@@ -92,18 +92,18 @@ export const menu = [
                 items: [
                     { label: 'Apuração Financeira', icon: '', to: '/financeiro/relatorios/apuracao-financeira' },
                     { label: 'Diário', icon: '', to: '/financeiro/relatorios/diario' },
-                    { label: 'Documentp de Baixa', icon: '', to: '/financeiro/relatorios/documento-baixa' },
+                    { label: 'Documento de Baixa', icon: '', to: '/financeiro/relatorios/documento-baixa' },
                     { label: 'Ficha Financeira', icon: '', to: '/financeiro/relatorios/ficha-financeira' },
                     {
                         label: 'Posição de Título',
                         icon: '',
                         items: [
-                            { label: 'Adiantamentos / Devoluções', icon: '', to: '/financeiro/relatorios/adiantamento-devolucao' },
-                            { label: 'Em Aberto', icon: '', to: '/financeiro/relatorios/adiantamento-devolucao' },
-                            { label: 'Baixados', icon: '', to: '/financeiro/relatorios/adiantamento-devolucao' },
-                            { label: 'Por Vencimento', icon: '', to: '/financeiro/relatorios/adiantamento-devolucao' },
-                            { label: 'Sintético', icon: '', to: '/financeiro/relatorios/adiantamento-devolucao' },
-                            { label: 'Sintético a Vencer', icon: '', to: '/financeiro/relatorios/adiantamento-devolucao' },
+                            { label: 'Adiantamentos / Devoluções', icon: '', to: '/financeiro/relatorio/adiantamento-devolucao-aberto' },
+                            { label: 'Em Aberto', icon: '', to: '/financeiro/relatorio/posicao-titulo-aberto' },
+                            { label: 'Baixados', icon: '', to: '/financeiro/relatorio/posicao-titulo-baixados' },
+                            { label: 'Por Vencimento', icon: '', to: '/financeiro/relatorio/posicao-titulo-aberto-vencimento' },
+                            { label: 'Sintético', icon: '', to: '/financeiro/relatorio/sintetico-geral' },
+                            { label: 'Sintético em Aberto', icon: '', to: '/financeiro/relatorios/sintetico-aberto' },
                             { label: 'Sintético Vencidos', icon: '', to: '/financeiro/relatorios/adiantamento-devolucao' }
                         ]
                     },

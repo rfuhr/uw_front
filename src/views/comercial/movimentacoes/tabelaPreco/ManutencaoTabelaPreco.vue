@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, defineProps } from 'vue';
+import { ref, reactive, computed, defineProps } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import _ from 'lodash';
@@ -35,6 +35,7 @@ const props = defineProps({
 const emit = defineEmits(['closeDialog']);
 
 const toast = useToast();
+const blocked = ref(false);
 
 const formData = reactive({
     dataInicioVigencia: undefined,
@@ -108,10 +109,12 @@ const showModal = async () => {
         formData.tabelaPrecoItens = [];
         formData.tabelaPrecoEmpresaFiliais = [];
     } else {
+        blocked.value = true;
         await Service.getById(props.id).then((data) => {
             _.assign(formData, data);
             formData.dataInicioVigencia = parseISO(data.dataInicioVigencia)
             formData.dataFinalVigencia = parseISO(data.dataFinalVigencia)
+            blocked.value = false;
         });
     }
 };
@@ -127,6 +130,7 @@ const changeTipoPreco = async (event) => {
 </script>
 
 <template>
+    <BlockUI :blocked="blocked" fullScreen /> 
     <Dialog v-model:visible="showDialogComputed" :style="{ width: '90%' }" :header="mode === 'create' ? 'Nova Tabela de Preços' : 'Alterar Tabela de Preços'" :modal="true" :closable="false" @show="showModal">
         <UWForm :schema="schema" :values="formData" ref="formTabelaPreco" @doCancel="hideDialog" @doSubmit="salvarRegistro">
             <template #errors="{ errors }">
@@ -196,7 +200,7 @@ const changeTipoPreco = async (event) => {
                     </div>
                     <TabView class="col-12">
                         <TabPanel header="Preços dos Itens" class="col-12">
-                            <ManutencaoTabelaPrecoItem v-model="formData.tabelaPrecoItens" />
+                            <ManutencaoTabelaPrecoItem v-model="formData.tabelaPrecoItens" :tipoPrecoId="formData.tipoPrecoId"/>
                         </TabPanel>
                         <TabPanel header="Filiais" class="col-12">
                             <ManutencaoTabelaPrecoEmpresaFilial v-model="formData.tabelaPrecoEmpresaFiliais" />

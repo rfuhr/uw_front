@@ -98,7 +98,7 @@ onMounted(
 
 <template>
     <div class="layout-topbar">
-        <div class="layout-topbar-start" style="background-color: #3B3B3B;">
+        <div class="layout-topbar-start" style="background-color: white;">
             <router-link class="layout-topbar-logo" to="/">
                 <!-- <svg width="167" height="32" viewBox="0 0 167 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="layout-topbar-logo-full">
                     <path

@@ -207,7 +207,8 @@ function updateFormData(formData, jsonParsed) {
 const onComplete = async () => {
     const nfeRequest = montarNFeRequest();
     await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
-    await NFeService.emitirNFe(nfeRequest).then((data) => {
+    await NFeService.emitirNFe(nfeRequest).then((response) => {
+
         Swal.fire('Sucesso', 'NFe enviada com sucesso', 'success');
         router.push({ path: '/fiscal/gerenciador-nfe' });
     }).catch((error) => {

@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import ManutencaoParceiroDadosEndereco from './ManutencaoParceiroDadosEndereco.vue';
 import ManutencaoParceiroDadosTelefone from './ManutencaoParceiroDadosTelefone.vue';
 import ManutencaoParceiroDadosEmail from './ManutencaoParceiroDadosEmail.vue';
-
+import ManutencaoParceiroDadosPropriedade from './ManutencaoParceiroDadosPropriedade.vue';
 
 const props = defineProps({
     modelValue: {}
@@ -30,6 +30,9 @@ const localModelValue = computed({
         </TabPanel>
         <TabPanel header="Emails" class="col-12">
             <ManutencaoParceiroDadosEmail v-model="localModelValue.emails"/>
+        </TabPanel>
+        <TabPanel header="Propriedades" class="col-12">
+            <ManutencaoParceiroDadosPropriedade v-model="localModelValue.propriedades"/>
         </TabPanel>
     </TabView>
 </template>

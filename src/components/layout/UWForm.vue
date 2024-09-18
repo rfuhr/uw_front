@@ -108,6 +108,7 @@ const isValid = () => {
 };
 
 defineExpose({
+    handleSubmit,
     validateForm,
     isValid
 });
@@ -145,6 +146,7 @@ const preventEnterSubmit = (event) => {
                 <Button v-if="visibleVoltar" label="Voltar" icon="pi pi-replay" class="p-button-help" outlined @click="handleVoltar()" />
                 <Button v-if="visibleSave" type="submit" label="Salvar" icon="pi pi-save" :disabled="!isValid()" />
                 <Button v-if="visibleConfirmar" type="submit" :label="props.labelConfirmar" style="color: var(--teal-600);" outlined icon="pi pi-check" :disabled="!isValid()" />
+                <slot name="buttonsRight" />
             </div>
         </div>
     </form>

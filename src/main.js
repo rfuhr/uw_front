@@ -119,6 +119,9 @@ import UWInteger from '@/components/inputs/UWInteger.vue';
 import UWCheckBox from '@/components/inputs/UWCheckBox.vue';
 import UWEstruturaConta from '@/components/diversos/UWEstruturaConta.vue';
 import UWMonth from '@/components/seletores/UWMonth.vue';
+import UWPeso from '@/components/inputs/UWPeso.vue';
+import UWPropriedades from '@/components/seletores/UWPropriedades.vue'; 
+import UWToggleButton from '@/components/inputs/UWToggleButton.vue';
 
 
 import '@/assets/styles.scss';
@@ -371,5 +374,8 @@ app.component('UWInteger', UWInteger);
 app.component('UWEstruturaConta', UWEstruturaConta);
 app.component('UWCheckBox', UWCheckBox);
 app.component('UWMonth', UWMonth);
+app.component('UWPeso', UWPeso);
+app.component('UWPropriedades', UWPropriedades);
+app.component('UWToggleButton', UWToggleButton);
 
 app.mount('#app');

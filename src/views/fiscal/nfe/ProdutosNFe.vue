@@ -257,7 +257,7 @@ const getConfiguracaoFiscal = async () => {
             }
             if (itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins) {
                 itemEmManutencao.value.cofins.configuracaoFiscalCofins = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins;
-                itemEmManutencao.value.cofins.configuracaoFiscalCofinsId = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofinsId;
+                itemEmManutencao.value.cofins.configuracaoFiscalCofinsId = itemEmManutencao.value.configuracaoFiscal.configuracaoFiscalCofins.id;
             }
         }
     } catch (error) {

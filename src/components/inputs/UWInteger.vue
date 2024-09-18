@@ -45,6 +45,7 @@ const localModelValue = computed({
         if (!value) value = 0;
         if (value !== props.modelValue) {
             emit('update:modelValue', value);
+            emit('change');
         }
     }
 });
@@ -59,7 +60,7 @@ const execButton = () => {
     <div :class="['field', classContainer]">
         <div class="p-inputgroup">
             <span class="p-float-label">
-                <InputNumber :id="id" :minFractionDigits=0 :maxFractionDigits=0 locale="pt-Br" :disabled="disabled" v-model="localModelValue" 
+                <InputNumber :id="id" :minFractionDigits=0 :maxFractionDigits=0 locale="pt-Br" :disabled="disabled" v-model="localModelValue"
                 :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs" 
                 />
                 <label :for="id" v-required="required">{{ label }}</label>

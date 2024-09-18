@@ -31,7 +31,7 @@ class NFeService {
     }
 
     enviarNFe(nfeId) {
-        return api.get(`/fiscal/nfe/${nfeId}/enviar` );
+        return api.get(`/fiscal/nfe/${nfeId}/enviar`, { responseType: 'blob' } );
     }
 }
 

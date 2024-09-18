@@ -2,7 +2,22 @@
 import { ref, computed, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import { useContexto } from '@/stores';
-import { TituloService, UsuarioService, EmpresaFilialService, DepartamentoService, TipoTituloService, CaracteristicaMovimentoFinanceiroService, GrupoFinanceiroService, FatoGeradorService, CarteiraFinanceiraService, ParceiroLocalService, HistoricoPadraoService } from '@/service';
+import {
+    TituloService,
+    UsuarioService,
+    EmpresaFilialService,
+    DepartamentoService,
+    TipoTituloService,
+    CaracteristicaMovimentoFinanceiroService,
+    GrupoFinanceiroService,
+    FatoGeradorService,
+    CarteiraFinanceiraService,
+    ParceiroLocalService,
+    HistoricoPadraoService,
+    BancoService,
+    AgenciaService,
+    ContaService
+} from '@/service';
 import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 import { useFormatDate } from '@/composables/useFormatDate';
 import * as yup from 'yup';
@@ -19,12 +34,14 @@ const toast = useToast();
 const formData = ref({
     dataMovimento: new Date(),
     valorTitulo: 0,
-    valorRetencoes: 0,
     parcelas: [],
     historicoPadrao: {}
 });
 
 const enviandoTitulo = ref(false);
+const seletorAgencia = ref(null);
+const seletorConta = ref(null);
+const carteiraSelecionada = ref({});
 
 const itemsReorganizar = [
     {
@@ -83,7 +100,7 @@ const getEnderecoCompleto = (objetoEndereco) => {
 };
 
 const valorLiquido = computed(() => {
-    return formData.value.valorTitulo - formData.value.valorRetencoes;
+    return formData.value.valorTitulo;
 });
 
 const valorTotalParcelas = computed(() => {
@@ -207,7 +224,6 @@ const cancelar = () => {
             formData.value = {
                 dataMovimento: new Date(),
                 valorTitulo: 0,
-                valorRetencoes: 0,
                 parcelas: [],
                 historicoPadrao: {}
             };
@@ -220,14 +236,17 @@ const cancelar = () => {
 const salvarRegistro = async () => {
     enviandoTitulo.value = true;
     const tituloRequest = montarLancamentoTituloRequest();
-    await TituloService.incluirTitulo(tituloRequest).then(() => {
-        Swal.fire('Sucesso', 'Título gerado com sucesso', 'success');
-        window.location.reload();
-    }).catch(() => {
-        Swal.fire('Falha', 'Ocorreu uma falha no processo de lançamento de título', 'error');
-    }).finally(() => {
-        enviandoTitulo.value = false;
-    });
+    await TituloService.incluirTitulo(tituloRequest)
+        .then(() => {
+            Swal.fire('Sucesso', 'Título gerado com sucesso', 'success');
+            window.location.reload();
+        })
+        .catch(() => {
+            Swal.fire('Falha', 'Ocorreu uma falha no processo de lançamento de título', 'error');
+        })
+        .finally(() => {
+            enviandoTitulo.value = false;
+        });
 };
 
 const montarLancamentoTituloRequest = () => {
@@ -243,21 +262,55 @@ const montarLancamentoTituloRequest = () => {
         parceiroLocalId: formData.value.parceiroLocalId,
         historicoPadraoId: formData.value.historicoPadraoId,
         documento: formData.value.documento,
-        dataDocumento: formData.value.dataDocumento? formatToUTC(formData.value.dataDocumento) : null,
+        dataDocumento: formData.value.dataDocumento ? formatToUTC(formData.value.dataDocumento) : null,
         complemento: formData.value.complemento,
         valorTitulo: formData.value.valorTitulo,
         valorLiquido: valorLiquido.value,
         observacao: formData.value.observacao,
-        parcelas: formData.value.parcelas.map(parcela => {
+        contaId: formData.value.contaId,
+        parcelas: formData.value.parcelas.map((parcela) => {
             return {
                 numeroParcela: parcela.numeroParcela,
                 dataVencimento: formatToUTC(parcela.dataVencimento),
                 valorParcela: parcela.valorParcela
             };
         })
-    }
-}
+    };
+};
 
+const onChangeBanco = (value) => {
+    if (value) {
+        seletorAgencia.value.reload();
+        seletorConta.value.reload();
+    } else {
+        formData.value.agenciaId = null;
+        formData.value.contaId = null;
+    }
+};
+
+const onChangeAgencia = (value) => {
+    if (value) {
+        seletorConta.value.reload();
+    } else {
+        formData.value.contaId = null;
+    }
+};
+
+const onChangeCarteira = (value) => {
+    if (value) {
+        carteiraSelecionada.value = value;
+        if (!carteiraSelecionada.value.informaBanco) {
+            formData.value.bancoId = null;
+            formData.value.agenciaId = null;
+            formData.value.contaId = null;
+        }
+    } else {
+        carteiraSelecionada.value = null;
+        formData.value.bancoId = null;
+        formData.value.agenciaId = null;
+        formData.value.contaId = null;
+    }
+};
 </script>
 
 <template>
@@ -269,7 +322,16 @@ const montarLancamentoTituloRequest = () => {
                     <div class="col-12">
                         <UWFieldSet title="Classificação do Título" class="h-full">
                             <div class="p-fluid formgrid grid">
-                                <UWCalendar id="dataMovimento" label="Data de Movimento" dateFormat="dd/mm/yy" :disabled="!temAutonomiaDataMovimento" required v-model="formData.dataMovimento" :errors="errors.value?.dataMovimento" classContainer="col-12 md:col-3" />
+                                <UWCalendar
+                                    id="dataMovimento"
+                                    label="Data de Movimento"
+                                    dateFormat="dd/mm/yy"
+                                    :disabled="!temAutonomiaDataMovimento"
+                                    required
+                                    v-model="formData.dataMovimento"
+                                    :errors="errors.value?.dataMovimento"
+                                    classContainer="col-12 md:col-3"
+                                />
                                 <UWSeletor
                                     :id="empresaFilial"
                                     classContainer="col-12 md:col-3"
@@ -356,6 +418,7 @@ const montarLancamentoTituloRequest = () => {
                                     :service="CarteiraFinanceiraService"
                                     placeholder="Selecione a carteira financeira"
                                     :erros="errors.value?.carteiraFinanceiraId"
+                                    @changeObject="onChangeCarteira"
                                 />
                             </div>
                         </UWFieldSet>
@@ -417,16 +480,66 @@ const montarLancamentoTituloRequest = () => {
                             </div>
                         </UWFieldSet>
                     </div>
-                    <div class="col-6">
+                    <div class="col-2">
                         <UWFieldSet title="Valores do Título" class="h-full">
                             <div class="p-fluid formgrid grid">
-                                <UWCurrency id="valorTitulo" label="Valor do Título" required v-model="formData.valorTitulo" :errors="errors.value?.valorTitulo" classContainer="col-12 md:col-4" />
-                                <UWCurrency id="valorRetencoes" disabled label="Valor das Retenções" required v-model="formData.valorRetencoes" :errors="errors.value?.valorRetencoes" classContainer="col-12 md:col-4" />
-                                <UWCurrency id="valorLiquido" disabled label="Valor Líquido" v-model="valorLiquido" classContainer="col-12 md:col-4" />
+                                <UWCurrency id="valorTitulo" label="Valor do Título" required v-model="formData.valorTitulo" :errors="errors.value?.valorTitulo" classContainer="col-12 md:col-12" />
                             </div>
                         </UWFieldSet>
                     </div>
-                    <div class="col-6">
+                    <div class="col-10">
+                        <UWFieldSet title="Dados Bancários" class="h-full">
+                            <div class="p-fluid formgrid grid">
+                                <UWSeletor
+                                    id="banco"
+                                    classContainer="col-12 md:col-4"
+                                    v-model="formData.bancoId"
+                                    optionLabel="nome"
+                                    optionValue="id"
+                                    :required="carteiraSelecionada.informaBanco"
+                                    :disabled="!carteiraSelecionada.informaBanco"
+                                    label="Banco"
+                                    :service="BancoService"
+                                    placeholder="Selecione o banco"
+                                    :erros="errors.value?.bancoId"
+                                    @changeObject="onChangeBanco"
+                                />
+                                <UWSeletor
+                                    id="agencia"
+                                    ref="seletorAgencia"
+                                    classContainer="col-12 md:col-4"
+                                    v-model="formData.agenciaId"
+                                    optionLabel="nome"
+                                    optionValue="id"
+                                    :required="carteiraSelecionada.informaBanco"
+                                    :disabled="!carteiraSelecionada.informaBanco"
+                                    label="Agência"
+                                    :service="AgenciaService"
+                                    placeholder="Selecione a agência"
+                                    :columnsFilters="[{ field: 'banco', value: formData.bancoId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'banco.id' }]"
+                                    :erros="errors.value?.agenciaId"
+                                    @changeObject="onChangeAgencia"
+                                />
+                                <UWSeletor
+                                    id="conta"
+                                    ref="seletorConta"
+                                    classContainer="col-12 md:col-4"
+                                    v-model="formData.contaId"
+                                    optionLabel="nome"
+                                    optionValue="id"
+                                    :required="carteiraSelecionada.informaBanco"
+                                    :disabled="!carteiraSelecionada.informaBanco"
+                                    label="Conta"
+                                    :service="ContaService"
+                                    placeholder="Selecione a conta"
+                                    :columnsFilters="[{ field: 'agencia', value: formData.agenciaId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'agencia.id' }]"
+                                    :erros="errors.value?.agenciaId"
+                                    @changeObject="onChangeConta"
+                                />
+                            </div>
+                        </UWFieldSet>
+                    </div>
+                    <div class="col-12">
                         <UWFieldSet title="Observação" class="h-full">
                             <div class="p-fluid formgrid grid">
                                 <UWInput id="observacao" label="" uppercase v-model="formData.observacao" :errors="errors.value?.observacao" classContainer="col-12 md:col-12" />
@@ -509,7 +622,6 @@ const montarLancamentoTituloRequest = () => {
                                 </div>
                             </div>
                         </TabPanel>
-                        <TabPanel header="Retenções" class="col-12"> </TabPanel>
                     </TabView>
                 </div>
             </template>

@@ -6,6 +6,7 @@ import { menu as menuComercial } from './menus/comercial'
 import { menu as menuFinanceiro } from './menus/financeiro'
 import { menu as menuFiscal } from './menus/fiscal'
 import { menu as menuEstoque } from './menus/estoque'
+import { menu as menuAgricola } from './menus/agricola'
 
 export const useMenu = defineStore('menu', () => {
 
@@ -26,6 +27,9 @@ export const useMenu = defineStore('menu', () => {
         }
         if (contexto.getPathModuloSelecionado === 'estoque') {
             return menuEstoque;
+        }
+        if (contexto.getPathModuloSelecionado === 'agricola') {
+            return menuAgricola;
         }
         
     }

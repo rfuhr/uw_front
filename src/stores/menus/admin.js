@@ -10,7 +10,7 @@ export const menu = [
         label: 'Configurações', 
         icon: 'pi pi-fw pi-cog',
         items: [
-            {label: 'Sistema', icon: '', to: ''},
+            {label: 'Sistema', icon: '', to: '/admin/configuracao/sistema'},
             {label: 'Empresa', icon: '', to: '/admin/configuracao/empresa'},
             {label: 'Certificado', icon: '', to: '/admin/configuracao/certificado'},
         ]

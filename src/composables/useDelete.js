@@ -2,10 +2,10 @@ import Swal from 'sweetalert2';
 
 export function useDelete() {
 
-    const execute = async (service, id, textoConfirmacao, textoSucesso, textoCancelado) => {
+    const execute = async (service, id, textoConfirmacao, textoSucesso, textoCancelado, title = 'Você confirma a exclusão?') => {
         try {
             const result = await Swal.fire({
-                title: 'Você confirma a exclusão?',
+                title: title,
                 text: textoConfirmacao,
                 icon: 'question',
                 showCancelButton: true,

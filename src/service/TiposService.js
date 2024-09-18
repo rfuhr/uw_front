@@ -101,6 +101,15 @@ class TiposService {
     getTipoSinteticoAnalitico() {
         return api.get('/tabela/tipo-sintetico-analitico');
     }
+    
+    getIndicadorDC() {
+        return api.get('/tabela/indicador-dc');
+    }
+
+    getSituacaoPesagem() {
+        return api.get('/agricola/situacao-pesagem');
+    }
+
 }
 
 

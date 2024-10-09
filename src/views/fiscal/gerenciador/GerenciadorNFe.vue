@@ -28,6 +28,10 @@ const getBadgeSeverity = (status) => {
     switch (status.toLowerCase()) {
         case 'em digitação':
             return 'contrast';
+        case 'rejeitado':
+            return 'warning';
+        case 'autorizado':
+            return 'success';
         default:
             return 'info';
     }

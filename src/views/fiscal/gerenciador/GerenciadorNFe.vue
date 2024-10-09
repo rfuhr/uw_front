@@ -14,10 +14,14 @@ const novaNFe = () => {
     router.push({ name: 'fis-nfe-nova' });
 };
 
-onMounted(() => {
+const buscarListagem = async () => {
     NFeService.getListaNFe(contextoStore.contexto.empresaFilialId).then((response) => {
         listagem.value = response;
     });
+};
+
+onMounted(() => {
+    buscarListagem();
 });
 
 const getBadgeSeverity = (status) => {
@@ -37,7 +41,10 @@ const openEdit = (selectId) => {
 
 const enviarNFe = (selectId) => {
     NFeService.enviarNFe(selectId).then((response) => {
-        const disposition = response.headers['content-disposition'];
+        buscarListagem();
+        console.log(response)
+        if (response.data.size > 0) {
+            const disposition = response.headers['content-disposition'];
             const fileNameRegex = /filename[^;=\n]=((['"]).?\2|[^;\n]*)/;
             const matches = fileNameRegex.exec(disposition);
             const filename = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : 'Nfe.pdf';
@@ -48,6 +55,9 @@ const enviarNFe = (selectId) => {
             link.setAttribute('download', filename);
             document.body.appendChild(link);
             link.click();        
+        }
+    }).catch(() => {
+        buscarListagem();
     });
 };
 
@@ -107,7 +117,7 @@ const enviarNFe = (selectId) => {
             <Column style="width: 10%">
                 <template #body="slotProps">
                     <Button icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="openEdit(slotProps.data.nfeId)" />
-                    <Button icon="pi pi-send" class="p-button-success p-button-sm mr-2" @click="enviarNFe(slotProps.data.nfeId)" />
+                    <Button icon="pi pi-send" :disabled="slotProps.data.situacao != 'Aguardando Envio'" class="p-button-success p-button-sm mr-2" @click="enviarNFe(slotProps.data.nfeId)" />
                 </template>
             </Column>
         </DataTable>

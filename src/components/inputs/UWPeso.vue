@@ -38,6 +38,10 @@ const props = defineProps({
     habilitaCapturaAutomatica: {
         type: Boolean,
         default: true
+    },
+    habilitaPesoManual: {
+        type: Boolean,
+        default: true
     }
 });
 
@@ -73,7 +77,7 @@ const execLancarPesagemManual = () => {
                 <label :for="id" v-required="required">{{ label }}</label>
             </span>
             <Button icon="fa fa-truck-moving" severity="info" :disabled="!habilitaCapturaAutomatica" @click="execButton" />
-            <Button icon="fa fa-pencil" severity="warning" @click="execLancarPesagemManual" />
+            <Button icon="fa fa-pencil" severity="warning" :disabled="!habilitaPesoManual" @click="execLancarPesagemManual" />
         </div>
         <span v-if="errors">
             <span v-for="(error, index) of errors" :key="index">

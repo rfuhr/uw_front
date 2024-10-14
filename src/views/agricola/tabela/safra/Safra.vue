@@ -12,14 +12,51 @@ const crudlista = ref();
 
 const columns = reactive([
     {
+        label: 'Produto',
+        field: 'itemNome',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '30%',
+        fieldFilter: 'item.nome'
+    },  
+    {
+        label: 'Código',
+        field: 'codigo',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '8%'
+    },   
+    {
         label: 'Nome',
         field: 'nome',
         tipoField: 'text',
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '40%'
-    }   
+        size: '30%'
+    },
+       {
+        label: 'Início Vigência',
+        field: 'dataInicioVigencia',
+        tipoField: 'maskDate',
+        filter: false,
+        placeholder: '',
+        size: '8%',
+        maskDate: 'dd/MM/yyyy'
+    },
+    {
+        label: 'Final Vigência',
+        field: 'dataFinalVigencia',
+        filter: false,
+        placeholder: '',
+        size: '8%',
+        tipoField: 'maskDate',
+        maskDate: 'dd/MM/yyyy'
+    },      
 ]);
 
 const openNew = () => {

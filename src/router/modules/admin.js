@@ -336,7 +336,17 @@ const adminRouter = {
               tag: 'operacaointerna',
               operacao: 'consultar'
             },
-          }
+          },
+          {
+            path: 'regra-atividade',
+            component: () => import('../../views/administrativo/tabela/regraAtividade/RegraAtividade.vue'),
+            name: 'admin-tabela-regra-atividade',
+            meta: {
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Tabelas'}, {label: 'Relacionamento'}, { label: 'Regra de Atividade' }],
+              tab: 'regraatividade',
+              operacao: 'consultar'
+            },
+          },
         ]
       },      
       {

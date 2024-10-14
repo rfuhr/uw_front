@@ -7,6 +7,7 @@ import { OperacaoInternaService as Service, NaturezaOperacaoService } from '@/se
 import OperacaoInternaConfigFiscal from './OperacaoInternaConfigFiscal.vue';
 import OperacaoInternaConfigEstoque from './OperacaoInternaConfigEstoque.vue';
 import OperacaoInternaConfigAgricola from './OperacaoInternaConfigAgricola.vue';
+import OperacaoInternaConfigFinanceiro from './OperacaoInternaConfigFinanceiro.vue';
 
 const schema = yup.object().shape({
     nome: yup.string().required('Nome é obrigatório.').max(120, 'Nome deve ter no máximo 120 caracteres.'),
@@ -42,9 +43,11 @@ const initialValues = () => {
         (formData.caracteristicaFiscal = false),
         (formData.caracteristicaEstoque = false),
         (formData.caracteristicaAgricola = false),
+        (formData.caracteristicaFinanceira = false),
         (formData.operacaoInternaFiscal = {}),
         (formData.operacaoInternaEstoque = {}),
-        (formData.operacaoInternaAgricola = {});
+        (formData.operacaoInternaAgricola = {}),
+        (formData.operacaoInternaFinanceiro = {});
 };
 
 const formData = reactive({});
@@ -156,6 +159,19 @@ const showModal = async () => {
                         "
                     />
                     <UWCheckBox
+                        label="Tem Característica Financeira"
+                        v-model="formData.caracteristicaFinanceira"
+                        classContainer="col-12 md:col-2 mb-1 p-1"
+                        @change="
+                            () => {
+                                formData.operacaoInternaFinanceiro = {
+                                    indiceFinanceiroPadraoId: undefined
+                                };
+                                activeIndexTabView = 2;
+                            }
+                        "
+                    />                    
+                    <UWCheckBox
                         label="Tem Característica Agrícola"
                         v-model="formData.caracteristicaAgricola"
                         classContainer="col-12 md:col-2 mb-1 p-1"
@@ -164,7 +180,7 @@ const showModal = async () => {
                                 formData.operacaoInternaAgricola = {
                                     selecionaPesagem: false
                                 };
-                                activeIndexTabView = 2;
+                                activeIndexTabView = 3;
                             }
                         "
                     />
@@ -181,9 +197,13 @@ const showModal = async () => {
                             <Message v-if="!formData.caracteristicaEstoque" severity="warn" :closable="false">Operação Interna não possui Característica de Estoque!</Message>
                             <OperacaoInternaConfigEstoque v-if="formData.caracteristicaEstoque" v-model="formData.operacaoInternaEstoque" />
                         </TabPanel>
+                        <TabPanel header="Configuração Financeira" class="col-12" :disabled="!formData.caracteristicaFinanceira">
+                            <Message v-if="!formData.caracteristicaFinanceira" severity="warn" :closable="false">Operação Interna não possui Característica Financeira!</Message>
+                            <OperacaoInternaConfigFinanceiro v-if="formData.caracteristicaFinanceira" v-model="formData.operacaoInternaFinanceiro" :errors="errors"/>
+                        </TabPanel>
                         <TabPanel header="Configuração Agrícola" class="col-12" :disabled="!formData.caracteristicaAgricola">
                             <Message v-if="!formData.caracteristicaAgricola" severity="warn" :closable="false">Operação Interna não possui Característica Agrícola!</Message>
-                            <OperacaoInternaConfigAgricola v-if="formData.caracteristicaAgricola" v-model="formData.operacaoInternaAgricola" />
+                            <OperacaoInternaConfigAgricola v-if="formData.caracteristicaAgricola" v-model="formData.operacaoInternaAgricola" :errors="errors"/>
                         </TabPanel>
                     </TabView>
                 </div>

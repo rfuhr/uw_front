@@ -25,7 +25,6 @@ const localModelValue = computed({
 </script>
 
 <template>
-    <UWFieldSet title="Informações Pessoais" class="col-12">
         <div class="p-fluid formgrid grid">
             <UWInput id="RG" label="Documento de Identificação" required v-model="localModelValue.dadosPessoaFisica.rg" :errors="_.get(errors.value, `locais[0].dadosPessoaFisica.rg`, null)" classContainer="col-12 md:col-3" />
             <UWCalendar id="dataNascimento" label="Data de Nascimento" required v-model="localModelValue.dadosPessoaFisica.dataNascimento" :errors="_.get(errors.value, `locais[0].dadosPessoaFisica.dataNascimento`, null)" classContainer="col-12 md:col-3" />
@@ -75,5 +74,4 @@ const localModelValue = computed({
             />
         </div>
         <ManutencaoParceiroDados v-model="localModelValue" />
-    </UWFieldSet>
 </template>

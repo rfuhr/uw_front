@@ -1,26 +1,31 @@
 export const requiredDirective = {
     beforeMount(el, binding) {
-        if (binding.value === undefined || binding.value === true) {
-            appendAsterisk(el);
-        }
+        handleAsterisk(el, binding.value);
     },
     updated(el, binding) {
-        if (binding.value === undefined || binding.value === true) {
-            appendAsterisk(el);
-        } else {
-            removeAsterisk(el);
-        }
+        handleAsterisk(el, binding.value);
     }
 };
 
-function appendAsterisk(el) {
-    if (!el.querySelector('[data-asterisk]')) { // Verifica se já existe um asterisco adicionado
-        const asteriskElement = document.createElement('span');
-        asteriskElement.textContent = ' *';
-        asteriskElement.style.color = 'red';
-        asteriskElement.setAttribute('data-asterisk', ''); // Optional: You can set a data attribute to identify this asterisk.
+function handleAsterisk(el, value) {
+    if (value === undefined || value === true) {
+        appendAsterisk(el, 'red'); // Valor padrão ou true = asterisco vermelho
+    } else if (value === 'opcional') {
+        appendAsterisk(el, 'orange'); // Se for 'opcional' = asterisco laranja
+    } else {
+        removeAsterisk(el); // Remove o asterisco se o valor não for 'true', 'undefined' ou 'opcional'
+    }
+}
+
+function appendAsterisk(el, color) {
+    let asteriskElement = el.querySelector('[data-asterisk]');
+    if (!asteriskElement) {
+        asteriskElement = document.createElement('span');
+        asteriskElement.setAttribute('data-asterisk', '');
         el.appendChild(asteriskElement);
     }
+    asteriskElement.textContent = ' *';
+    asteriskElement.style.color = color; // Define a cor com base no parâmetro recebido
 }
 
 function removeAsterisk(el) {

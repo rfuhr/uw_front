@@ -33,6 +33,7 @@ export function useFormatDate() {
             return format(isValid(date) ? date : parseISO(date), 'MM/yyyy');
     }
 
+
     return {
         formatDate,
         formatToISO,

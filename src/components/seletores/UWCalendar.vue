@@ -38,6 +38,7 @@ const localFieldName = computed({
     set: (value) => {
         console.log('value', value);
         emit('update:modelValue', value);
+        emit('change');
     }
 });
 

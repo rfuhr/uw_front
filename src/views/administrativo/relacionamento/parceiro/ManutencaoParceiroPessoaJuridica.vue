@@ -78,7 +78,6 @@ onMounted(async () => {
 </script>
 
 <template>
-    <UWFieldSet title="Filiais" class="col-12">
         <Toolbar>
             <template #start>
                 <div>
@@ -126,5 +125,4 @@ onMounted(async () => {
                 </div>
             </AccordionTab>
         </Accordion>
-    </UWFieldSet>
 </template>

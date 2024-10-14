@@ -66,7 +66,8 @@ export const menu = [
                     { label: 'Fato Gerador', icon: '', to: '/financeiro/tabela/fato-gerador' },
                     { label: 'Grupo Financeiro', icon: '', to: '/financeiro/tabela/grupo-financeiro' },
                     { label: 'Tipo de Operação Financeiro', icon: '', to: '/financeiro/tabela/tipo-operacao-financeira' },
-                    { label: 'Motivo de Estorno', icon: '', to: '/financeiro/tabela/motivo-estorno-financeiro' }
+                    { label: 'Motivo de Estorno', icon: '', to: '/financeiro/tabela/motivo-estorno-financeiro' },
+                    { label: 'Índice Financeiro', icon: '', to: '/financeiro/tabela/indice-financeiro' }
                 ]
             },
             {

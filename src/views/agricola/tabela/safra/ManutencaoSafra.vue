@@ -4,9 +4,19 @@ import { useToast } from 'primevue/usetoast';
 import * as yup from 'yup';
 import _ from 'lodash';
 import { SafraService as Service } from '@/service';
+import UWSeletorItemAgricola from '@/components/seletores/item/UWSeletorItemAgricola.vue';
 
 const schema = yup.object().shape({
+    itemId: yup.number().required('Produto é obrigatório.'),
+    codigo: yup.string().required('Código é obrigatório.'),
     nome: yup.string().required('Nome é obrigatório.').max(120, 'Nome deve ter no máximo 120 caracteres.'),
+    dataInicioVigencia: yup.date().required('Data Início Vigência é obrigatório.')
+        .nullable()
+        .max(yup.ref('dataFinalVigencia'), 'Data de início de vigência deve ser menor que a data final.'),
+    dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.')
+        .nullable()
+        .min(yup.ref('dataInicioVigencia'), 'Data final de vigência deve ser maior que a data inicial.')
+
 });
 
 const props = defineProps({
@@ -94,7 +104,20 @@ const showModal = async () => {
             <template #errors="{ errors }">
                 <div class="col-12">
                     <div class="p-fluid formgrid grid">
-                        <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-12" />   
+                        <UWSeletorItemAgricola
+                            classContainer="col-12 md:col-12"
+                            label="Produto"
+                            v-model="formData.itemId"
+                            required
+                            optionLabel="nome"
+                            optionValue="id"
+                            placeholder="Selecione o produto"
+                            :erros="errors.value?.itemId"
+                        />
+                        <UWInput id="id" label="Código" required autofocus v-model="formData.codigo" classContainer="col-12 md:col-3" :errors="errors.value?.codigo" />
+                        <UWInput id="nome" label="Nome" required v-model="formData.nome" :errors="errors.value?.nome" classContainer="col-12 md:col-9" />   
+                        <UWCalendar id="dataInicioVigencia" label="Data Início Vigência" required v-model="formData.dataInicioVigencia" :errors="errors.value?.dataInicioVigencia" classContainer="col-12 md:col-6" />
+                        <UWCalendar id="dataFinalVigencia" label="Data Final Vigência" required v-model="formData.dataFinalVigencia" :errors="errors.value?.dataFinalVigencia" classContainer="col-12 md:col-6" />                        
                     </div>
                 </div>
             </template>

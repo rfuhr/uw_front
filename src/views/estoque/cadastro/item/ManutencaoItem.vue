@@ -75,6 +75,9 @@ onMounted(async () => {
                 formData.classificacaoOperacaoId = data.classificacaoOperacaoId;
                 formData.informaPesagemAgricola = data.informaPesagemAgricola;
                 formData.usaClassificacaoAgricola = data.usaClassificacaoAgricola;
+                formData.produtoAgricola = data.produtoAgricola;
+                formData.informaSafraAgricola = data.informaSafraAgricola;
+                formData.usaRomaneioAgricola = data.usaRomaneioAgricola;
                 
                 await NcmService.getById(formData.ncmId).then((data) => {
                     formData.ncm = data;
@@ -154,6 +157,13 @@ const changeControlaEstoque = () => {
         formData.quantidadeMaximaEstoque = null;
         formData.quantidadeIdealEstoque = null;
         formData.quantidadeAviso = null;
+    }
+};
+
+const changeProdutoAgricola = () => {
+    if (!formData.produtoAgricola) {
+        formData.informaSafraAgricola = false;
+        formData.usaRomaneioAgricola = false;
     }
 };
 
@@ -436,25 +446,37 @@ const labelNcmSelector = computed(() => {
                     <TabPanel header="Agrícola" class="col-12">
                         <div class="p-fluid formgrid grid">
                             <UWToggleButton
-                                id="informaPesagemAgricola"
-                                classContainer="col-12 md:col-3"
-                                v-model="formData.informaPesagemAgricola"
-                                onLabel="Informa na Pesagem"
-                                offLabel="Não Informa na Pesagem"
+                                id="produtoAgricola"
+                                classContainer="col-12 md:col-2"
+                                v-model="formData.produtoAgricola"
+                                onLabel="Produto agrícola"
+                                offLabel="Não é produto agrícola"
                                 onIcon="pi pi-thumbs-up"
                                 offIcon="pi pi-thumbs-down"
-                            />
+                                @change="changeProdutoAgricola"
+                            />   
                             <UWToggleButton
-                                id="usaClassificacaoAgricola"
-                                classContainer="col-12 md:col-3"
-                                v-model="formData.usaClassificacaoAgricola"
-                                onLabel="Usa Classificação"
-                                offLabel="Não Usa Classificação"
+                                id="informaSafraAgricola"
+                                classContainer="col-12 md:col-2"
+                                v-model="formData.informaSafraAgricola"
+                                :disabled="!formData.produtoAgricola"
+                                onLabel="Informa safra agrícola"
+                                offLabel="Não informa safra agrícola"
                                 onIcon="pi pi-thumbs-up"
                                 offIcon="pi pi-thumbs-down"
-                            />
+                            />  
+                            <UWToggleButton
+                                id="usaRomaneioAgricola"
+                                classContainer="col-12 md:col-2"
+                                v-model="formData.usaRomaneioAgricola"
+                                :disabled="!formData.produtoAgricola"
+                                onLabel="Usa no romaneio agrícola"
+                                offLabel="Não usa no romaneio agrícola"
+                                onIcon="pi pi-thumbs-up"
+                                offIcon="pi pi-thumbs-down"
+                            />                            
                         </div>
-                    </TabPanel>                    
+                    </TabPanel>
                 </TabView>
             </template>
         </UWForm>

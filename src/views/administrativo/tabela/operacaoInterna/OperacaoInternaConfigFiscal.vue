@@ -30,7 +30,7 @@ onMounted(async () => {
     TiposService.getDestinoOperacao().then((data) => {
         destinosOperacao.value = data;
     });
-    TiposService.getFinalidadeNfe().then((data) => {
+    TiposService.getFinalidadeNFe().then((data) => {
         finalidadesNfe.value = data;
     });
     TiposService.getTipoConsumidor().then((data) => {

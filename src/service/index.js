@@ -65,6 +65,7 @@ export { default as ConfigMarkupPlanoItemService } from './ConfigMarkupPlanoItem
 export { default as ConfigMarkupItemService } from './ConfigMarkupItemService';
 export { default as ConfigCalculoPrecoService } from './ConfigCalculoPrecoService';
 export { default as TabelaPrecoService } from './TabelaPrecoService';
+export { default as CalcularPrecoBaseService } from './CalcularPrecoBaseService';
 export { default as OperacaoAcessoriaFinanceiraService } from './OperacaoAcessoriaFinanceiraService';
 export { default as MotivoEstornoFinanceiroService } from './MotivoEstornoFinanceiroService';
 export { default as BancoService } from './BancoService';

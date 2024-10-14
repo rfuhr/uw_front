@@ -92,7 +92,7 @@ onMounted(async () => {
                                         { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nome', labelFilter: 'Nome'},
                                     ]"
                         fieldSearchDefault="nome"
-                        :columnsFilters="[{ field: 'tipoTributo', value: 'IPI', matchMode: 'equal', tipoField: 'text', fieldFilter: 'tipoTributo' }]"
+                        :columnsFilters="[{ field: 'tipoTributo', value: 'PIS', matchMode: 'equal', tipoField: 'text', fieldFilter: 'tipoTributo' }]"
                         >
                         <template #values> {{ localModelValue.situacaoTributariaCodigo }} - {{ localModelValue.situacaoTributariaNome }} </template>
                         <template #options="slotProps">

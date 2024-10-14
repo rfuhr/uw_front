@@ -4,15 +4,18 @@ import { ref, computed } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import * as yup from 'yup';
 import { useToast } from 'primevue/usetoast';
-import { ItemService } from '@/service';
+import { ItemService, CalcularPrecoBaseService } from '@/service';
 import moment from 'moment'
+import { useFormatNumber } from '@/composables/useFormatNumber';
 
 const confirm = useConfirm();
 const toast = useToast();
+const blocked = ref(false);
 
 const visibleDialog = ref(false);
 const modeDialog = ref('')
 const indexItemEdicao = ref(0);
+const { formatNumber } = useFormatNumber();
 
 const formData = ref({
     itemId: undefined,
@@ -25,7 +28,8 @@ const formData = ref({
 });
 
 const props = defineProps({
-    modelValue: []
+    modelValue: [],
+    tipoPrecoId: {}
 });
 
 const createSchema = () => {
@@ -33,6 +37,8 @@ const createSchema = () => {
         itemId: yup.number().required('Item é obrigatório.'),
         dataInicioVigencia: yup.date().required('Data Início Vigência é obrigatório.'),
         dataFinalVigencia: yup.date().required('Data Final Vigência é obrigatório.'),
+        valor: yup.number().required('Valor é obrigatório.'),
+        percentualMaximoDesconto: yup.number().required('Percentual Máximo de Desconto é obrigatório.'),
     });
 };
 
@@ -134,12 +140,26 @@ const changeItem = async (event) => {
     } else {
         formData.value.itemCodigo = event.codigo
         formData.value.itemNome = event.nome
+        formData.value.unidadeMedidaSigla = event.unidadeMedidaSigla
+        blocked.value = true;
+        await CalcularPrecoBaseService.calcularPrecoBase(props.tipoPrecoId, formData.value.itemId).then((data) => {
+            formData.value.valorCusto = data.valorPrecoBase
+            formData.value.valorMarkup = data.valorMarkup
+            formData.value.valorCalculado = data.valorCalculado
+            formData.value.valorAtual = data.valorAtual
+            if (data.valorAtual > data.valorCalculado)
+                formData.value.valor = data.valorAtual
+            else
+                formData.value.valor = data.valorCalculado
+            blocked.value = false;
+        });
     }
 }
 
 </script>
 
 <template>
+    <BlockUI :blocked="blocked" fullScreen />
     <ConfirmPopup></ConfirmPopup>
     <div class="col-12">
         <Toolbar>
@@ -159,8 +179,17 @@ const changeItem = async (event) => {
 
             <Column field="itemCodigo" header="Código" style="width: 12%"> </Column>
             <Column field="itemNome" header="Item" style="width: 30%"> </Column>
-            <Column field="valor" header="Valor" style="width: 10%"> </Column>
-            <Column field="percentualMaximoDesconto" header="% Máx. Desconto" style="width: 10%"> </Column>
+            <Column field="unidadeMedidaSigla" header="U.M." style="width: 8%"> </Column>
+            <Column header="Valor" style="width: 10%">
+                <template #body="slotProps">
+                    <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.valor, 5) }}</div> 
+                </template>
+            </Column>
+            <Column header="Perc. Máximo Desconto" style="width: 10%">
+                <template #body="slotProps">
+                    <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.percentualMaximoDesconto, 3) }}</div> 
+                </template>
+            </Column>
             <Column header="Início Vigência" style="width: 10%">
                 <template #body="slotProps">
                     <span>{{ formataData(slotProps.data.dataInicioVigencia) }}</span>

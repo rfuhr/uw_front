@@ -1,15 +1,11 @@
 import api from './api';
 
+const pathService = '/agricola/classificacao-agricola';
 class ClassificacaoAgricolaService {
 
-    recalcular(payload) {
-        return api.post(`/agricola/classificacao-agricola/servicos/recalcular`, JSON.stringify(payload));
+    realizarCalculoAgricola(payload) {
+        return api.post(`${pathService}/servicos/calcular`, payload);
     }
-
-    recalcularAll(payload) {
-        return api.post(`/agricola/classificacao-agricola/servicos/recalcular/all`, JSON.stringify(payload));
-    }
-
 }
 
 export default new ClassificacaoAgricolaService();

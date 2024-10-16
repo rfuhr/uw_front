@@ -6,7 +6,7 @@ import { useValidationsSchemaNFe } from './useValidationsSchemaNFe';
 import { useFormatNumber } from '@/composables/useFormatNumber';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
-import UWSeletorItem from '@/components/seletores/UWSeletorItem.vue';
+import UWSeletorItem from '@/components/seletores/item/UWSeletorItem.vue';
 import UWSeletorCfopByOpInt from '@/components/seletores/UWSeletorCfopByOpInt.vue';
 import { Icms00, Icms10, Icms20, Icms30, Icms40, Icms41, Icms50, Icms51, Icms60, Icms70, Icms90, PartilhaIcms, RepasseIcms } from './tributacao';
 import { Cson101, Cson102, Cson103, Cson201, Cson202, Cson203, Cson300, Cson400, Cson500, Cson900 } from './tributacaoSimples';
@@ -497,8 +497,8 @@ const showDialog = () => {
                                 <Column field="detalhamentoItem.item.nome" header="Nome" style="width: 30%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="detalhamentoItem.cfop.codigo" header="Cfop" style="width: 3%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.cfop?.codigo }}</div> </template
-                                    >template>
+                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.cfop?.codigo }}</div> 
+                                    </template>
                                 </Column>
                                 <Column field="detalhamentoItem.item.unidadeMedidaComercialNome" header="U.M." style="width: 3%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">

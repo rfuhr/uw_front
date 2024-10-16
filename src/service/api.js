@@ -123,6 +123,8 @@ instance.interceptors.response.use(
             const requestUrl = error.response.config.url;
             if (!requestUrl.includes('login'))
                 router.push({ path: `/notPermission` });	
+        } else if (error.response.status === 404) {
+            return Promise.reject(error)
         } else {
             if (error.response.data && error.response.data.errors) {
                 msgErro = createErrorTable(error.response.data.exceptionName, error.response.data.message, error.response.data.errors)

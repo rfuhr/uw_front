@@ -110,6 +110,25 @@ class TiposService {
         return api.get('/agricola/situacao-pesagem');
     }
 
+    getSituacaoRomaneio() {
+        return api.get('/agricola/situacao-romaneio');
+    }
+
+    getOrigemRomaneio() {
+        return api.get('/agricola/origem-romaneio');
+    }
+
+    getIdentificacaoDocumentoAgricola() {
+        return api.get('/agricola/identificacao-documento');
+    }
+
+    getBaseCalculoAgricola() {
+        return api.get('/agricola/base-calculo-agricola');
+    }
+
+    getTipoTaxaAgricola() {
+        return api.get('/agricola/tipo-taxa-agricola');
+    }
 }
 
 

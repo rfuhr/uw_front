@@ -11,7 +11,8 @@ import {
     FatoGeradorService,
     CaracteristicaMovimentoFinanceiroService,
     HistoricoPadraoService,
-    CarteiraFinanceiraService
+    CarteiraFinanceiraService,
+    TipoDocumentoService
 } from '@/service';
 
 const createSchema = () => {
@@ -27,7 +28,8 @@ const createSchema = () => {
         fatoGeradorNegociacaoId: yup.string().required('Fato gerador é obrigatório.'),
         carteiraFinanceiraNegociacaoId: yup.string().required('Carteira financeira é obrigatório.'),
         caracteristicaMovimentoFinanceiroNegociacaoId: yup.string().required('Característica de movimento é obrigatório.'),
-        historicoPadraoNegociacaoId: yup.string().required('Histórico padrão é obrigatório.')
+        historicoPadraoNegociacaoId: yup.string().required('Histórico padrão é obrigatório.'),
+        tipoDocumentoRomaneioId: yup.string().required('Tipo de documento de romaneio é obrigatório.'),
     });
 };
 
@@ -48,7 +50,6 @@ const salvarRegistro = async () => {
 
 const carregarRegistro = () => {
     ConfigSistemaService.getById(1).then((response) => {
-        console.log('response', response.configuracoesFinanceiro[0])
         formData.value.id = response.id;
         formData.value.configuracoesFinanceiroId = response.configuracoesFinanceiro[0].id,
         formData.value.operacaoMovimentoFinanceiroInclusaoId = response.configuracoesFinanceiro[0].operacaoMovimentoFinanceiroInclusaoId
@@ -62,6 +63,9 @@ const carregarRegistro = () => {
         formData.value.carteiraFinanceiraNegociacaoId = response.configuracoesFinanceiro[0].carteiraFinanceiraNegociacaoId
         formData.value.caracteristicaMovimentoFinanceiroNegociacaoId = response.configuracoesFinanceiro[0].caracteristicaMovimentoFinanceiroNegociacaoId
         formData.value.historicoPadraoNegociacaoId = response.configuracoesFinanceiro[0].historicoPadraoNegociacaoId
+
+        formData.value.configuracoesAgricolaId = response.configuracoesAgricola[0].id,
+        formData.value.tipoDocumentoRomaneioId = response.configuracoesAgricola[0].tipoDocumentoRomaneioId
     });
 };
 
@@ -82,7 +86,14 @@ const montaRequest = () => {
                 fatoGeradorNegociacaoId: formData.value.fatoGeradorNegociacaoId,
                 carteiraFinanceiraNegociacaoId: formData.value.carteiraFinanceiraNegociacaoId,
                 caracteristicaMovimentoFinanceiroNegociacaoId: formData.value.caracteristicaMovimentoFinanceiroNegociacaoId,
-                historicoPadraoNegociacaoId: formData.value.historicoPadraoNegociacaoId
+                historicoPadraoNegociacaoId: formData.value.historicoPadraoNegociacaoId,
+            }
+        ],
+        configuracoesAgricola: [
+            {
+                id: formData.value.configuracoesFinanceiroId,
+                configSistemaId: formData.value.id,
+                tipoDocumentoRomaneioId: formData.value.tipoDocumentoRomaneioId                
             }
         ]
     };
@@ -257,6 +268,24 @@ onMounted(() => {
                                                 />
                                             </div>
                                         </UWFieldSet>
+                                    </div>
+                                </div>
+                            </TabPanel>
+                            <TabPanel header="Agrícola" class="col-12">
+                                <div class="grid nested-grid">
+                                    <div class="col-12">
+                                        <UWSeletor
+                                            id="tipoDocumentoRomaneio"
+                                            classContainer="col-12 md:col-3"
+                                            v-model="formData.tipoDocumentoRomaneioId"
+                                            optionLabel="nome"
+                                            optionValue="id"
+                                            required
+                                            label="Tipo de Documento para Romaneio"
+                                            :service="TipoDocumentoService"
+                                            placeholder="Selecione o tipo de documento"
+                                            :erros="errors.value?.tipoDocumentoRomaneioId"
+                                        />
                                     </div>
                                 </div>
                             </TabPanel>

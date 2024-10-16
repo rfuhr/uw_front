@@ -16,6 +16,11 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    visibleButtons: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
     visibleSave: {
         type: Boolean,
         required: false,
@@ -89,6 +94,7 @@ const handleSubmit = async () => {
     if (await validateForm()) {
         emit('doSubmit', props.values);
     } else {
+        submitted.value = false;
         toast.add({ severity: 'warn', summary: 'Atenção', detail: 'Regras de campos não atendidas.', life: 5000 });
         emit('handleErrorSubmit');
     }
@@ -138,7 +144,7 @@ const preventEnterSubmit = (event) => {
             <slot />
         </slot>
 
-        <div class="col-12" >
+        <div v-if="visibleButtons" class="col-12" >
             <Divider />
             <div class="flex justify-content-end flex-wrap gap-2">
                 <slot name="buttons" />

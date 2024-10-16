@@ -96,6 +96,16 @@ const financeiroRouter = {
                     }
                 },
                 {
+                    path: 'indice-financeiro',
+                    component: () => import('../../views/financeiro/tabela/indiceFinanceiro/IndiceFinanceiro.vue'),
+                    name: 'financeiro-tabela-indiceFinanceiro',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Tabelas' }, { label: 'Índice Financeiro' }],
+                        tag: 'indicefinanceiro',
+                        operacao: 'consultar'
+                    }
+                },
+                {
                     path: 'banco',
                     component: () => import('../../views/financeiro/tabela/banco/Banco.vue'),
                     name: 'financeiro-tabela-banco',

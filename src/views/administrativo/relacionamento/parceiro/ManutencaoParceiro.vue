@@ -9,6 +9,7 @@ import { ParceiroService } from '@/service';
 
 import ManutencaoParceiroPessoaJuridica from './ManutencaoParceiroPessoaJuridica.vue';
 import ManutencaoParceiroPessoaFisica from './ManutencaoParceiroPessoaFisica.vue';
+import ManutencaoParceiroRegras from './ManutencaoParceiroRegras.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -26,7 +27,8 @@ const formData = reactive({
     raizCnpjCpf: '',
     nomeRazaoSocial: '',
     nomeFantasia: '',
-    locais: []
+    locais: [],
+    regras: []
 });
 
 const createSchemaRaizCnpjCpf = () => {
@@ -128,6 +130,7 @@ const cancelar = () => {
 
 const changeTipoPessoa = () => {
     formData.locais = []
+    formData.regras = []
     if (formData.tipoPessoa === 'F') {
         formData.locais.push({
             cnpjCpfLocal: '',
@@ -236,9 +239,20 @@ const beforeSubmit = () => {
 
                         </UWFieldSet>
                     </div>
+
                 </div>
-                <ManutencaoParceiroPessoaJuridica v-if="formData.tipoPessoa === 'J'" v-model="formData.locais" :errors="errors" />
-                <ManutencaoParceiroPessoaFisica v-else v-model="formData.locais[0]" :errors="errors" />
+                <TabView class="col-12">
+                    <TabPanel v-if="formData.tipoPessoa === 'J'" header="Filiais" class="col-12">
+                        <ManutencaoParceiroPessoaJuridica v-if="formData.tipoPessoa === 'J'" v-model="formData.locais" :errors="errors" />
+                    </TabPanel>
+                    <TabPanel v-if="formData.tipoPessoa === 'F'" header="Informações Pessoais" class="col-12">
+                        <ManutencaoParceiroPessoaFisica v-model="formData.locais[0]" :errors="errors" />
+                    </TabPanel>
+                    <TabPanel header="Regras" class="col-12">
+                        <ManutencaoParceiroRegras v-model="formData.regras"/>
+                    </TabPanel>
+                </TabView>
+                <code>{{ formData }}</code>
             </template>
         </UWForm>
     </UWPageBase>

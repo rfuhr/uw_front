@@ -48,6 +48,7 @@ export const menu = [
                 label: 'Relacionamento',
                 items: [
                     {label: 'Tipo de Parceiro', icon: '', to: '/admin/tabela/tipoParceiro'},
+                    {label: 'Regra de Atividade', icon: '', to: '/admin/tabela/regra-atividade'},
                 ]
             },
             {

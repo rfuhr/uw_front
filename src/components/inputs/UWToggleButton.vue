@@ -47,6 +47,7 @@ const localModelValue = computed({
     get: () => props.modelValue,
     set: (value) => {
         emit('update:modelValue', value);
+        emit('change');
     }
 });
 
@@ -57,6 +58,7 @@ const localModelValue = computed({
         <span class="p-float-label">
             <ToggleButton
                 v-model="localModelValue"
+                :disabled="disabled"
                 :onLabel="onLabel"
                 :offLabel="offLabel"
                 :onIcon="onIcon"

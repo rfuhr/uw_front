@@ -207,12 +207,12 @@ function updateFormData(formData, jsonParsed) {
 const onComplete = async () => {
     const nfeRequest = montarNFeRequest();
     await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
-    await NFeService.emitirNFe(nfeRequest).then((response) => {
+    await NFeService.emitirNFe(nfeRequest).then(() => {
 
         Swal.fire('Sucesso', 'NFe enviada com sucesso', 'success');
         router.push({ path: '/fiscal/gerenciador-nfe' });
     }).catch((error) => {
-        Swal.fire('Falha', 'Ocorreu uma falha no processo de envio de nfe', 'error');
+        Swal.fire('Falha', 'Ocorreu uma falha no processo de envio de nfe', error);
     }).finally(() => {
         enviandoNfe.value = false;
     });
@@ -272,7 +272,7 @@ const montarNFeRequest = () => {
             <template #prev><Button class="px-6 py-12" severity="primary">Anterior</Button></template>
             <template #next><Button class="px-6 py-12" severity="primary">Próximo</Button></template>
             <template #finish>
-                <SplitButton label="Enviar NFe" class="py-12" @click="onComplete" :model="actionsFinalizar" :loading="enviandoNfe" />
+                <SplitButton label="Preparar Envio NFe" class="py-12" @click="onComplete" :model="actionsFinalizar" :loading="enviandoNfe" />
             </template>
             <TabContent title="Identificação da Nota Final" icon="fa fa-file-invoice" :before-change="beforeChangeIdentificacao">
                 <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe" />

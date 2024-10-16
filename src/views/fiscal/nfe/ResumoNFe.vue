@@ -158,6 +158,8 @@ const dadosTransporte = computed(() => {
             <table class="w-full" :style="{ borderCollapse: 'collapse', tableLayout: 'auto' }">
                 <thead>
                     <tr>
+                        <th class="text-left font-semibold py-3 border-bottom-1 surface-border white-space-nowrap">Parcela</th>
+                        <th class="text-left font-semibold py-3 border-bottom-1 surface-border white-space-nowrap">Data de Vencimento</th>
                         <th class="text-left font-semibold py-3 border-bottom-1 surface-border white-space-nowrap">Forma de Pagamento</th>
                         <th class="text-left font-semibold py-3 border-bottom-1 surface-border white-space-nowrap">Meio de Pagamento</th>
                         <th class="text-right font-semibold py-3 border-bottom-1 surface-border white-space-nowrap px-3">Bandeira do Cartão</th>
@@ -166,6 +168,8 @@ const dadosTransporte = computed(() => {
                 </thead>
                 <tbody>
                     <tr v-for="pagamento in localModelValue.financeiro.pagamentos" :key="pagamento.index">
+                        <td class="text-left py-3 border-bottom-1 surface-border white-space-nowrap" style="width: 10%;">{{ pagamento.numero ? pagamento.numero : '' }}</td>
+                        <td class="text-left py-3 border-bottom-1 surface-border white-space-nowrap" style="width: 15%;">{{ pagamento.dataVencimento ? formatToDDMMYYYY(pagamento.dataVencimento) : '' }}</td>
                         <td class="text-left py-3 border-bottom-1 surface-border white-space-nowrap" style="width: 30%;">{{ pagamento.aux.indicadorFormaPagamento ? pagamento.aux.indicadorFormaPagamento.name : '' }}</td>
                         <td class="text-left py-3 border-bottom-1 surface-border white-space-nowrap" style="width: 10%;">{{ pagamento.aux.meioPagamento ? pagamento.aux.meioPagamento.name : '' }}</td>
                         <td class="text-right py-3 border-bottom-1 surface-border px-3" style="width: 10%;">{{ pagamento.aux.bandeiraCartao ? pagamento.aux.bandeiraCartao.name : '' }}</td>

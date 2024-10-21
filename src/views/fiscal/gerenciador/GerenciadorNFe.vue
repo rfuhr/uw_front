@@ -32,6 +32,8 @@ const getBadgeSeverity = (status) => {
             return 'warning';
         case 'autorizado':
             return 'success';
+        case 'cancelado':
+            return 'error';
         default:
             return 'info';
     }

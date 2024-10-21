@@ -8,6 +8,7 @@ import { useFormatNumber } from '@/composables/useFormatNumber';
 import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 import { TiposService } from '@/service';
 import { useValidationsSchemaNFe } from './useValidationsSchemaNFe';
+import moment from 'moment';
 
 const createSchemaFinanceiroNFe = (dynamicFields) => {
     const schemaObject = {};
@@ -61,6 +62,8 @@ const adicionarPagamento = () => {
     pagamentoEmManutencao.value = {
         idLine,
         valorPagamento: 0,
+        numero: undefined,
+        dataVencimento: undefined,
         grupoCartao: {},
         aux: {}
     };
@@ -174,6 +177,14 @@ const validateForm = () => {
     }
 };
 
+const formataData = (data) => {
+    if (data) {
+        moment.locale('pt-br')
+        return moment(data).format('DD/MM/YYYY')
+    }
+    return ''
+}
+
 defineExpose({
     validateForm
 });
@@ -220,6 +231,12 @@ defineExpose({
                                         <i v-if="!temErro(errors?.value, `pagamentos[${slotProps.index}]`)" class="pi pi-exclamation-circle text-green-500 text-bold" style="font-size: 1.3rem" />
                                     </template>
                                 </Column>
+                                <Column field="numero" header="Parcela" style="width: 8%"> </Column>
+                                <Column header="Data Vencimento" style="width: 12%">
+                                    <template #body="slotProps">
+                                        <span>{{ formataData(slotProps.data.dataVencimento) }}</span>
+                                    </template>
+                                </Column>
                                 <Column field="aux.meioPagamento.name" header="Meio de Pagamento" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="aux.indicadorFormaPagamento.name" header="Forma de Pagamento" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column field="valorPagamento" header="Valor do Pagamento" style="width: 10%" headerClass="columnHeaderItem">
@@ -228,14 +245,14 @@ defineExpose({
                                     >
                                 </Column>
                                 <Column field="aux.tipoIntegracao.name" header="Tipo de Integração" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
-                                <Column field="grupoCartao.cnpj" header="Cnpj Instituição Pagamento" style="width: 10%; text-align: left" headerClass="columnHeaderItem">
+                                <Column field="grupoCartao.cnpj" header="CNPJ Inst. Pgto" style="width: 12%; text-align: left" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
                                         <div class="w-full text-center pr-2">{{ formatDocumento(slotProps.data.grupoCartao.cnpj, 2) }}</div> </template
                                     >
                                 </Column>
                                 <Column field="aux.bandeiraCartao.name" header="Bandeira do Cartão" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
-                                <Column field="grupoCartao.numeroAutorizacao" header="Número da Autorização" style="width: 20%; text-align: left" headerClass="columnHeaderItem"> </Column>
-                                <Column header="" style="width: 6%">
+                                <Column field="grupoCartao.numeroAutorizacao" header="Número da Autorização" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
+                                <Column header="" style="width: 18%">
                                     <template #body="slotProps">
                                         <Button icon="pi pi-pencil" class="p-button-info p-button-sm mr-2" @click="handleEdit(slotProps)" />
                                         <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete($event, slotProps.data)" />
@@ -257,9 +274,10 @@ defineExpose({
                                 v-model="pagamentoEmManutencao.meioPagamento"
                                 optionLabel="name"
                                 optionValue="value"
+                                autofocus 
                                 required
                                 :options="meiosPagamento"
-                                classContainer="col-12 md:col-4"
+                                classContainer="col-12 md:col-6"
                                 @changeObject="changeMeioPagamento"
                                 :errors="_.get(errors.value, `pagamentos[${indexSelecionado}].meioPagamento`, null)"
                             />
@@ -272,9 +290,27 @@ defineExpose({
                                 optionValue="value"
                                 required
                                 :options="tiposFormaPagamento"
-                                classContainer="col-12 md:col-4"
+                                classContainer="col-12 md:col-6"
                                 @changeObject="changeIndicadorFormaPagamento"
                                 :errors="_.get(errors.value, `pagamentos[${indexSelecionado}].indicadorFormaPagamento`, null)"
+                            />                            
+                            <UWInput 
+                                id="numero" 
+                                label="Parcela" 
+                                required 
+                                v-model="pagamentoEmManutencao.numero" 
+                                :errors="_.get(errors.value, `pagamentos[${indexSelecionado}].numero`, null)" 
+                                classContainer="col-12 md:col-4" 
+                            />
+                            <UWCalendar 
+                                id="dataVencimento" 
+                                label="Data de Vencimento" 
+                                v-model="pagamentoEmManutencao.dataVencimento" 
+                                dateFormat="dd/mm/yy" 
+                                required 
+                                :showTime="false" 
+                                classContainer="col-12 md:col-4" 
+                                :errors="_.get(errors.value, `pagamentos[${indexSelecionado}].dataVencimento`, null)" 
                             />
                             <UWCurrency v-if="pagamentoEmManutencao.meioPagamento !== '90'" id="valorPagamento" label="Valor Pagamento" v-model="pagamentoEmManutencao.valorPagamento" required classContainer="col-12 md:col-4" 
                             :errors="_.get(errors.value, `pagamentos[${indexSelecionado}].valorPagamento`, null)"/>

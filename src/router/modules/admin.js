@@ -160,56 +160,56 @@ const adminRouter = {
           }          
         ]
       },
-      {
-        path: 'organograma',
-        name: 'admin-organograma',
-        meta: {
-            breadcrumb: [{ parent: 'Administrativo', label: 'Organograma' }],
-        },
-        children: [
-          {
-            path: 'departamentos',
-            name: 'admin-organograma-departamentos',
-            redirect: '/admin/organograma/departamentos',
-            meta: {
-              breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}],
-            },
-            children: [
-              {
-                path: '',
-                component: () => import('@/views/administrativo/organograma/departamento/Departamento.vue'),
-                name: 'admin-organograma-departamentos-listagem',
-                meta: {
-                  breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}],
-                  tag: 'departamento',
-                  operacao: 'consultar'
-                },
-              },
+      // {
+      //   path: 'organograma',
+      //   name: 'admin-organograma',
+      //   meta: {
+      //       breadcrumb: [{ parent: 'Administrativo', label: 'Organograma' }],
+      //   },
+      //   children: [
+      //     {
+      //       path: 'departamentos',
+      //       name: 'admin-organograma-departamentos',
+      //       redirect: '/admin/organograma/departamentos',
+      //       meta: {
+      //         breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}],
+      //       },
+      //       children: [
+      //         {
+      //           path: '',
+      //           component: () => import('@/views/administrativo/organograma/departamento/Departamento.vue'),
+      //           name: 'admin-organograma-departamentos-listagem',
+      //           meta: {
+      //             breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}],
+      //             tag: 'departamento',
+      //             operacao: 'consultar'
+      //           },
+      //         },
 
-              {
-                path: 'novo',
-                component: () => import('@/views/administrativo/organograma/departamento/ManutencaoDepartamento.vue'),
-                name: 'admin-organograma-departamentos-novo',
-                meta: {
-                  breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}, {label: 'Novo'}],
-                  tag: 'departamento',
-                  operacao: 'inserir'
-                },
-              },
-              {
-                path: ':id(\\d+)',
-                component: () => import('@/views/administrativo/organograma/departamento/ManutencaoDepartamento.vue'),
-                name: 'admin-organograma-departamentos-editar',
-                meta: {
-                  breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}, {label: 'Editar'}],
-                  tag: 'departamento',
-                  operacao: 'alterar'
-                },
-              },
-            ]
-          }          
-        ]
-      },
+      //         {
+      //           path: 'novo',
+      //           component: () => import('@/views/administrativo/organograma/departamento/ManutencaoDepartamento.vue'),
+      //           name: 'admin-organograma-departamentos-novo',
+      //           meta: {
+      //             breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}, {label: 'Novo'}],
+      //             tag: 'departamento',
+      //             operacao: 'inserir'
+      //           },
+      //         },
+      //         {
+      //           path: ':id(\\d+)',
+      //           component: () => import('@/views/administrativo/organograma/departamento/ManutencaoDepartamento.vue'),
+      //           name: 'admin-organograma-departamentos-editar',
+      //           meta: {
+      //             breadcrumb: [{label: 'Administrativo'}, {label: 'Organograma'}, {label: 'Departamento'}, {label: 'Editar'}],
+      //             tag: 'departamento',
+      //             operacao: 'alterar'
+      //           },
+      //         },
+      //       ]
+      //     }          
+      //   ]
+      // },
       {
         path: 'tabela',
         name: 'admin-tabela',

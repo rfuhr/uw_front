@@ -1,5 +1,6 @@
 <script setup>
 import { ref, defineProps, onMounted, onBeforeMount, computed } from 'vue';
+import _ from 'lodash';
 
 const props = defineProps({
     id: {
@@ -145,7 +146,7 @@ const localFieldName = computed({
                 :placeholder="placeholder"
                 class="minimodrop"
                 :showClear="true"
-                :class="{ 'p-invalid': props.erros, 'w-11': true }"
+                :class="{ 'p-invalid': !_.isEmpty(props.erros), 'w-full': true }"
                 display="chip"
                 @before-show="getLista(false)"
             >

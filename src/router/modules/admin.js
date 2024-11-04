@@ -157,7 +157,17 @@ const adminRouter = {
                 },
               },
             ]
-          }          
+          },
+          {
+            path: 'autorizacoes',
+            component: () => import('@/views/administrativo/autorizacao/liberar/Autorizacao.vue'),
+            name: 'admin-relacionamento-autorizacoes',
+            meta: {
+              breadcrumb: [{label: 'Administrativo'}, {label: 'Relacionamento'}, {label: 'Autorizações'}],
+              tag: 'autorizacao',
+              operacao: 'consultar'
+            },
+          },                   
         ]
       },
       // {

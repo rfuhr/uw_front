@@ -24,7 +24,7 @@ const props = defineProps({
 
 <template>
     <fieldset v-show="visible" class="fieldset-border" :class="{'disabled': props.disabled}" :style="{'background-color': props.color}">
-        <legend class="fieldset-border" :style="{'background-color': props.color}">{{ title }}</legend>
+        <legend v-if="title" class="fieldset-border" :style="{'background-color': props.color}">{{ title }}</legend>
         <slot></slot>
     </fieldset>
 </template>

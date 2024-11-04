@@ -108,3 +108,9 @@ export { default as ValidaPrecoAgricolaItemService } from './ValidaPrecoAgricola
 export { default as MelhoriaAgricolaService } from './MelhoriaAgricolaService';
 export { default as PrecoAgricolaService } from './PrecoAgricolaService';
 export { default as FixacaoAgricolaService } from './FixacaoAgricolaService';
+export { default as ItemSimplificadoService } from './ItemSimplificadoService';
+export { default as SolicitacaoMercadoriaService } from './SolicitacaoMercadoriaService';
+export { default as ValidaDepartamentoGrupoContabilService } from './ValidaDepartamentoGrupoContabilService';
+export { default as ConfigAutorizacaoSolicitacaoMercadoriaService } from './ConfigAutorizacaoSolicitacaoMercadoriaService';
+export { default as AutorizacaoService } from './AutorizacaoService';
+export { default as CotacaoMercadoriaService } from './CotacaoMercadoriaService';

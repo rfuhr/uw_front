@@ -1,7 +1,8 @@
 <script setup>
-import { ref, defineProps, onMounted, onBeforeMount, computed } from 'vue';
+import { ref, defineProps, onMounted, onBeforeMount, computed, watch } from 'vue';
 import _ from 'lodash';
-import { useFormatString } from '@/composables/useFormatString';
+import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
+import { UsuarioService as Service } from '@/service';
 
 const props = defineProps({
     id: {
@@ -13,70 +14,38 @@ const props = defineProps({
         type: String,
         default: ''
     },
-    optionLabel: {
-        type: String,
-        default: ''
-    },
-    optionValue: {
-        type: String,
-        default: ''
-    },
-    sortField: {
-        type: String,
-        default: ''
-    },
     placeholder: {
         type: String,
-        default: ''
+        default: 'Selecione o usuário'
     },
     required: {
         type: Boolean,
         default: false
     },
-    service: {
-        type: Object,
-        required: true
-    },
     columnsFilters: {},
-    filtersSearch: {
-        type: Array,
-        default: () => []
-    },
-    fieldSearchDefault: {
-        type: String,
-        default: 'nome'
-    },
+
     erros: {},
     classContainer: {},
     disabled: {
         type: Boolean,
         default: false
     },
-    visible: {
-        type: Boolean,
-        default: true
-    },
     maxSizeOptions: {
         type: Number,
         default: 100
     },
-    maxSizeLabel: {
-        type: Number,
-        default: 90
-    },
     positionTooltip: {
         type: String,
         default: 'top'
-    },
-    selecaoAutomatica: {
-        type: Boolean,
-        default: true
-    },
-    noShowGeneral: {
-        type: Boolean,
-        default: true
     }
 });
+
+const optionLabel = ref('nome');
+const optionValue = ref('id');
+const filtersSearch = [
+    { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nomeLocal', labelFilter: 'Nome' },
+];
+const fieldSearchDefault = ref('nome');
 
 const registros = ref([]);
 const totalRegistros = ref(0);
@@ -85,6 +54,7 @@ const filters = ref();
 const valorFiltro = ref();
 const filtroAtivo = ref();
 const filterSelected = ref({ value: 'Nome' });
+const usuario = ref({});
 
 const filterSearchAtivo = {
     field: 'nome',
@@ -94,8 +64,6 @@ const filterSearchAtivo = {
     fieldFilter: 'nome',
     labelFilter: 'Nome'
 };
-
-const { truncate } = useFormatString();
 
 const montarFiltros = async (forceId) => {
     filters.value = {};
@@ -111,7 +79,7 @@ const montarFiltros = async (forceId) => {
     if (props.columnsFilters && props.columnsFilters.length > 0) {
         props.columnsFilters.forEach((element) => {
             filters.value[element.field] = {
-                value: element.value ? element.value : element.tipoField === 'boolean' ? false : '',
+                value: element.value ? element.value : element.tipoField === 'boolean' ? null : '',
                 matchMode: element.matchMode,
                 tipo: element.tipoField,
                 fieldFilter: element.fieldFilter
@@ -123,19 +91,17 @@ const montarFiltros = async (forceId) => {
     if(forceId) lazyParams.value.id = forceId 
     else if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
     else lazyParams.value.id = null;
-
-    lazyParams.value.noShowGeneral = props.noShowGeneral;
 };
 
 const getLista = async (forceId) => {
     try {
         await montarFiltros(forceId);
-        const data = await props.service.getPageAll(lazyParams.value);
+        const data = await Service.getPageAll(lazyParams.value);
         registros.value = data.registros;
         totalRegistros.value = data.totalRegistros;
         lazyParams.value.page = data.page;
         lazyParams.value.first = data.paginaAtual * data.tamanhoPagina;
-        if (!props.modelValue && totalRegistros.value === 1 && props.selecaoAutomatica) {
+        if (!props.modelValue && totalRegistros.value === 1) {
             localFieldName.value = registros.value[0].id;
             handleChange({ value: registros.value[0].id });
         } else if (forceId) {
@@ -162,7 +128,7 @@ const onLazyLoad = (event) => {
 const options = ref();
 
 const getConfigFilter = (filterSelected) => {
-    const filter = props.filtersSearch.find((element) => element.labelFilter === filterSelected['value']);
+    const filter = filtersSearch.find((element) => element.labelFilter === filterSelected['value']);
     filterSearchAtivo.field = filter.field;
     filterSearchAtivo.matchMode = filter.matchMode;
     filterSearchAtivo.tipo = filter.tipoField;
@@ -171,15 +137,15 @@ const getConfigFilter = (filterSelected) => {
 };
 
 const montarOpcoesSearchFilter = () => {
-    if (props.filtersSearch.length >= 1) {
-        const configParaFieldDefault = _.find(props.filtersSearch, { field: props.fieldSearchDefault });
-        filterSelected.value = { value: configParaFieldDefault.labelFilter || props.filtersSearch[0].labelFilter };
+    if (filtersSearch.length >= 1) {
+        const configParaFieldDefault = _.find(filtersSearch, { field: fieldSearchDefault });
+        filterSelected.value = { value: (configParaFieldDefault && configParaFieldDefault.labelFilter) || filtersSearch[0].labelFilter };
         getConfigFilter(filterSelected.value);
     }
-    if (props.filtersSearch.length > 1) {
+    if (filtersSearch.length > 1) {
         options.value = [];
 
-        props.filtersSearch.forEach((element) => {
+        filtersSearch.forEach((element) => {
             options.value.push({ value: element.labelFilter });
         });
     }
@@ -194,7 +160,7 @@ onMounted(() => {
         first: 0,
         page: 0,
         rows: 50,
-        sortField: props.sortField ? props.sortField : props.optionLabel,
+        sortField: props.optionLabel,
         sortOrder: 1,
         filters: filters.value,
         sortFilter: props.optionLabel
@@ -220,6 +186,7 @@ const handleChange = (event) => {
         lazyParams.value.page = 0;
     }
     const reg = registros.value.find((e) => e.id === event.value);
+    usuario.value = reg;
     emit('changeObject', reg);
 };
 
@@ -228,13 +195,25 @@ const changeFilter = () => {
     getLista();
 };
 
-const getLabel = (value) => {
-    const reg = registros.value.find(item => item[props.optionValue] === value)
-    if (reg)
-        return truncate(reg[props.optionLabel], props.maxSizeLabel);
-    else
-        return '';
+watch(
+    () => props.operacaoInternaId,
+    () => {
+        getLista();
+    }
+);
+
+
+const beforeShow = () => {
+    limparFiltro();
+    getLista();
 };
+
+const labelSelector = computed(() => {
+    if (usuario.value) {
+        return `${usuario.value.nome}`;
+    }
+    return '';
+});
 
 const reload = (id) => {
     getLista(id)
@@ -247,7 +226,7 @@ defineExpose({
 </script>
 
 <template>
-    <div v-show="visible" :class="['field', classContainer]">
+    <div :class="['field', classContainer]">
         <span class="p-float-label">
             <Dropdown
                 :id="props.id"
@@ -260,7 +239,7 @@ defineExpose({
                 :showClear="true"
                 :disabled="disabled"
                 :class="{ 'p-invalid': !_.isEmpty(props.erros), 'w-full': true }"
-                @before-show="getLista()"
+                @before-show="beforeShow()"
                 @change="handleChange"
                 v-bind="$attrs"
             >
@@ -269,7 +248,7 @@ defineExpose({
                         <div class="flex flex-row justify-content-end align-items-end gap-2">
                             <div class="text-600 text-bold text-sm">Pesquisando por:</div>
                             <SelectButton
-                                v-if="props.filtersSearch.length > 1"
+                                v-if="filtersSearch && filtersSearch.length > 1"
                                 v-model="filterSelected"
                                 :options="options"
                                 optionLabel="value"
@@ -300,15 +279,14 @@ defineExpose({
                     </div>
                 </template>
 
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex align-items-center">
-                            <slot v-if="$slots.values" name="values" v-bind="slotProps"></slot>
-                            <slot v-if="!$slots.values"><span>{{ getLabel(slotProps.value)  }}</span></slot>
-                        </div>
-                        <span v-else>
-                            {{ slotProps.placeholder }}
-                        </span>
-                    </template>
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex align-items-center">
+                        {{ labelSelector }}
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
 
                 <template #option="slotProps">
                     <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-wrap: wrap">
@@ -330,8 +308,10 @@ defineExpose({
                                 }
                             }"
                         >
-                            <slot v-if="$slots.options" name="options" v-bind="slotProps"></slot>
-                            <div v-if="!$slots.options">{{ truncate(slotProps.option[props.optionLabel], props.maxSizeOptions) }}</div>
+                            <div class="flex flex-column align-items-start">
+                                <span>{{ slotProps.option.nome }}</span>
+                                <span style="font-size: 0.9rem" class="text-silver-400">Email: {{ slotProps.option.email }}</span>
+                            </div>
                         </div>
                         <div
                             v-else-if="props.positionTooltip === 'left'"
@@ -354,8 +334,10 @@ defineExpose({
                                 }
                             }"
                         >
-                            <slot v-if="$slots.options" name="options" v-bind="slotProps"></slot>
-                            <div v-if="!$slots.options">{{ truncate(slotProps.option[props.optionLabel], props.maxSizeOptions) }}</div>
+                            <div class="flex flex-column align-items-start">
+                                <span>{{ slotProps.option.nome }}</span>
+                                <span style="font-size: 0.9rem;" class="text-silver-400">Email: {{ slotProps.option.email }}</span>
+                            </div>
                         </div>
                         <div
                             v-else-if="props.positionTooltip === 'right'"
@@ -375,8 +357,10 @@ defineExpose({
                                 }
                             }"
                         >
-                            <slot v-if="$slots.options" name="options" v-bind="slotProps"></slot>
-                            <div v-if="!$slots.options">{{ truncate(slotProps.option[props.optionLabel], props.maxSizeOptions) }}</div>
+                            <div class="flex flex-column align-items-start">
+                                <span>{{ slotProps.option.nome }}</span>
+                                <span style="font-size: 0.9rem;" class="text-silver-400">Email: {{ slotProps.option.email }}</span>
+                            </div>
                         </div>
                     </div>
                 </template>

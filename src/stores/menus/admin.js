@@ -75,6 +75,7 @@ export const menu = [
         icon: 'pi pi-fw pi-slack',
         items: [
             {label: 'Parceiro', icon: '', to: '/admin/relacionamento/parceiros'},
+            {label: 'Autorizações', icon: '', to: '/admin/relacionamento/autorizacoes'},
         ]
     },
     {

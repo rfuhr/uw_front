@@ -20,6 +20,13 @@ export const menu = [
         ]
     },    
     {
+        label: 'Configurações', 
+        icon: 'pi pi-fw pi-cog',
+        items: [
+            {label: 'Validação Departamento x Grupo Contábil', icon: '', to: '/estoque/configuracoes/validacao-departamento-grupo-contabil'},
+        ]
+    },
+    {
         label: 'Relatórios', 
         icon: 'pi pi-fw pi-print',
         items: [

@@ -12,12 +12,15 @@ import {
     CaracteristicaMovimentoFinanceiroService,
     HistoricoPadraoService,
     CarteiraFinanceiraService,
-    TipoDocumentoService
+    TipoDocumentoService,
+    TipoTituloService,
 } from '@/service';
 
 const createSchema = () => {
     return yup.object().shape({
         id: yup.string().required('Id é obrigatório.'),
+        tipoTituloReceberId: yup.string().required('Tipo de título a receber é obrigatório.'),
+        tipoTituloPagarId: yup.string().required('Tipo de título a pagar é obrigatório.'),
         operacaoMovimentoFinanceiroInclusaoId: yup.string().required('Operação de movimentação de inclusão é obrigatória.'),
         operacaoMovimentoFinanceiroBaixaId: yup.string().required('Operação de movimentação de baixa é obrigatória.'),
         operacaoAcessoriaFinanceiraPrincipalId: yup.string().required('Operação acessória principal é obrigatória.'),
@@ -30,6 +33,8 @@ const createSchema = () => {
         caracteristicaMovimentoFinanceiroNegociacaoId: yup.string().required('Característica de movimento é obrigatório.'),
         historicoPadraoNegociacaoId: yup.string().required('Histórico padrão é obrigatório.'),
         tipoDocumentoRomaneioId: yup.string().required('Tipo de documento de romaneio é obrigatório.'),
+        tipoDocumentoSolicitacaoId: yup.string().required('Tipo de documento de solicitação é obrigatório.'),
+        tipoDocumentoCotacaoId: yup.string().required('Tipo de documento de cotação é obrigatório.'),
     });
 };
 
@@ -52,6 +57,8 @@ const carregarRegistro = () => {
     ConfigSistemaService.getById(1).then((response) => {
         formData.value.id = response.id;
         formData.value.configuracoesFinanceiroId = response.configuracoesFinanceiro[0].id,
+        formData.value.tipoTituloReceberId = response.configuracoesFinanceiro[0].tipoTituloReceberId
+        formData.value.tipoTituloPagarId = response.configuracoesFinanceiro[0].tipoTituloPagarId
         formData.value.operacaoMovimentoFinanceiroInclusaoId = response.configuracoesFinanceiro[0].operacaoMovimentoFinanceiroInclusaoId
         formData.value.operacaoMovimentoFinanceiroBaixaId  = response.configuracoesFinanceiro[0].operacaoMovimentoFinanceiroBaixaId
         formData.value.operacaoAcessoriaFinanceiraPrincipalId = response.configuracoesFinanceiro[0].operacaoAcessoriaFinanceiraPrincipalId
@@ -66,6 +73,9 @@ const carregarRegistro = () => {
 
         formData.value.configuracoesAgricolaId = response.configuracoesAgricola[0].id,
         formData.value.tipoDocumentoRomaneioId = response.configuracoesAgricola[0].tipoDocumentoRomaneioId
+
+        formData.value.tipoDocumentoSolicitacaoId = response.configuracoesCompra[0].tipoDocumentoSolicitacaoId
+        formData.value.tipoDocumentoCotacaoId = response.configuracoesCompra[0].tipoDocumentoCotacaoId
     });
 };
 
@@ -76,6 +86,8 @@ const montaRequest = () => {
             {
                 id: formData.value.configuracoesFinanceiroId,
                 configSistemaId: formData.value.id,
+                tipoTituloReceberId: formData.value.tipoTituloReceberId,
+                tipoTituloPagarId: formData.value.tipoTituloPagarId,
                 operacaoMovimentoFinanceiroInclusaoId: formData.value.operacaoMovimentoFinanceiroInclusaoId,
                 operacaoMovimentoFinanceiroBaixaId: formData.value.operacaoMovimentoFinanceiroBaixaId,
                 operacaoAcessoriaFinanceiraPrincipalId: formData.value.operacaoAcessoriaFinanceiraPrincipalId,
@@ -95,6 +107,14 @@ const montaRequest = () => {
                 configSistemaId: formData.value.id,
                 tipoDocumentoRomaneioId: formData.value.tipoDocumentoRomaneioId                
             }
+        ],
+        configuracoesCompra: [
+            {
+                id: formData.value.configuracoesCompraId,
+                configSistemaId: formData.value.id,
+                tipoDocumentoSolicitacaoId: formData.value.tipoDocumentoSolicitacaoId,
+                tipoDocumentoCotacaoId: formData.value.tipoDocumentoCotacaoId                
+            }
         ]
     };
 };
@@ -113,6 +133,36 @@ onMounted(() => {
                         <TabView class="col-12">
                             <TabPanel header="Financeiro" class="col-12">
                                 <div class="grid nested-grid">
+                                    <div class="col-12">
+                                        <UWFieldSet title="Operações de Movimentação Financeira" class="h-full">
+                                            <div class="p-fluid formgrid grid">
+                                                <UWSeletor
+                                                    id="tipoTituloReceber"
+                                                    classContainer="col-12 md:col-6"
+                                                    v-model="formData.tipoTituloReceberId"
+                                                    optionLabel="nome"
+                                                    optionValue="id"
+                                                    required
+                                                    label="Tipo do Título a Receber"
+                                                    :service="TipoTituloService"
+                                                    placeholder="Selecione o tipo de título"
+                                                    :erros="errors.value?.tipoTituloReceberId"
+                                                />
+                                                <UWSeletor
+                                                    id="tipoTituloPagar"
+                                                    classContainer="col-12 md:col-6"
+                                                    v-model="formData.tipoTituloPagarId"
+                                                    optionLabel="nome"
+                                                    optionValue="id"
+                                                    required
+                                                    label="Tipo do Título a Pagar"
+                                                    :service="TipoTituloService"
+                                                    placeholder="Selecione o tipo de título"
+                                                    :erros="errors.value?.tipoTituloPagarId"
+                                                />
+                                            </div>
+                                        </UWFieldSet>
+                                    </div>
                                     <div class="col-6">
                                         <UWFieldSet title="Operações de Movimentação Financeira" class="h-full">
                                             <div class="p-fluid formgrid grid">
@@ -286,6 +336,40 @@ onMounted(() => {
                                             placeholder="Selecione o tipo de documento"
                                             :erros="errors.value?.tipoDocumentoRomaneioId"
                                         />
+                                    </div>
+                                </div>
+                            </TabPanel>
+                            <TabPanel header="Compras" class="col-12">
+                                <div class="grid nested-grid">
+                                    <div class="col-12">
+                                        <UWFieldSet title="Tipos de Documento" class="h-full">
+                                            <div class="p-fluid formgrid grid">
+                                                <UWSeletor
+                                                    id="tipoDocumentoSolicitacao"
+                                                    classContainer="col-12 md:col-3"
+                                                    v-model="formData.tipoDocumentoSolicitacaoId"
+                                                    optionLabel="nome"
+                                                    optionValue="id"
+                                                    required
+                                                    label="Tipo de Documento para Solicitação"
+                                                    :service="TipoDocumentoService"
+                                                    placeholder="Selecione o tipo de solicitacao"
+                                                    :erros="errors.value?.tipoDocumentoSolicitacaoId"
+                                                />
+                                                <UWSeletor
+                                                    id="tipoDocumentoCotacao"
+                                                    classContainer="col-12 md:col-3"
+                                                    v-model="formData.tipoDocumentoCotacaoId"
+                                                    optionLabel="nome"
+                                                    optionValue="id"
+                                                    required
+                                                    label="Tipo de Documento para Cotação"
+                                                    :service="TipoDocumentoService"
+                                                    placeholder="Selecione o tipo de cotação"
+                                                    :erros="errors.value?.tipoDocumentoCotacaoId"
+                                                />
+                                            </div>
+                                        </UWFieldSet>
                                     </div>
                                 </div>
                             </TabPanel>

@@ -129,6 +129,22 @@ class TiposService {
     getTipoTaxaAgricola() {
         return api.get('/agricola/tipo-taxa-agricola');
     }
+
+    getPrioridadeSolicitacaoItem() {
+        return api.get('/compras/urgencia-solicitacao-mercadoria');
+    }
+
+    getSituacaoSolicitacaoMercadoria() {
+        return api.get('/compras/situacao-solicitacao-mercadoria');
+    }
+
+    getTipoAutorizacao() {
+        return api.get('/tabela/tipo-autorizacao');
+    }
+
+    getStatusAutorizacao() {
+        return api.get('/tabela/status-autorizacao');
+    }
 }
 
 

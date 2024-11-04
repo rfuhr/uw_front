@@ -62,6 +62,11 @@ const props = defineProps({
         type: Boolean,
         required: false,
         default: true
+    },
+    filtersDefault: { // Adicionando nova propriedade para filtros padrão
+        type: Object,
+        required: false,
+        default: () => ({})
     }
 });
 
@@ -75,19 +80,24 @@ const totalRegistros = ref(0);
 const tableCrud = ref();
 
 const montarFiltros = () => {
-    filters.value = [];
+    filters.value = { ...props.filtersDefault }; 
+
     props.columns.forEach((element) => {
         filters.value[element.field] = {
-            value: element.tipoField === 'boolean' ? null : '',
+            value: element.tipoField === 'boolean' ? element.filterValue || null : element.filterValue || '',
             matchMode: element.matchMode,
             tipo: element.tipoField,
             fieldFilter: element.fieldFilter
         };
     });
+
 };
 
 const getPageRegistros = async () => {
+    
     if (lazyParams.value.filters && lazyParams.value.filters.length === 0) lazyParams.value.filters = null;
+
+    lazyParams.value.filters = { ...props.filtersDefault, ...filters.value };
 
     props.service.getPageAll(lazyParams.value).then((data) => {
         registros.value = data.registros;
@@ -125,7 +135,7 @@ const onSort = (event) => {
 };
 
 const onFilter = () => {
-    lazyParams.value.filters = filters.value;
+    lazyParams.value.filters = { ...props.filtersDefault, ...filters.value };
     lazyParams.value.first = 0;
 
     getPageRegistros();
@@ -197,7 +207,7 @@ defineExpose({
             <template #header>
                 <div class="flex flex-wrap gap-2 align-items-center justify-content-end">
                     <slot name="headerActions"></slot>
-                    <Button type="button" :v-show="showButtonNew" :icon="iconButtonNew" :label="labelButtonNew" class="w-full sm:w-auto flex-order-0 sm:flex-order-1" outlined @click="addNew" />
+                    <Button type="button" v-if="props.showButtonNew" :icon="iconButtonNew" :label="labelButtonNew" class="w-full sm:w-auto flex-order-0 sm:flex-order-1" outlined @click="addNew" />
                 </div>
             </template>
             <Column

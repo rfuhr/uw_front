@@ -1,5 +1,6 @@
 import CrudService from './CrudService';
 import api from './api';
+
 class OperacaoInternaService extends CrudService {
 
     getSeletorByOperacaoInternaValidadoParaRomaneio(filtros, itemId, grupoOperacaoAgricolaId) {

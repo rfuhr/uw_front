@@ -502,33 +502,27 @@ const showDialog = () => {
                                 </Column>
                                 <Column field="detalhamentoItem.item.unidadeMedidaComercialNome" header="U.M." style="width: 3%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.item.unidadeMedidaComercialNome }}</div> </template
-                                    >template>
+                                        <div class="w-full text-center">{{ slotProps.data.detalhamentoItem.item.unidadeMedidaComercialNome }}</div> </template>
                                 </Column>
                                 <Column field="detalhamentoItem.quantidade" header="Qtde" style="width: 4%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.quantidade, 0) }}</div> </template
-                                    >template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.quantidade, 0) }}</div> </template>
                                 </Column>
                                 <Column field="detalhamentoItem.valorUnitario" header="Valor Unitário" style="width: 5%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorUnitario, 2) }}</div> </template
-                                    >template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorUnitario, 2) }}</div> </template>
                                 </Column>
                                 <Column field="detalhamentoItem.percentualDesconto" header="% Desc." style="width: 3%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.percentualDesconto, 2) }}</div> </template
-                                    >template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.percentualDesconto, 2) }}</div> </template>
                                 </Column>
                                 <Column field="detalhamentoItem.valorDesconto" header="Valor Desc." style="width: 4%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorDesconto, 2) }}</div> </template
-                                    >template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorDesconto, 2) }}</div> </template>
                                 </Column>
                                 <Column field="detalhamentoItem.valorTotal" header="Valor Total" style="width: 7%" headerClass="columnHeaderItem">
                                     <template #body="slotProps">
-                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorTotal, 2) }}</div> </template
-                                    >template>
+                                        <div class="w-full text-right pr-2">{{ formatNumber(slotProps.data.detalhamentoItem.valorTotal, 2) }}</div> </template>
                                 </Column>
                                 <Column header="" style="width: 6%">
                                     <template #body="slotProps">

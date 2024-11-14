@@ -120,7 +120,7 @@ const montarFiltros = async (forceId) => {
     }
 
     if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
-    if(forceId) lazyParams.value.id = forceId 
+    if (forceId) lazyParams.value.id = forceId;
     else if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
     else lazyParams.value.id = null;
 
@@ -215,12 +215,14 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    if (event.value === null) {
-        lazyParams.value.first = 0;
-        lazyParams.value.page = 0;
+    if (event.value !== localFieldName.value) {
+        if (event.value === null) {
+            lazyParams.value.first = 0;
+            lazyParams.value.page = 0;
+        }
+        const reg = registros.value.find((e) => e.id === event.value);
+        emit('changeObject', reg);
     }
-    const reg = registros.value.find((e) => e.id === event.value);
-    emit('changeObject', reg);
 };
 
 const changeFilter = () => {
@@ -229,21 +231,18 @@ const changeFilter = () => {
 };
 
 const getLabel = (value) => {
-    const reg = registros.value.find(item => item[props.optionValue] === value)
-    if (reg)
-        return truncate(reg[props.optionLabel], props.maxSizeLabel);
-    else
-        return '';
+    const reg = registros.value.find((item) => item[props.optionValue] === value);
+    if (reg) return truncate(reg[props.optionLabel], props.maxSizeLabel);
+    else return '';
 };
 
 const reload = (id) => {
-    getLista(id)
-}
+    getLista(id);
+};
 
 defineExpose({
     reload
 });
-
 </script>
 
 <template>
@@ -300,15 +299,17 @@ defineExpose({
                     </div>
                 </template>
 
-                    <template #value="slotProps">
-                        <div v-if="slotProps.value" class="flex align-items-center">
-                            <slot v-if="$slots.values" name="values" v-bind="slotProps"></slot>
-                            <slot v-if="!$slots.values"><span>{{ getLabel(slotProps.value)  }}</span></slot>
-                        </div>
-                        <span v-else>
-                            {{ slotProps.placeholder }}
-                        </span>
-                    </template>
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex align-items-center">
+                        <slot v-if="$slots.values" name="values" v-bind="slotProps"></slot>
+                        <slot v-if="!$slots.values"
+                            ><span>{{ getLabel(slotProps.value) }}</span></slot
+                        >
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
 
                 <template #option="slotProps">
                     <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-wrap: wrap">

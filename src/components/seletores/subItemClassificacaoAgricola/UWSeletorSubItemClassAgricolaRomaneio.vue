@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, onMounted, onBeforeMount, computed, watch  } from 'vue';
+import { ref, defineProps, onMounted, onBeforeMount, computed, watch } from 'vue';
 import _ from 'lodash';
 import { useFormatString } from '@/composables/useFormatString';
 import { SubItemClassificacaoAgricolaService as Service } from '@/service';
@@ -50,7 +50,7 @@ const props = defineProps({
     dataRomaneio: {
         type: Date,
         required: true
-    },    
+    }
 });
 
 const { formatDate } = useFormatDate();
@@ -105,7 +105,6 @@ const montarFiltros = async () => {
         });
     }
 
-
     if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
     if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
     else lazyParams.value.id = null;
@@ -120,7 +119,7 @@ const getLista = async () => {
         lazyParams.value.page = data.page;
         lazyParams.value.first = data.paginaAtual * data.tamanhoPagina;
         if (totalRegistros.value === 0) {
-            localFieldName.value = undefined
+            localFieldName.value = undefined;
         }
         if (!props.modelValue && totalRegistros.value === 1) {
             localFieldName.value = registros.value[0].id;
@@ -200,13 +199,15 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    if (event.value === null) {
-        lazyParams.value.first = 0;
-        lazyParams.value.page = 0;
+    if (event.value !== localFieldName.value) {
+        if (event.value === null) {
+            lazyParams.value.first = 0;
+            lazyParams.value.page = 0;
+        }
+        const reg = registros.value.find((e) => e.id === event.value);
+        registro.value = reg;
+        emit('changeObject', reg);
     }
-    const reg = registros.value.find((e) => e.id === event.value);
-    registro.value = reg;
-    emit('changeObject', reg);
 };
 
 const changeFilter = () => {
@@ -221,13 +222,6 @@ const beforeShow = () => {
 
 watch([() => props.itemId, () => props.itemClassificacaoAgricolaId, () => props.dataRomaneio], async () => {
     await getLista();
-});
-
-const labelSelector = computed(() => {
-    if (registro.value) {
-        return `${registro.value.codigo}`;
-    }
-    return '';
 });
 
 </script>
@@ -280,7 +274,18 @@ const labelSelector = computed(() => {
                         </div>
                         <div class="p-inputgroup">
                             <InputText v-if="filterSearchAtivo.tipo !== 'decimal'" size="small" autofocus placeholder="Digite argumento de pesquisa" v-model="valorFiltro" @keypress.enter="getLista()" />
-                            <InputNumber ref="myInputNumber" v-if="filterSearchAtivo.tipo === 'decimal'" size="small" :minFractionDigits="2" :maxFractionDigits="2" locale="pt-Br" autofocus placeholder="Digite argumento de pesquisa" v-model="valorFiltro" @keypress.enter="getLista()" />
+                            <InputNumber
+                                ref="myInputNumber"
+                                v-if="filterSearchAtivo.tipo === 'decimal'"
+                                size="small"
+                                :minFractionDigits="2"
+                                :maxFractionDigits="2"
+                                locale="pt-Br"
+                                autofocus
+                                placeholder="Digite argumento de pesquisa"
+                                v-model="valorFiltro"
+                                @keypress.enter="getLista()"
+                            />
                             <Button v-if="filtroAtivo" icon="pi pi-times" class="bg-red-400" @click.stop="limparFiltro()" />
                             <Button icon="pi pi-search" class="bg-yellow-400" @click.stop="getLista()" />
                         </div>

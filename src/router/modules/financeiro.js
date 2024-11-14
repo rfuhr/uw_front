@@ -154,7 +154,17 @@ const financeiroRouter = {
                         tag: 'operacaocaixabanco',
                         operacao: 'consultar'
                     }
-                }
+                },
+                {
+                    path: 'condicao-pagamento',
+                    component: () => import('../../views/financeiro/tabela/condicaoPagamento/CondicaoPagamento.vue'),
+                    name: 'financeiro-tabela-condicao-pagamento',
+                    meta: {
+                        breadcrumb: [{ label: 'Financeiro' }, { label: 'Tabelas' },  { label: 'Contas Pagar e Receber' }, { label: 'Condição de Pagamento' }],
+                        tag: 'condicaopagamento',
+                        operacao: 'consultar'
+                    }
+                },
             ]
         },
         {

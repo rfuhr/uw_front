@@ -38,6 +38,10 @@ const props = defineProps({
     max: {
         type: Number,
         default: 999999999
+    },
+    maximoDigitos: {
+        type: Number,
+        default: 2
     }    
 });
 

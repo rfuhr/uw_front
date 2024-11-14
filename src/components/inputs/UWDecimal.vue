@@ -66,7 +66,7 @@ const localModelValue = computed({
 <template>
     <div v-show="visible" :class="['field', classContainer]">
         <span class="p-float-label">
-            <InputNumber :id="id" mode="decimal" :minFractionDigits="2" :maxFractionDigits="maximoDigitos" :min="min" :max="max" locale="pt-Br" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs" />
+            <InputNumber :id="id" :minFractionDigits="2" :maxFractionDigits="maximoDigitos" :min="min" :max="max" locale="pt-Br" :disabled="disabled" v-model="localModelValue" :autofocus="autofocus" :class="{ 'w-full': true, 'p-invalid': errors }" v-bind="$attrs" />
             <label :for="id" v-required="required">{{ label }}</label>
         </span>
         <span v-if="errors">

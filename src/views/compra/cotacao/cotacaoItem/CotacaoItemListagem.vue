@@ -1,12 +1,13 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { CotacaoMercadoriaService } from '@/service';
+import { CotacaoMercadoriaService, TiposService } from '@/service';
 import { useFormatDate} from '@/composables/useFormatDate';
 
 const router = useRouter();
 const crudlista = ref();
 const { formatToDDMMYYYY } = useFormatDate();
+const situacoesCotacao = ref([]);
 
 const columns = reactive([
     {
@@ -30,7 +31,20 @@ const columns = reactive([
         size: '10%',
         sortable: true,
         format: formatToDDMMYYYY
-    }
+    },
+    {
+        label: 'Situação',
+        field: 'situacaoCotacaoMercadoriaNome',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '15%',
+        sortable: true,
+        fieldFilter: 'situacaoCotacaoMercadoria',
+        filterSeletor: true,
+        filterValues: situacoesCotacao
+    },
 ]);
 
 const openNew = () => {
@@ -43,6 +57,26 @@ const openView = (selectId) => {
     }})    
 };
 
+const openEdit = (selectId) => {
+    router.push({name: 'compra-cotacao-cotacao-item-editar', params: {
+        id: selectId
+    }})    
+};
+
+onMounted(() => {
+    TiposService.getSituacaoCotacaoMercadoria().then((response) => {
+        situacoesCotacao.value = response.map(m => {
+            return {
+                label: m.name,
+                value: m.value
+            }
+        })
+    })
+    .catch(() => {
+        situacoesCotacao.value = []
+    })
+})
+
 </script>
 
 <template>
@@ -52,6 +86,7 @@ const openView = (selectId) => {
     @openNew="openNew" sortField="id">
     <template #tableActions="slotProps">
         <Button v-tooltip="'Visualizar cotacao'" icon="pi pi-eye" class="p-button-secundary p-button-sm mr-2" @click="openView(slotProps.data.id)" style="height: 24px; width: 24px;"/>
+        <Button v-if="slotProps.data.situacaoCotacaoMercadoria === '1'" v-tooltip="'Editar cotação'" icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="openEdit(slotProps.data.id)" style="height: 24px; width: 24px;"/>
     </template>
     </UWPageCrud>
 </template>

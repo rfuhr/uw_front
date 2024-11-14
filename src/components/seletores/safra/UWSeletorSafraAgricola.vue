@@ -41,7 +41,7 @@ const props = defineProps({
     itemId: {
         type: Number,
         required: true
-    },
+    }
 });
 
 const optionLabel = ref('nome');
@@ -94,10 +94,10 @@ const montarFiltros = async () => {
     }
 
     filters.value['itemId'] = {
-                value: props.itemId,
-                matchMode: 'equals',
-                tipo: 'integer',
-                fieldFilter: 'item.id'
+        value: props.itemId,
+        matchMode: 'equals',
+        tipo: 'integer',
+        fieldFilter: 'item.id'
     };
 
     if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
@@ -191,12 +191,14 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    if (event.value === null) {
-        lazyParams.value.first = 0;
-        lazyParams.value.page = 0;
+    if (event.value !== localFieldName.value) {
+        if (event.value === null) {
+            lazyParams.value.first = 0;
+            lazyParams.value.page = 0;
+        }
+        const reg = registros.value.find((e) => e.id === event.value);
+        emit('changeObject', reg);
     }
-    const reg = registros.value.find((e) => e.id === event.value);
-    emit('changeObject', reg);
 };
 
 const changeFilter = () => {
@@ -214,13 +216,12 @@ watch([() => props.itemId], async () => {
 });
 
 const reload = (id) => {
-    getLista(id)
-}
+    getLista(id);
+};
 
 defineExpose({
     reload
 });
-
 </script>
 
 <template>

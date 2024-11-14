@@ -42,8 +42,9 @@ router.beforeEach(async (to, from, next) => {
 
     const moduloPathBaseContexto = getPathModuloSelecionado;
 
+    
     if (publicPages.indexOf(to.path) !== -1) {
-        next();
+        return next();
     } else {
         if (auth.isAuthenticated) {
             if (to.meta.tag) {
@@ -51,7 +52,7 @@ router.beforeEach(async (to, from, next) => {
                     await UsuarioService.checkPermissao(contexto.empresaId, contexto.empresaFilialId, to.meta.tag, to.meta.operacao);
                     next()
                 } catch {
-                    next({ name: 'NotPermission' });
+                    //return next({ name: 'NotPermission' });
                 }
             } else {
                 if (!moduloPathBaseContexto) {

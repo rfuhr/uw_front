@@ -185,12 +185,14 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    if (event.value === null) {
-        lazyParams.value.first = 0;
-        lazyParams.value.page = 0;
+    if (event.value !== localFieldName.value) {
+        if (event.value === null) {
+            lazyParams.value.first = 0;
+            lazyParams.value.page = 0;
+        }
+        const reg = registros.value.find((e) => e.id === event.value);
+        emit('changeObject', reg);
     }
-    const reg = registros.value.find((e) => e.id === event.value);
-    emit('changeObject', reg);
 };
 
 const changeFilter = () => {
@@ -202,7 +204,6 @@ const beforeShow = () => {
     limparFiltro();
     getLista();
 };
-
 </script>
 
 <template>

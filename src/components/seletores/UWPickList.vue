@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, computed } from 'vue';
-import _ from 'lodash'
+import _ from 'lodash';
 
 const props = defineProps({
     id: {
@@ -54,7 +54,7 @@ const localFieldName = computed({
     get: () => props.modelValue,
     set: (newValue) => {
         if (!_.isEqual(newValue, props.modelValue)) {
-            console.log("NewValue ", newValue, "OldValue", props.modelValue)
+            console.log('NewValue ', newValue, 'OldValue', props.modelValue);
             emit('update:modelValue', newValue);
             emit('change');
         }
@@ -62,10 +62,11 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    const reg = props.options.find(e => e[props.optionValue] === event.value)
-    emit('changeObject', reg);
-}
-
+    if (event.value !== localFieldName.value) {
+        const reg = props.options.find((e) => e[props.optionValue] === event.value);
+        emit('changeObject', reg);
+    }
+};
 </script>
 
 <template>
@@ -84,7 +85,6 @@ const handleChange = (event) => {
                 :class="{ 'p-invalid': props.errors, 'w-full': true }"
                 @change="handleChange"
             >
-
             </Dropdown>
             <label :for="props.id" v-required="props.required">{{ props.label }}</label>
         </span>

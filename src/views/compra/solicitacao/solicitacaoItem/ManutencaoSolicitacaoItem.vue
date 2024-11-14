@@ -230,6 +230,7 @@ const handleVoltar = () => {
                                     :erros="errors.value?.departamentoSolicitanteId"
                                     :columnsFilters="[{ field: 'empresaFilial', value: formData.empresaFilialId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresaFilial.id' }]"
                                     @changeObject="changeDepartamento"
+                                    :selecaoAutomatica="false"
                                 />
                                 <UWSeletor
                                     id="grupoContabilDestino"

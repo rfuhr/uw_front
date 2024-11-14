@@ -46,18 +46,24 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onBeforeMount  } from 'vue';
 import { useRouter } from 'vue-router';
 import * as yup from 'yup';
-import { AuthService, UsuarioService, ContextoService } from '../service';
+// import useServices from '@/composables/useServices';
 import { useAuth, useContexto } from '../stores';
 import UWForm from '../components/layout/UWForm.vue';
+import AuthService from '@/service/AuthService';
+import UsuarioService from '@/service/UsuarioService';
+import ContextoService from '@/service/ContextoService';    
 
 const schema = yup.object().shape({
     tenant: yup.string().required(),
     username: yup.string().required('Usuário é obrigatório.'),
     password: yup.string().required('Senha é obrigatória.')
 });
+
+// const services = ref({});
+// let   AuthService, UsuarioService, ContextoService;
 
 const auth = useAuth();
 const contexto = useContexto();
@@ -101,7 +107,8 @@ const autenticar = async (username, password) => {
         auth.setUserId(retorno.userId);
         userId.value = retorno.userId;
         return true;
-    } catch {
+    } catch (err) {
+        console.log(err)
         return false;
     }
 };
@@ -149,6 +156,16 @@ const getOrganogramaContexto = async (userId) => {
         return false;
     }
 };
+
+// onBeforeMount(async () => {
+//     await useServices(['AuthService', 'UsuarioService', 'ContextoService'], services);
+
+//     const { AuthService: _AuthService, UsuarioService: _UsuarioService, ContextoService: _ContextoService } = services.value;
+//     AuthService = _AuthService;
+//     UsuarioService = _UsuarioService;
+//     ContextoService = _ContextoService;
+// });
+
 </script>
 
 <!-- :class="{ 'p-invalid': errors && errorBag.value.tenant }" -->

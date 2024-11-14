@@ -1,7 +1,8 @@
+
 export { default as AuthService } from './AuthService'
-export { default as UsuarioService } from './UsuarioService'
-export { default as ContextoService } from './ContextoService'
 export { default as ModuloService } from './ModuloService'
+export { default as ContextoService } from './ContextoService'
+export { default as UsuarioService } from './UsuarioService'
 export { default as EstadoCivilService } from './EstadoCivilService'
 export { default as NacionalidadeService } from './NacionalidadeService'
 export { default as ProfissaoService } from './ProfissaoService'
@@ -114,3 +115,13 @@ export { default as ValidaDepartamentoGrupoContabilService } from './ValidaDepar
 export { default as ConfigAutorizacaoSolicitacaoMercadoriaService } from './ConfigAutorizacaoSolicitacaoMercadoriaService';
 export { default as AutorizacaoService } from './AutorizacaoService';
 export { default as CotacaoMercadoriaService } from './CotacaoMercadoriaService';
+
+const services = {
+    AuthService: () => import('./AuthService'),
+    UsuarioService: () => import('./UsuarioService'),
+    ContextoService: () => import('./ContextoService'),
+}
+
+export default { services };
+
+

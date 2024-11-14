@@ -145,6 +145,14 @@ class TiposService {
     getStatusAutorizacao() {
         return api.get('/tabela/status-autorizacao');
     }
+
+    getSituacaoCotacaoMercadoria() {
+        return api.get('/compras/situacao-cotacao-mercadoria');
+    }
+
+    getTipoCondicaoPagamento() {
+        return api.get('/financeiro/tipo-condicao-pagamento');
+    }
 }
 
 

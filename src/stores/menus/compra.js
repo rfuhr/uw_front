@@ -16,6 +16,7 @@ export const menu = [
         icon: 'pi pi-fw pi-table',
         items: [
             { label: 'Cotação', icon: '', to: '/compra/cotacao/cotacao-item' },
+            { label: 'Retorno de Cotação', icon: '', to: '/compra/cotacao/retorno-cotacao' },
             { label: 'Mapa de Cotação', icon: '', to: '/compra/cotacao/mapa-cotacao' }
         ]
     },

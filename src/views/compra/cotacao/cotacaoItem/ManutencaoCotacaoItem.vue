@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, nextTick } from 'vue';
 import * as yup from 'yup';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 import { useToast } from 'primevue/usetoast';
 import { useContexto } from '@/stores';
@@ -11,11 +11,30 @@ import SelecaoParceiro from '@/views/administrativo/relacionamento/selecaoParcei
 
 const createSchema = () => {
     return yup.object().shape({
-            parceiros: yup.array().min(1).required('Deve ser informado ao menos um parceiro'),
-            temItemSelecionado: yup.boolean().oneOf([true], 'Deve ser informado ao menos um item para cotação').required('Deve ser informado ao menos um item para cotação'),
+        parceiros: yup.array().min(1).required('Deve ser informado ao menos um parceiro'),
+        temItemSelecionado: yup.boolean().oneOf([true], 'Deve ser informado ao menos um item para cotação').required('Deve ser informado ao menos um item para cotação')
     });
 };
 
+const itemsActions = [
+    {
+        label: 'Apenas Salvar',
+        icon: 'pi pi-lock',
+        command: () => {
+            handleApenasSalvar();
+        }
+    },
+    {
+        label: 'Desistir',
+        icon: 'pi pi-times-circle',
+        disabled: () => mode.value === 'nova',
+        command: () => {
+            handleDesistir();
+        }
+    }
+];
+
+const route = useRoute();
 const router = useRouter();
 const { formatDocumento } = useFormatDocumentos();
 const toast = useToast();
@@ -24,9 +43,11 @@ const { formatDate, formatToDDMMYYYY } = useFormatDate();
 const selectedSolicitacao = ref(null);
 const selectedSolicitacaoItens = ref([]);
 const formData = ref({
-    parceiros: [],
-    solicitacoes: undefined
+    // parceiros: [],
+    // solicitacoes: undefined
 });
+const formCotacaoItem = ref();
+const seletorDepartamento = ref();
 
 const mode = ref('nova');
 const visibleSelecaoParceiro = ref(false);
@@ -50,6 +71,7 @@ const jaExisteParceiro = (parceiroLocalId) => {
 
 const handleConfirmarSelecao = (parceiro) => {
     visibleSelecaoParceiro.value = false;
+    if (!formData.value.parceiros) formData.value.parceiros = [];
     if (jaExisteParceiro(parceiro.dadosParceiroLocal.id)) {
         toast.add({ severity: 'error', summary: 'Falha', detail: 'Parceiro já adicionado a listagem', life: 5000 });
     } else {
@@ -65,10 +87,23 @@ const handleDeleteParceiro = (parceiroLocalId) => {
     formData.value.parceiros = formData.value.parceiros.filter((parceiro) => parceiro.parceiroLocalId !== parceiroLocalId);
 };
 
-const changeDepartamento = (departamento) => {
-    SolicitacaoMercadoriaService.buscarSolicitacoesPendentesParaCotacao(departamento.id).then((response) => {
-        formData.value.solicitacoes = response;
-    });
+const buscarSolicitacoesEmAberto = async () => {
+    await SolicitacaoMercadoriaService.buscarSolicitacoesPendentesParaCotacao(formData.value.departamentoSolicitadoId).then((response) => {
+            formData.value.solicitacoes = response;
+            if (formData.value.solicitacoes && formData.value.solicitacoes.length > 0) {
+                selectedSolicitacao.value = formData.value.solicitacoes[0];
+            }
+    });    
+}
+const changeDepartamento = async (departamento) => {
+    if (departamento) {
+        console.log('changeDepartamento');
+        await buscarSolicitacoesEmAberto();
+    } else {
+        formData.value.solicitacoes = [];
+        selectedSolicitacao.value = null;
+        selectedSolicitacaoItens.value = [];
+    }
 };
 
 const itensDaSolicitacaoSelecionada = computed(() => {
@@ -118,14 +153,89 @@ const unSelectAllItens = () => {
         nextTick(() => {
             selectedSolicitacaoItens.value = updatedSelection;
             if (!selectedSolicitacaoItens.value || selectedSolicitacaoItens.value.length === 0) {
-            formData.value.temItemSelecionado = false;
-        }
+                formData.value.temItemSelecionado = false;
+            }
         });
     }
 };
 
 onMounted(async () => {
-    mode.value = 'nova';
+    const id = route.params.id || 0;
+    if (id > 0) {
+        mode.value = 'editar';
+        await CotacaoMercadoriaService.getById(id).then(async (data) => {
+            
+            formData.value.id = data.id;
+            formData.value.numero = data.numero;
+            formData.value.dataCotacao = data.dataCotacao;
+            formData.value.situacaoCotacaoMercadoria = data.situacaoCotacaoMercadoria;
+            formData.value.departamentoSolicitadoId = data.departamentoCotacaoId;
+            formData.value.parceiros = [];
+            formData.value.solicitacoes = [];
+            
+            await buscarSolicitacoesEmAberto();
+
+            data.parceiros.forEach((parceiro) => {
+                formData.value.parceiros.push({
+                    id: parceiro.id,
+                    cotacaoMercadoriaId: parceiro.cotacaoMercadoriaId,
+                    parceiroLocalId: parceiro.parceiroLocal.id,
+                    cpfCnpj: parceiro.parceiroLocal.cpfCnpj,
+                    nomeRazaoSocial: parceiro.parceiroLocal.nomeRazaoSocial,
+                    nomeLocal: parceiro.parceiroLocal.nomeLocal,
+                    enderecos: parceiro.parceiroLocal.enderecos
+                });
+                parceiro.itens.forEach((item) => {
+                    let solicitacao = formData.value.solicitacoes.find((solicitacao) => solicitacao.id === item.solicitacaoMercadoriaId);
+                    if (!solicitacao) {
+                        solicitacao = {
+                            id: item.solicitacaoMercadoriaId,
+                            numero: item.solicitacaoMercadoriaNumero,
+                            dataSolicitacao: item.solicitacaoMercadoriaDataSolicitacao,
+                            departamentoSolicitanteSigla: item.solicitacaoMercadoriaDepartamentoSolicitanteSigla,
+                            itens: []
+                        };
+                        formData.value.solicitacoes.push(solicitacao);
+                    }
+                    let itemSolicitacao = solicitacao.itens.find((it) => it.id === item.solicitacaoMercadoriaItemId);
+                    if (!itemSolicitacao) {
+                        itemSolicitacao = {
+                            id: item.solicitacaoMercadoriaItemId,
+                            solicitacaoMercadoriaId: item.solicitacaoMercadoriaId,
+                            itemId: item.itemId,
+                            itemSimplificadoId: item.itemSimplificadoId,
+                            itemNome: item.itemNome,
+                            itemSimplificadoNome: item.itemSimplificadoNome,
+                            quantidadeSolicitada: item.solicitacaoMercadoriaItemQuantidadeSolicitada, 
+                            previsaoDiasUtilizacao: item.solicitacaoMercadoriaItemPrevisaoDiasUtilizacao,
+                            urgenciaSolicitacaoMercadoria: item.solicitacaoMercadoriaItemUrgenciaSolicitacao,
+                            departamentoEntregaSigla: item.solicitacaoMercadoriaItemDepartamentoEntregaSigla,
+                            observacao: item.solicitacaoMercadoriaItemObservacao,
+                            usuarioSolicitacaoNome: item.solicitacaoMercadoriaItemUsuarioSolicitacaoNome
+                        }
+                        solicitacao.itens.push(itemSolicitacao);
+
+                        nextTick(() => {
+                            const updatedSelection = [...selectedSolicitacaoItens.value, itemSolicitacao];
+                            selectedSolicitacaoItens.value = updatedSelection;
+                            if (selectedSolicitacaoItens.value && selectedSolicitacaoItens.value.length > 0) {
+                                formData.value.temItemSelecionado = true;
+                            }
+                        });
+
+                    }
+                });
+            });
+
+            
+
+            if (formData.value.solicitacoes && formData.value.solicitacoes.length > 0) {
+                selectedSolicitacao.value = formData.value.solicitacoes[0];
+            }
+        });
+    } else {
+        mode.value = 'nova';
+    }
 });
 
 const onRowSelect = (event) => {
@@ -143,7 +253,15 @@ const itensSelecionadosAgrupados = computed(() => {
     // Itera sobre os itens selecionados e agrupa por itemId ou itemSimplificadoId
     selectedSolicitacaoItens.value.forEach((item) => {
         // Verifica qual identificador usar
-        const idItemAgrupado = item.itemId + '-' || 'Simpl_' + item.itemSimplificadoId;
+        if (!item.itemId && !item.itemSimplificadoId) {
+            return;
+        }
+        let idItemAgrupado = null;
+        if (item.itemId) {
+            idItemAgrupado = item.itemId;
+        } else if (item.itemSimplificadoId) {
+            idItemAgrupado = 'Simpl_' + item.itemSimplificadoId
+        }
         const quantidade = item.quantidadeSolicitada || 0; // Ajuste conforme sua estrutura
 
         if (!agrupados[idItemAgrupado]) {
@@ -190,33 +308,48 @@ const itensSelecionadosAgrupados = computed(() => {
     return Object.values(agrupados);
 });
 
+const handleConfirmar = async () => {
+    nextTick(() => {
+        formData.value.situacaoCotacaoMercadoria = '2';
+        formCotacaoItem.value.handleSubmit();
+    });
+};
+
 const salvarRegistro = () => {
     if (mode.value === 'nova') {
         criarRegistro();
-    } 
+    }
+    if (mode.value === 'editar') {
+        alterarRegistro();
+    }
 };
 
 const montarRequest = () => {
     const payload = {
+        id: formData.value.id,
         departamentoCotacaoId: formData.value.departamentoSolicitadoId,
         dataCotacao: formatDate(new Date(), 'yyyy-MM-dd'),
+        numero: formData.value.numero,
+        situacaoCotacaoMercadoria: formData.value.situacaoCotacaoMercadoria || '1',
         parceiros: []
-    }
+    };
     formData.value.parceiros.forEach((parceiro) => {
         payload.parceiros.push({
+            id: parceiro.id,
             parceiroLocalId: parceiro.parceiroLocalId,
             itens: selectedSolicitacaoItens.value.map((item) => {
                 return {
                     itemId: item.itemId,
                     itemSimplificadoId: item.itemSimplificadoId,
                     quantidade: item.quantidadeSolicitada,
-                    solicitacaoMercadoriaItemId: item.id
-                }
+                    solicitacaoMercadoriaItemId: item.id,
+                    status: '1'
+                };
             })
         });
     });
     return payload;
-}
+};
 
 const criarRegistro = () => {
     const payload = montarRequest();
@@ -230,6 +363,37 @@ const criarRegistro = () => {
             toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível salvar a cotação de item.', life: 5000 });
         });
 };
+
+const alterarRegistro = () => {
+    const payload = montarRequest();
+    CotacaoMercadoriaService.update(payload)
+        .then(() => {
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Cotação de item salva com sucesso', life: 5000 });
+            router.push({ path: '/compra/cotacao/cotacao-item' });
+        })
+        .catch(() => {
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível salvar a cotação de item', life: 5000 });
+        });
+};
+
+const handleApenasSalvar = async () => {
+    nextTick(() => {
+        formData.value.situacaoCotacaoMercadoria = '1';
+        formCotacaoItem.value.handleSubmit();
+    });
+};
+
+const handleDesistir = () => {
+    const cotacaoMercadoriaItemId = formData.value.id;
+    CotacaoMercadoriaService.delete(cotacaoMercadoriaItemId)
+        .then(() => {
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Desistência da Cotação com sucesso', life: 5000 });
+            router.push({ path: '/compra/cotacao/cotacao-item' });
+        })
+        .catch(() => {
+            toast.add({ severity: 'error', summary: 'Falha', detail: 'Não foi possível realizar a desistência da cotação.', life: 5000 });
+        });
+};
 </script>
 
 <template>
@@ -237,8 +401,8 @@ const criarRegistro = () => {
         <UWForm
             :schema="createSchema()"
             :values="formData"
-            ref="formSolicitacaoItem"
-            :visibleSave="true"
+            ref="formCotacaoItem"
+            :visibleSave="false"
             :visibleCancel="mode !== 'visualizar'"
             :visibleVoltar="mode === 'visualizar'"
             @doSubmit="salvarRegistro"
@@ -269,7 +433,7 @@ const criarRegistro = () => {
                                     <Column field="nomeLocal" header="Filial" />
                                     <Column header="Endereço">
                                         <template #body="slotProps">
-                                            <div class="w-full text-left">{{ getEnderecoCompleto(slotProps.data.enderecos[0]) }}</div>
+                                            <div class="w-full text-left">{{ slotProps.data.enderecos ? getEnderecoCompleto(slotProps.data.enderecos[0]) : ""}}</div>
                                         </template>
                                     </Column>
                                     <Column header="Ações" style="width: 10%">
@@ -287,13 +451,16 @@ const criarRegistro = () => {
                                     <div class="col-4">
                                         <UWSeletor
                                             id="departamento"
+                                            ref="seletorDepartamento"
                                             classContainer="col-12 md:col-12 w-full p-0"
                                             v-model="formData.departamentoSolicitadoId"
                                             optionLabel="nome"
                                             optionValue="id"
                                             required
+                                            :disabled="mode !== 'nova'"
                                             label="Departamento Solicitado"
                                             :service="DepartamentoService"
+                                            :selecaoAutomatica="false"
                                             placeholder="Selecione o departamento"
                                             :erros="errors.value?.departamentoEntregaId"
                                             :columnsFilters="[{ field: 'empresaFilial', value: contextoStore.contexto.empresaFilialId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresaFilial.id' }]"
@@ -373,9 +540,9 @@ const criarRegistro = () => {
                                                 </Column>
                                                 <Column field="previsaoDiasUtilizacao" header="Prev. Dias" />
                                                 <Column field="urgenciaSolicitacaoMercadoria" header="Urgência" />
-                                                <Column header="Departamento Solicitante">
+                                                <Column header="Departamento Entrega">
                                                     <template #body="slotProps">
-                                                        <div class="w-full text-left">{{ slotProps.data.departamentoSolicitante }}</div>
+                                                        <div class="w-full text-left">{{ slotProps.data.departamentoEntregaSigla }}</div>
                                                     </template>
                                                 </Column>
                                                 <Column field="observacao" header="Observação" />
@@ -387,7 +554,7 @@ const criarRegistro = () => {
                             </TabPanel>
                             <TabPanel header="Resumo" class="col-12">
                                 <UWFieldSet title="" class="h-full col-12 flex flex-column justify-content-start border-solid">
-                                    <DataTable ref="dtSolicitacoes" size="small" :value="itensSelecionadosAgrupados" responsiveLayout="scroll" dataKey="idItemAgrupado" v-model:expandedRows="expandedRows">
+                                    <DataTable ref="dtSolicitacoes" size="small" :value="itensSelecionadosAgrupados" responsiveLayout="scroll" dataKey="id" v-model:expandedRows="expandedRows">
                                         <template #header>
                                             <div class="flex flex-wrap align-items-center justify-content-between gap-2">
                                                 <span class="text-sm text-900 font-bold">Resumo da Cotação</span>
@@ -409,16 +576,16 @@ const criarRegistro = () => {
                                                         </template>
                                                     </Column>
                                                     <Column header="Data">
-                                                    <template #body="slotProps">
-                                                        <div class="w-full text-left">{{ formatToDDMMYYYY(slotProps.data.dataSolicitacao) }}</div>
-                                                    </template>
-                                                </Column>
-                                                <Column field="quantidadeSolicitada" header="Quantidade Solicitada" />
-                                                <Column field="previsaoDiasUtilizacao" header="Prev. Dias" />
-                                                <Column field="urgenciaSolicitacaoMercadoria" header="Urgência" />
-                                                <Column field="departamentoEntrega" header="Departamento Entrega" />
-                                                <Column field="observacao" header="observacao" />
-                                                <Column field="solicitante" header="Solicitante" />
+                                                        <template #body="slotProps">
+                                                            <div class="w-full text-left">{{ formatToDDMMYYYY(slotProps.data.dataSolicitacao) }}</div>
+                                                        </template>
+                                                    </Column>
+                                                    <Column field="quantidadeSolicitada" header="Quantidade Solicitada" />
+                                                    <Column field="previsaoDiasUtilizacao" header="Prev. Dias" />
+                                                    <Column field="urgenciaSolicitacaoMercadoria" header="Urgência" />
+                                                    <Column field="departamentoEntrega" header="Departamento Entrega" />
+                                                    <Column field="observacao" header="observacao" />
+                                                    <Column field="solicitante" header="Solicitante" />
                                                 </DataTable>
                                             </div>
                                         </template>
@@ -428,6 +595,9 @@ const criarRegistro = () => {
                         </TabView>
                     </div>
                 </div>
+            </template>
+            <template #buttonsRight>
+                <SplitButton v-if="!isVisualizar" label="Confirmar" icon="pi pi-check" menuButtonIcon="pi pi-cog" :model="itemsActions" @click="handleConfirmar" />
             </template>
         </UWForm>
     </UWPageBase>

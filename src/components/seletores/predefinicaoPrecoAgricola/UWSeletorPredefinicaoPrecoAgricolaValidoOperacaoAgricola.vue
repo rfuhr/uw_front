@@ -45,7 +45,7 @@ const props = defineProps({
     tipoPrecoAgricolaId: {
         type: Number,
         required: true
-    }    
+    }
 });
 
 const optionLabel = ref('nome');
@@ -111,7 +111,7 @@ const getLista = async () => {
         lazyParams.value.page = data.page;
         lazyParams.value.first = data.paginaAtual * data.tamanhoPagina;
         if (totalRegistros.value === 0) {
-            localFieldName.value = undefined
+            localFieldName.value = undefined;
         }
         if (!props.modelValue && totalRegistros.value === 1) {
             localFieldName.value = registros.value[0].id;
@@ -191,12 +191,14 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    if (event.value === null) {
-        lazyParams.value.first = 0;
-        lazyParams.value.page = 0;
+    if (event.value !== localFieldName.value) {
+        if (event.value === null) {
+            lazyParams.value.first = 0;
+            lazyParams.value.page = 0;
+        }
+        const reg = registros.value.find((e) => e.id === event.value);
+        emit('changeObject', reg);
     }
-    const reg = registros.value.find((e) => e.id === event.value);
-    emit('changeObject', reg);
 };
 
 const changeFilter = () => {
@@ -214,13 +216,12 @@ watch([() => props.itemId, () => props.tipoPrecoAgricolaId], async () => {
 });
 
 const reload = (id) => {
-    getLista(id)
-}
+    getLista(id);
+};
 
 defineExpose({
     reload
 });
-
 </script>
 
 <template>

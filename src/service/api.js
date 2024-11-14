@@ -103,31 +103,31 @@ instance.interceptors.response.use(
                 icon: 'error',
                 title: 'Atenção',
                 text: response.message,
-            })
+            });
 
-            return Promise.reject(new Error(response.message || 'Error'))
+            return Promise.reject(new Error(response.message || 'Error'));
         }
     },
     (error) => {
         const data = error.response && error.response.data || undefined;
-        let msgErro = ''
-        if (error.response.status === 501) {
-            const requestUrl = error.response.config.url;
-            if (!requestUrl.includes('login'))
-                router.push({ path: `/notFound` });	
-        } else if (error.response.status === 401) {
-            const requestUrl = error.response.config.url;
-            if (!requestUrl.includes('login'))
-                router.push({ path: `/accessDenied` });	
-        } else if (error.response.status === 403) {
-            const requestUrl = error.response.config.url;
-            if (!requestUrl.includes('login'))
-                router.push({ path: `/notPermission` });	
+        let msgErro = '';
+        const requestUrl = error.response.config.url;
+
+        if (error.response.status === 501 && !requestUrl.includes('login')) {
+            router.push({ path: `/notFound` });	
+        } else if (error.response.status === 401 && !requestUrl.includes('login')) {
+            // Adicione uma propriedade personalizada para evitar redirecionamentos duplicados
+            if (!router.currentRoute.value.meta.redirected) {
+                router.currentRoute.value.meta.redirected = true;
+                router.push({ path: `/accessDenied` });
+            }
+        } else if (error.response.status === 403 && !requestUrl.includes('login')) {
+            router.push({ path: `/notPermission` });	
         } else if (error.response.status === 404) {
-            return Promise.reject(error)
+            return Promise.reject(error);
         } else {
             if (error.response.data && error.response.data.errors) {
-                msgErro = createErrorTable(error.response.data.exceptionName, error.response.data.message, error.response.data.errors)
+                msgErro = createErrorTable(error.response.data.exceptionName, error.response.data.message, error.response.data.errors);
             } else  {
                 if (error.response.data.message) {
                     msgErro = error.response.data.message;
@@ -137,16 +137,14 @@ instance.interceptors.response.use(
                 icon: 'error',
                 title: 'Atenção',
                 html: msgErro || 'Erro não identificado',
-                // width: '50vw', 
                 customClass: {
-                    // Use customClass para definir o estilo
                     popup: 'swal-custom-popup-error',
                 }
             });
         }
 
-        return Promise.reject(error)
+        return Promise.reject(error);
     }
-)  
+);
 
 export default instance;

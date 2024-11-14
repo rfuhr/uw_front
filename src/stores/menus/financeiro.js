@@ -67,7 +67,8 @@ export const menu = [
                     { label: 'Grupo Financeiro', icon: '', to: '/financeiro/tabela/grupo-financeiro' },
                     { label: 'Tipo de Operação Financeiro', icon: '', to: '/financeiro/tabela/tipo-operacao-financeira' },
                     { label: 'Motivo de Estorno', icon: '', to: '/financeiro/tabela/motivo-estorno-financeiro' },
-                    { label: 'Índice Financeiro', icon: '', to: '/financeiro/tabela/indice-financeiro' }
+                    { label: 'Índice Financeiro', icon: '', to: '/financeiro/tabela/indice-financeiro' },
+                    { label: 'Condição de Pagamento', icon: '', to: '/financeiro/tabela/condicao-pagamento' }
                 ]
             },
             {

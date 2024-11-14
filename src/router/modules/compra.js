@@ -125,12 +125,22 @@ const compraRouter = {
                         },
                         {
                             path: 'nova',
-                            component: () => import('@/views/compra/cotacao/cotacaoItem/GerarCotacaoItem.vue'),
+                            component: () => import('@/views/compra/cotacao/cotacaoItem/ManutencaoCotacaoItem.vue'),
                             name: 'compra-cotacao-cotacao-item-nova',
                             meta: {
                                 breadcrumb: [{ label: 'Compras' }, { label: 'Cotações' }, { label: 'Cotação de Item' }, { label: 'Nova' }],
                                 tag: 'cotacaoitem',
                                 operacao: 'inserir'
+                            }
+                        },
+                        {
+                            path: ':id(\\d+)',
+                            component: () => import('@/views/compra/cotacao/cotacaoItem/ManutencaoCotacaoItem.vue'),
+                            name: 'compra-cotacao-cotacao-item-editar',
+                            meta: {
+                                breadcrumb: [{ label: 'Compras' }, { label: 'Cotações' }, { label: 'Cotação de Item' }, { label: 'Editar' }],
+                                tag: 'cotacaoitem',
+                                operacao: 'alterar'
                             }
                         },
                         // {
@@ -171,6 +181,47 @@ const compraRouter = {
                             meta: {
                                 breadcrumb: [{ label: 'Compras' }, { label: 'Cotações' }, { label: 'Mapa de Cotação' }, { label: 'Novo' }],
                                 tag: 'mapacotacao',
+                                operacao: 'inserir'
+                            }
+                        },
+                        // {
+                        //     path: ':id(\\d+)/visualizar',
+                        //     component: () => import('@/views/compra/solicitacao/solicitacaoItem/ManutencaoSolicitacaoItem.vue'),
+                        //     name: 'compra-solicitacao-solicitacao-item-visualizar',
+                        //     meta: {
+                        //         breadcrumb: [{ label: 'Compras' }, { label: 'Solicitações' }, { label: 'Solicitação de Item' }, { label: 'Visualizar' }],
+                        //         tag: 'solicitacaoitem',
+                        //         operacao: 'consultar'
+                        //     }
+                        // },
+                    ]
+                },
+                {
+                    path: 'retorno-cotacao',
+                    name: 'compra-cotacao-retorno-cotacao',
+                    redirect: '/compra/cotacao/retorno-cotacao/listagem',
+                    meta: {
+                        breadcrumb: [{ label: 'Compras' }, { label: 'Cotações' }, { label: 'Retorno de Cotação' }]
+                    },
+
+                    children: [
+                        {
+                            path: '',
+                            component: () => import('@/views/compra/cotacao/retornoCotacao/RetornoCotacaoListagem.vue'),
+                            name: 'compra-cotacao-retorno-cotacao-listagem',
+                            meta: {
+                                breadcrumb: [{ label: 'Compras' }, { label: 'Cotações' }, { label: 'Retorno de Cotação' }],
+                                tag: 'retornocotacao',
+                                operacao: 'consultar'
+                            }
+                        },
+                        {
+                            path: ':cotacaomercadoriaid(\\d+)/:cotacaomercadoriaparceiroid(\\d+)',
+                            component: () => import('@/views/compra/cotacao/retornoCotacao/ManutencaoRetornoCotacao.vue'),
+                            name: 'compra-cotacao-retorno-cotacao-lancar',
+                            meta: {
+                                breadcrumb: [{ label: 'Compras' }, { label: 'Cotações' }, { label: 'Retorno de Cotação' }, { label: 'Novo' }],
+                                tag: 'retornocotacao',
                                 operacao: 'inserir'
                             }
                         },

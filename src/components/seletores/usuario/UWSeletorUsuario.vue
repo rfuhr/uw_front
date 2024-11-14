@@ -1,7 +1,6 @@
 <script setup>
 import { ref, defineProps, onMounted, onBeforeMount, computed, watch } from 'vue';
 import _ from 'lodash';
-import { useFormatDocumentos } from '@/composables/useFormatDocumentos';
 import { UsuarioService as Service } from '@/service';
 
 const props = defineProps({
@@ -42,9 +41,7 @@ const props = defineProps({
 
 const optionLabel = ref('nome');
 const optionValue = ref('id');
-const filtersSearch = [
-    { field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nomeLocal', labelFilter: 'Nome' },
-];
+const filtersSearch = [{ field: 'nome', matchMode: 'contains', tipoField: 'text', fieldFilter: 'nomeLocal', labelFilter: 'Nome' }];
 const fieldSearchDefault = ref('nome');
 
 const registros = ref([]);
@@ -88,7 +85,7 @@ const montarFiltros = async (forceId) => {
     }
 
     if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
-    if(forceId) lazyParams.value.id = forceId 
+    if (forceId) lazyParams.value.id = forceId;
     else if (props.modelValue && props.modelValue > 0) lazyParams.value.id = props.modelValue;
     else lazyParams.value.id = null;
 };
@@ -181,13 +178,15 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    if (event.value === null) {
-        lazyParams.value.first = 0;
-        lazyParams.value.page = 0;
+    if (event.value !== localFieldName.value) {
+        if (event.value === null) {
+            lazyParams.value.first = 0;
+            lazyParams.value.page = 0;
+        }
+        const reg = registros.value.find((e) => e.id === event.value);
+        usuario.value = reg;
+        emit('changeObject', reg);
     }
-    const reg = registros.value.find((e) => e.id === event.value);
-    usuario.value = reg;
-    emit('changeObject', reg);
 };
 
 const changeFilter = () => {
@@ -202,7 +201,6 @@ watch(
     }
 );
 
-
 const beforeShow = () => {
     limparFiltro();
     getLista();
@@ -216,13 +214,12 @@ const labelSelector = computed(() => {
 });
 
 const reload = (id) => {
-    getLista(id)
-}
+    getLista(id);
+};
 
 defineExpose({
     reload
 });
-
 </script>
 
 <template>
@@ -336,7 +333,7 @@ defineExpose({
                         >
                             <div class="flex flex-column align-items-start">
                                 <span>{{ slotProps.option.nome }}</span>
-                                <span style="font-size: 0.9rem;" class="text-silver-400">Email: {{ slotProps.option.email }}</span>
+                                <span style="font-size: 0.9rem" class="text-silver-400">Email: {{ slotProps.option.email }}</span>
                             </div>
                         </div>
                         <div
@@ -359,7 +356,7 @@ defineExpose({
                         >
                             <div class="flex flex-column align-items-start">
                                 <span>{{ slotProps.option.nome }}</span>
-                                <span style="font-size: 0.9rem;" class="text-silver-400">Email: {{ slotProps.option.email }}</span>
+                                <span style="font-size: 0.9rem" class="text-silver-400">Email: {{ slotProps.option.email }}</span>
                             </div>
                         </div>
                     </div>

@@ -90,10 +90,10 @@ const montarFiltros = async () => {
     }
 
     filters.value['caracteristicaAgricola'] = {
-                value: true,
-                matchMode: 'equals',
-                tipo: 'boolean',
-                fieldFilter: 'caracteristicaAgricola'
+        value: true,
+        matchMode: 'equals',
+        tipo: 'boolean',
+        fieldFilter: 'caracteristicaAgricola'
     };
 
     if (!_.isEmpty(filters.value)) lazyParams.value.filters = filters.value;
@@ -187,12 +187,14 @@ const localFieldName = computed({
 });
 
 const handleChange = (event) => {
-    if (event.value === null) {
-        lazyParams.value.first = 0;
-        lazyParams.value.page = 0;
+    if (event.value !== localFieldName.value) {
+        if (event.value === null) {
+            lazyParams.value.first = 0;
+            lazyParams.value.page = 0;
+        }
+        const reg = registros.value.find((e) => e.id === event.value);
+        emit('changeObject', reg);
     }
-    const reg = registros.value.find((e) => e.id === event.value);
-    emit('changeObject', reg);
 };
 
 const changeFilter = () => {
@@ -204,7 +206,6 @@ const beforeShow = () => {
     limparFiltro();
     getLista();
 };
-
 </script>
 
 <template>

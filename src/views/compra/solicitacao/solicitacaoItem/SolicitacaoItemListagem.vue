@@ -19,7 +19,7 @@ const columns = reactive([
         filter: true,
         matchMode: 'equals',
         placeholder: '',
-        size: '8%',
+        size: '10%',
         sortable: true,
         fieldFilter: 'numero'
     },
@@ -41,11 +41,22 @@ const columns = reactive([
         filter: true,
         matchMode: 'contains',
         placeholder: '',
-        size: '10%',
+        size: '15%',
         sortable: true,
         fieldFilter: 'situacaoSolicitacaoMercadoria',
         filterSeletor: true,
         filterValues: situacoesSolicitacao
+    },
+    {
+        label: 'Observação',
+        field: 'observacao',
+        tipoField: 'text',
+        filter: true,
+        matchMode: 'contains',
+        placeholder: '',
+        size: '50%',
+        sortable: true,
+        fieldFilter: 'observacao'
     }
 ]);
 
@@ -66,10 +77,10 @@ const openView = (selectId) => {
 };
 
 const openCancelar = async (dados) => {
-    const textoConfirmacao = `Após o cancelamento da solicitação, ${dados.numero}, você não poderá reverter isso!`
-    const textoSucesso = `A solicitação, ${dados.nome}, foi cancelada com sucesso.`
-    const textoCancelado = "O cancelamento da solicitação não foi realizado :)"
-    const title = "Você confirma o cancelamento da solicitação?"
+    const textoConfirmacao = `Após a desistência da solicitação, de nº ${dados.numero}, você não poderá reverter isso!`
+    const textoSucesso = `A solicitação, de nº ${dados.numero}, foi cancelada com sucesso.`
+    const textoCancelado = "A desistência da solicitação não foi realizada."
+    const title = "Você confirma a desistência da solicitação?"
     
     const result = await execute(SolicitacaoMercadoriaService, dados.id, textoConfirmacao, textoSucesso, textoCancelado, title);
     if (result) crudlista.value.reload();
@@ -98,7 +109,7 @@ onMounted(() => {
     <template #tableActions="slotProps">
         <Button v-tooltip="'Visualizar solicitação'" icon="pi pi-eye" class="p-button-secundary p-button-sm mr-2" @click="openView(slotProps.data.id)" style="height: 24px; width: 24px;"/>
         <Button v-if="slotProps.data.situacaoSolicitacaoMercadoria === '1'" v-tooltip="'Editar solicitação'" icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="openEdit(slotProps.data.id)" style="height: 24px; width: 24px;"/>
-        <Button v-if="slotProps.data.situacaoSolicitacaoMercadoria !== '5' && slotProps.data.situacaoSolicitacaoMercadoria !== '9'" v-tooltip="'Cancelar solicitação'" icon="pi pi-trash" class="p-button-danger p-button-sm mr-2" @click="openCancelar(slotProps.data)" style="height: 24px; width: 24px;"/>
+        <Button v-if="slotProps.data.situacaoSolicitacaoMercadoria !== '5' && slotProps.data.situacaoSolicitacaoMercadoria !== '9'" v-tooltip="'Desistir da solicitação'" icon="pi pi-trash" class="p-button-danger p-button-sm mr-2" @click="openCancelar(slotProps.data)" style="height: 24px; width: 24px;"/>
     </template>
     </UWPageCrud>
 </template>

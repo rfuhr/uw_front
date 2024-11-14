@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import * as yup from 'yup';
-import { useConfirm } from "primevue/useconfirm";
+import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { useContexto } from '@/stores';
 import { DepartamentoService, ItemSimplificadoService, TiposService } from '@/service';
@@ -44,18 +44,17 @@ const contextoStore = useContexto();
 const confirm = useConfirm();
 const toast = useToast();
 
-const formData = ref({
-});
-const modeDialog = ref('')
+const formData = ref({});
+const modeDialog = ref('');
 const visibleDialog = ref(false);
 const indexItemEdicao = ref(0);
-const urgencias = ref([])
+const urgencias = ref([]);
 
 const adicionarItem = () => {
     formData.value = {
         quantidadeEnviada: 0,
         quantidadeCancelada: 0,
-        dataSolicitacao: new Date(),
+        dataSolicitacao: new Date()
     };
     modeDialog.value = 'add';
     visibleDialog.value = true;
@@ -67,6 +66,18 @@ const handleVoltar = () => {
 
 const confirmarItem = async () => {
     if (modeDialog.value === 'add') {
+        if (formData.value.itemId && formData.value.itemId > 0) {
+            if (itensModelValue.value.filter((item) => item.itemId === formData.value.itemId).length > 0) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Item já informado', life: 5000 });
+                return;
+            }
+        }
+        if (formData.value.itemSimplificadoId && formData.value.itemSimplificadoId > 0) {
+            if (itensModelValue.value.filter((item) => item.itemSimplificadoId === formData.value.itemSimplificadoId).length > 0) {
+                toast.add({ severity: 'error', summary: 'Erro', detail: 'Item Simplificado já informado', life: 5000 });
+                return;
+            }
+        }
         itensModelValue.value.push({ ...formData.value });
     } else {
         itensModelValue.value[indexItemEdicao.value] = { ...formData.value };
@@ -94,32 +105,24 @@ const handleDelete = (event, data) => {
             itensModelValue.value = itensModelValue.value.filter((item) => item !== data);
             toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Item removido com sucesso', life: 5000 });
         },
-        reject: () => {
-
-        }
+        reject: () => {}
     });
 };
 
 const changeItem = (item) => {
-    if (item)
-        formData.value.itemNome = item.nome;
-    else
-        formData.value.itemNome = null;
+    if (item) formData.value.itemNome = item.nome;
+    else formData.value.itemNome = null;
 };
 
 const changeItemSimplificado = (itemSimplificado) => {
-    if (itemSimplificado)
-        formData.value.itemSimplificadoNome = itemSimplificado.nome;
-    else
-        formData.value.itemSimplificadoNome = null;
+    if (itemSimplificado) formData.value.itemSimplificadoNome = itemSimplificado.nome;
+    else formData.value.itemSimplificadoNome = null;
 };
 
 const changeDepartamento = (departamento) => {
-    if (departamento)
-        formData.value.departamentoEntregaNome = departamento.nome
-    else
-        formData.value.departamentoEntregaNome = null
-}
+    if (departamento) formData.value.departamentoEntregaNome = departamento.nome;
+    else formData.value.departamentoEntregaNome = null;
+};
 
 const getNomeItem = (data) => {
     return props.informaItemSimplificado ? data.itemSimplificadoNome : data.itemNome;
@@ -129,50 +132,49 @@ const getNomeUrgencia = (data) => {
     return urgencias.value.find((u) => u.value === data.urgenciaSolicitacaoMercadoria)?.name;
 };
 
-
 onMounted(() => {
     TiposService.getPrioridadeSolicitacaoItem().then((data) => {
         urgencias.value = data;
-    })
+    });
 });
 </script>
 
 <template>
     <ConfirmPopup></ConfirmPopup>
-        <Toolbar class="col-12">
-            <template v-slot:start>
-                <div>
-                    <Button v-if="!props.isVisualizar" label="Adicionar Item" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarItem()" />
-                </div>
+    <Toolbar class="col-12">
+        <template v-slot:start>
+            <div>
+                <Button v-if="!props.isVisualizar" label="Adicionar Item" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarItem()" />
+            </div>
+        </template>
+    </Toolbar>
+    <DataTable ref="dtItens" size="small" :value="itensModelValue" responsiveLayout="scroll">
+        <template #empty> Nenhum item informado. </template>
+        <Column field="item.nome" header="Item">
+            <template #body="slotProps">
+                <div class="w-full text-left">{{ getNomeItem(slotProps.data) }}</div>
             </template>
-        </Toolbar>
-        <DataTable ref="dtItens" :value="itensModelValue" responsiveLayout="scroll">
-            <template #empty> Nenhum item informado. </template>
-            <Column field="item.nome" header="Item">
-                <template #body="slotProps">
-                    <div class="w-full text-left">{{ getNomeItem(slotProps.data) }}</div> 
-                </template>
-            </Column>
-            <Column field="departamentoEntregaNome" header="Departamento Entrega">
-                <template #body="slotProps">
-                    <div class="w-full text-left">{{ slotProps.data.departamentoEntregaNome }}</div> 
-                </template>
-            </Column>                
-            <Column field="quantidadeSolicitada" header="Quantidade Solicitada" />
-            <Column field="urgenciaSolicitacaoMercadoria" header="Urgência">
-                <template #body="slotProps">
-                    <div class="w-full text-left">{{ getNomeUrgencia(slotProps.data) }}</div> 
-                </template>
-            </Column>                
-            <Column field="previsaoDiasUtilizacao" header="Previsão Utilização" />
-            <Column field="observacao" header="Observação" />
-            <Column v-if="!props.isVisualizar" header="Ações" style="width: 10%">
-                <template #body="slotProps">
-                    <Button v-if="!props.isVisualizar" icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="handleEdit(slotProps)" />
-                    <Button v-if="!props.isVisualizar" icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete($event, slotProps.data)" />
-                </template>
-            </Column>            
-        </DataTable>
+        </Column>
+        <Column field="departamentoEntregaNome" header="Departamento Entrega">
+            <template #body="slotProps">
+                <div class="w-full text-left">{{ slotProps.data.departamentoEntregaNome }}</div>
+            </template>
+        </Column>
+        <Column field="quantidadeSolicitada" header="Quantidade Solicitada" />
+        <Column field="urgenciaSolicitacaoMercadoria" header="Urgência">
+            <template #body="slotProps">
+                <div class="w-full text-left">{{ getNomeUrgencia(slotProps.data) }}</div>
+            </template>
+        </Column>
+        <Column field="previsaoDiasUtilizacao" header="Previsão Utilização" />
+        <Column field="observacao" header="Observação" />
+        <Column v-if="!props.isVisualizar" header="Ações" style="width: 10%">
+            <template #body="slotProps">
+                <Button v-if="!props.isVisualizar" icon="pi pi-pencil" class="p-button-secundary p-button-sm mr-2" @click="handleEdit(slotProps)" />
+                <Button v-if="!props.isVisualizar" icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete($event, slotProps.data)" />
+            </template>
+        </Column>
+    </DataTable>
 
     <Dialog v-model:visible="visibleDialog" :style="{ width: '60%' }" header="Detalhes do Item" :modal="true">
         <UWForm :schema="createSchema()" :values="formData" visibleVoltar visibleConfirmar :visibleSave="false" :visibleCancel="false" @doVoltar="handleVoltar()" @doSubmit="confirmarItem" labelSalvar="Adicionar">
@@ -181,17 +183,7 @@ onMounted(() => {
                     <div class="p-fluid formgrid grid">
                         <UWFieldSet title="Dados do Item" class="col-12">
                             <div class="p-fluid formgrid grid">
-                                <UWSeletorItem
-                                    v-if="!props.informaItemSimplificado"
-                                    id="produto"
-                                    v-model="formData.itemId"
-                                    classContainer="col-12 md:col-6"
-                                    required
-                                    autofocus
-                                    label="Item"
-                                    @changeObject="changeItem"
-                                    :erros="errors?.value?.itemId"
-                                />
+                                <UWSeletorItem v-if="!props.informaItemSimplificado" id="produto" v-model="formData.itemId" classContainer="col-12 md:col-6" required autofocus label="Item" @changeObject="changeItem" :erros="errors?.value?.itemId" />
                                 <UWSeletor
                                     v-if="props.informaItemSimplificado"
                                     id="itemSimplificado"
@@ -220,8 +212,7 @@ onMounted(() => {
                                     :columnsFilters="[{ field: 'empresaFilial', value: contextoStore.contexto.empresaFilialId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresaFilial.id' }]"
                                     @changeObject="changeDepartamento"
                                 />
-                                <UWDecimal id="quantidadeSolicitada" label="Quantidade Solicitada" required v-model="formData.quantidadeSolicitada" 
-                                :maximoDigitos="5" classContainer="col-12 md:col-3"  :erros="errors.value?.quantidadeSolicitada"/>
+                                <UWDecimal id="quantidadeSolicitada" label="Quantidade Solicitada" required v-model="formData.quantidadeSolicitada" :maximoDigitos="5" classContainer="col-12 md:col-3" :erros="errors.value?.quantidadeSolicitada" />
                                 <UWPickList id="urgencia" label="Urgência" v-model="formData.urgenciaSolicitacaoMercadoria" optionLabel="name" optionValue="value" required :options="urgencias" classContainer="col-12 md:col-6" />
                                 <UWInteger id="previsao" label="Previsão Utilização (dias)" required v-model="formData.previsaoDiasUtilizacao" classContainer="col-12 md:col-3" />
                                 <UWInput id="observacao" label="Observação" v-model="formData.observacao" classContainer="col-12 md:col-12" :erros="errors.value?.observacao" />

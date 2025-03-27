@@ -57,6 +57,11 @@ const props = defineProps({
     modelValue: {
         type: Object,
         required: true
+    },
+    visualizacao: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
@@ -227,6 +232,7 @@ defineExpose({
                                     classContainer="col-12 md:col-3"
                                     :errors="errors.value?.modalidadeFrete"
                                     @changeObject="changeModalidadeFrete"
+                                    :disabled="visualizacao"
                                 />
                                 <UWPickList
                                     v-if="localModelValue.modalidadeFrete && localModelValue.modalidadeFrete !== '9'"
@@ -240,6 +246,7 @@ defineExpose({
                                     classContainer="col-12 md:col-2"
                                     :errors="errors.value?.tipoTransporte"
                                     @onChangeObject="changeTipoTransporte"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput
                                     v-if="localModelValue.modalidadeFrete && localModelValue.modalidadeFrete !== '9' && localModelValue.tipoTransporte === '1'"
@@ -250,6 +257,7 @@ defineExpose({
                                     v-model="localModelValue.placaVeiculo"
                                     classContainer="col-12 md:col-2"
                                     :errors="errors.value?.placaVeiculo"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput
                                     v-if="localModelValue.modalidadeFrete && localModelValue.modalidadeFrete !== '9' && localModelValue.tipoTransporte === '1'"
@@ -258,6 +266,7 @@ defineExpose({
                                     uppercase
                                     v-model="localModelValue.siglaUf"
                                     classContainer="col-12 md:col-2"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput
                                     v-if="localModelValue.modalidadeFrete && localModelValue.modalidadeFrete !== '9' && localModelValue.tipoTransporte === '1'"
@@ -265,6 +274,7 @@ defineExpose({
                                     label="Registro Nacional de Transportador de Carga (ANTT)"
                                     v-model="localModelValue.rntc"
                                     classContainer="col-12 md:col-3"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput
                                     v-if="localModelValue.modalidadeFrete && localModelValue.modalidadeFrete !== '9' && localModelValue.tipoTransporte === '2'"
@@ -274,6 +284,7 @@ defineExpose({
                                     v-model="localModelValue.vagao"
                                     classContainer="col-12 md:col-3"
                                     :errors="errors.value?.vagao"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput
                                     v-if="localModelValue.modalidadeFrete && localModelValue.modalidadeFrete !== '9' && localModelValue.tipoTransporte === '3'"
@@ -283,6 +294,7 @@ defineExpose({
                                     v-model="localModelValue.balsa"
                                     classContainer="col-12 md:col-3"
                                     :errors="errors.value?.balsa"
+                                    :disabled="visualizacao"
                                 />
                             </div>
                         </UWFieldSet>
@@ -301,6 +313,7 @@ defineExpose({
                                     @change="changeTipoPessoa()"
                                     :required="localModelValue.modalidadeFrete !== '9'"
                                     :errors="errors.value?.tipoPessoa"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInputMask
                                     id="cnpj"
@@ -311,6 +324,7 @@ defineExpose({
                                     classContainer="col-12 md:col-2"
                                     :required="localModelValue.modalidadeFrete !== '9'"
                                     :errors="errors.value?.cnpj"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInputMask
                                     id="cnpj"
@@ -321,6 +335,7 @@ defineExpose({
                                     classContainer="col-12 md:col-2"
                                     :required="localModelValue.modalidadeFrete !== '9'"
                                     :errors="errors.value?.cpf"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput
                                     id="razaoSocial"
@@ -329,6 +344,7 @@ defineExpose({
                                     :classContainer="['col-12', localModelValue.tipoPessoa === 'J' ? 'md:col-6' : 'md:col-8']"
                                     :required="localModelValue.modalidadeFrete !== '9'"
                                     :errors="errors.value?.nomeRazaoSocial"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput
                                     v-if="!localModelValue.tipoPessoa || localModelValue.tipoPessoa === 'J'"
@@ -337,14 +353,15 @@ defineExpose({
                                     uppercase
                                     v-model="localModelValue.inscricaoEstadual"
                                     classContainer="col-12 md:col-2"
+                                    :disabled="visualizacao"
                                 />
-                                <UWInputMask id="cep" label="Cep" :mask="'99.999-999'" :unmask="true" v-model="localModelValue.cep" :showButton="true" @clickButton="buscarEndereco" iconButton="pi pi-search" classContainer="col-12 md:col-2" />
-                                <UWInput id="endereco" label="Logradouro" uppercase v-model="localModelValue.endereco" classContainer="col-12 md:col-6" />
-                                <UWInput id="numero" label="Número" uppercase v-model="localModelValue.numero" classContainer="col-12 md:col-2" />
-                                <UWInput id="complemento" label="Complemento" uppercase v-model="localModelValue.complemento" classContainer="col-12 md:col-2" />
-                                <UWInput id="bairro" label="Bairro" uppercase v-model="localModelValue.bairro" classContainer="col-12 md:col-3" />
-                                <UWSeletor id="pais" classContainer="col-12 md:col-2" v-model="localModelValue.paisId" optionLabel="nome" optionValue="id" label="País" :service="PaisService" placeholder="Selecione o pais" />
-                                <UWSeletor id="uf" classContainer="col-12 md:col-2" v-model="localModelValue.ufId" optionLabel="nome" optionValue="id" label="UF" :service="UfService" placeholder="Selecione a uf" />
+                                <UWInputMask id="cep" :disabled="visualizacao" label="Cep" :mask="'99.999-999'" :unmask="true" v-model="localModelValue.cep" :showButton="true" @clickButton="buscarEndereco" iconButton="pi pi-search" classContainer="col-12 md:col-2" />
+                                <UWInput id="endereco" :disabled="visualizacao" label="Logradouro" uppercase v-model="localModelValue.endereco" classContainer="col-12 md:col-6" />
+                                <UWInput id="numero" :disabled="visualizacao" label="Número" uppercase v-model="localModelValue.numero" classContainer="col-12 md:col-2" />
+                                <UWInput id="complemento" :disabled="visualizacao" label="Complemento" uppercase v-model="localModelValue.complemento" classContainer="col-12 md:col-2" />
+                                <UWInput id="bairro" :disabled="visualizacao" label="Bairro" uppercase v-model="localModelValue.bairro" classContainer="col-12 md:col-3" />
+                                <UWSeletor id="pais" :disabled="visualizacao" classContainer="col-12 md:col-2" v-model="localModelValue.paisId" optionLabel="nome" optionValue="id" label="País" :service="PaisService" placeholder="Selecione o pais" />
+                                <UWSeletor id="uf" :disabled="visualizacao" classContainer="col-12 md:col-2" v-model="localModelValue.ufId" optionLabel="nome" optionValue="id" label="UF" :service="UfService" placeholder="Selecione a uf" />
                                 <UWSeletor
                                     id="cidade"
                                     ref="seletorCidade"
@@ -356,6 +373,7 @@ defineExpose({
                                     :service="CidadeService"
                                     placeholder="Selecione a cidade"
                                     :columnsFilters="[{ field: 'uf', value: localModelValue.ufId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'uf.id' }]"
+                                    :disabled="visualizacao"
                                 />
                             </div>
                         </UWFieldSet>
@@ -373,7 +391,7 @@ defineExpose({
                                     <span class="p-float-label">
                                         <ToggleButton
                                             v-model="localModelValue.possuiReboque"
-                                            :disabled="localModelValue.tipoTransporte !== '1'"
+                                            :disabled="localModelValue.tipoTransporte !== '1' || visualizacao"
                                             onLabel="Possui reboques"
                                             offLabel="Não possui reboques"
                                             onIcon="pi pi-lock"
@@ -395,6 +413,7 @@ defineExpose({
                                             class="w-full"
                                             aria-label="Do you confirm"
                                             @change="changePossuiVolume"
+                                            :disabled="visualizacao"
                                         />
                                     </span>
                                 </div>

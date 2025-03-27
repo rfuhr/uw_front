@@ -16,6 +16,11 @@ const props = defineProps({
     modelValue: {
         type: Object,
         required: true
+    },
+    visualizacao: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
@@ -56,6 +61,7 @@ const finalidadesNfe = ref([]);
 const tiposConsumidor = ref([]);
 const tiposPresenca = ref([]);
 const indicadoresOperacao = ref([]);
+const tiposNfe = ref([]);
 
 const destinosOperacao = ref([]);
 
@@ -86,13 +92,13 @@ const changeOperacaoInterna = (value) => {
                 localModelValue.value.cfopId = null;
             });
     } else {
-        localModelValue.value.operacaoInterna = null;
+        localModelValue.value.operacaoInterna = {};
         localModelValue.value.tipoOperacaoId = null;
-        localModelValue.value.naturezaOperacao = null;
-        localModelValue.value.destinoOperacao = null;
-        localModelValue.value.finalidadeNFe = null;
-        localModelValue.value.tipoConsumidor = null;
-        localModelValue.value.tipoPresencaComprador = null;
+        localModelValue.value.naturezaOperacao = {};
+        localModelValue.value.destinoOperacao = {};
+        localModelValue.value.finalidadeNFe = {};
+        localModelValue.value.tipoConsumidor = {};
+        localModelValue.value.tipoPresencaComprador = {};
         localModelValue.value.cfopId = null;
     }
 };
@@ -115,6 +121,9 @@ onMounted(async () => {
     });
     TiposService.getDestinoOperacao().then((data) => {
         destinosOperacao.value = data;
+    });
+    TiposService.getTipoNfe().then((data) => {
+        tiposNfe.value = data;
     });
 });
 
@@ -164,8 +173,19 @@ defineExpose({
                     <div class="col-4">
                         <UWFieldSet title="Identificação da NFe" class="h-full flex flex-column justify-content-start bg-primary-50 border-solid">
                             <div class="formgrid grid">
-                                <UWInput id="numero" label="Número" v-model="localModelValue.numero" :disabled="true" classContainer="col-12 md:col-6" />
-                                <UWInput id="serie" label="Série" v-model="localModelValue.serie" :disabled="true" classContainer="col-12 md:col-6" />
+                                <UWPickList
+                                    id="tipoNfe"
+                                    label="Tipo NFe"
+                                    v-model="localModelValue.tipoNfe"
+                                    :disabled="visualizacao"
+                                    optionLabel="name"
+                                    optionValue="value"
+                                    required
+                                    :options="tiposNfe"
+                                    classContainer="col-12 md:col-4"
+                                />                                
+                                <UWInput id="numero" label="Número" v-model="localModelValue.numero" :disabled="true" classContainer="col-12 md:col-4" />
+                                <UWInput id="serie" label="Série" v-model="localModelValue.serie" :disabled="true" classContainer="col-12 md:col-4" />
                                 <UWInput id="chaveNFe" label="Chave NFe" v-model="localModelValue.chaveNFe" :disabled="true" classContainer="col-12 md:col-12" />
                                 <UWInput id="modelo" label="Modelo" v-model="modeloNFe" :disabled="true" classContainer="col-12 md:col-6" />
                                 <UWPickList
@@ -187,6 +207,7 @@ defineExpose({
                                     dateFormat="dd/mm/yy"
                                     :showTime="true"
                                     required
+                                    :disabled="visualizacao"
                                     classContainer="col-12 md:col-6"
                                     :errors="errors.value?.dataHoraSaidaEntrada"
                                 />
@@ -221,6 +242,7 @@ defineExpose({
                                     :columnsFilters="[{ field: 'empresaFilial', value: contextoStore.contexto.empresaFilialId, matchMode: 'equal', tipoField: 'integer', fieldFilter: 'empresaFilial.id' }]"
                                     :erros="errors.value?.emitenteId"
                                     @changeObject="changeDepartamento"
+                                    :disabled="visualizacao"
                                 />
                                 <UWSeletor
                                     id="operacaoInterna"
@@ -234,6 +256,7 @@ defineExpose({
                                     placeholder="Selecione a operação interna"
                                     @changeObject="changeOperacaoInterna"
                                     :erros="errors.value?.operacaoInternaId"
+                                    :disabled="visualizacao"
                                 />
                                 <UWInput id="naturezaOperacao" label="Natureza da Operação" v-model="localModelValue.naturezaOperacao" :disabled="true" classContainer="col-12 md:col-4" />
                                 <UWPickList
@@ -246,10 +269,11 @@ defineExpose({
                                     required
                                     :options="destinosOperacao"
                                     classContainer="col-12 md:col-4"
+                                    :disabled="visualizacao"
                                 />
                                 <UWPickList id="tipoEmissao" label="Tipo de Emissão" v-model="localModelValue.tipoEmissao" disabled optionLabel="name" optionValue="value" :options="tiposEmissao" classContainer="col-12 md:col-4" />
                                 <UWPickList id="finalidadeNFe" label="Finalidade da NFe" v-model="localModelValue.finalidadeNFe" disabled optionLabel="name" optionValue="value" :options="finalidadesNfe" classContainer="col-12 md:col-4" />
-                                <UWPickList id="tipoConsumidor" label="Tipo do Consumidor" v-model="localModelValue.tipoConsumidor" disabled optionLabel="name" optionValue="value" :options="tiposConsumidor" classContainer="col-12 md:col-4" />
+                                <UWPickList id="tipoConsumidor" label="Tipo do Consumidor" v-model="localModelValue.tipoConsumidor" optionLabel="name" optionValue="value" :options="tiposConsumidor" classContainer="col-12 md:col-4" :disabled="visualizacao"/>
                                 <UWPickList
                                     id="tipoPresenca"
                                     label="Tipo de Presença de comprador"
@@ -264,7 +288,7 @@ defineExpose({
                                     id="cfop"
                                     v-model:operacaoInternaId="localModelValue.operacaoInternaId"
                                     v-model="localModelValue.cfopId"
-                                    :disabled="!localModelValue.operacaoInternaId"
+                                    :disabled="!localModelValue.operacaoInternaId || visualizacao"
                                     classContainer="col-12 md:col-12"
                                     required
                                     label="Cfop"
@@ -281,6 +305,7 @@ defineExpose({
                                             class="w-full"
                                             aria-label="Do you confirm"
                                             @change="() => (activeIndexTabView = 0)"
+                                            :disabled="visualizacao"
                                         />
                                     </span>
                                 </div>
@@ -300,6 +325,7 @@ defineExpose({
                                                     class: [{ 'h-full': true, 'bg-green-100 border-white': !localModelValue.outroLocalRetirada, 'bg-purple-100 border-white': localModelValue.outroLocalRetirada }]
                                                 }
                                             }"
+                                            :disabled="visualizacao"
                                         />
                                     </span>
                                 </div>
@@ -319,6 +345,7 @@ defineExpose({
                                                     class: [{ 'h-full': true, 'bg-green-100 border-white': !localModelValue.autorizarObterXml, 'bg-purple-100 border-white': localModelValue.autorizarObterXml }]
                                                 }
                                             }"
+                                            :disabled="visualizacao"
                                         />
                                     </span>
                                 </div>

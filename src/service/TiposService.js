@@ -153,6 +153,10 @@ class TiposService {
     getTipoCondicaoPagamento() {
         return api.get('/financeiro/tipo-condicao-pagamento');
     }
+
+    getTipoNfe() {
+        return api.get('/fiscal/tipo-nfe');
+    }
 }
 
 

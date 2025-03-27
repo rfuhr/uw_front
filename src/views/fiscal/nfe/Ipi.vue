@@ -7,7 +7,12 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    errors: {}
+    errors: {},
+    visualizacao: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -53,7 +58,7 @@ onMounted(async () => {
                         <div class="col-12">
                             <div class="p-fluid formgrid grid">
                                 <UWInput id="cstIpi" label="Situação Tributária IPI" v-model="itemModelValue.ipi.configuracaoFiscalIpi.situacaoTributariaNome" disabled classContainer="col-12 md:col-3" />
-                                <UWInputMask id="cnpj" label="Cnpj" mask="99.999.999/9999-99" required autofocus v-model="itemModelValue.ipi.cnpjProdutor" classContainer="col-12 md:col-2" />
+                                <UWInputMask id="cnpj" :disabled="visualizacao" label="Cnpj" mask="99.999.999/9999-99" required autofocus v-model="itemModelValue.ipi.cnpjProdutor" classContainer="col-12 md:col-2" />
                                 <UWPickList
                                     id="selocontrole"
                                     label="Selo de Controle"
@@ -63,8 +68,9 @@ onMounted(async () => {
                                     required
                                     :options="selos"
                                     classContainer="col-12 md:col-3"
+                                    :disabled="visualizacao"
                                 />
-                                <UWInteger id="quantidadeSelo" label="Quantidade de Selos" v-model="itemModelValue.ipi.quantidadeSelo" classContainer="col-12 md:col-2" />
+                                <UWInteger id="quantidadeSelo" :disabled="visualizacao" label="Quantidade de Selos" v-model="itemModelValue.ipi.quantidadeSelo" classContainer="col-12 md:col-2" />
                                 <UWInput id="tipoCalculo" label="Tipo de Cálculo" v-model="itemModelValue.ipi.configuracaoFiscalIpi.tipoCalculoName" disabled classContainer="col-12 md:col-2" />
                                 <UWSeletor
                                     classContainer="col-12 md:col-6"

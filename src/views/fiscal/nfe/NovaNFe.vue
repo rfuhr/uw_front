@@ -53,7 +53,8 @@ const formData = reactive({
     financeiro: {
         pagamentos: []
     },
-    informacoesAdicionais: {}
+    informacoesAdicionais: {},
+    visualizacao: false
 });
 const nfeId = ref(0);
 const identificacaoNFe = ref(null);
@@ -62,6 +63,8 @@ const produtosNFe = ref(null);
 const transporteNFe = ref(null);
 const financeiroNFe = ref(null);
 const enviandoNfe = ref(false);
+const visualizacao = ref(false);
+const wizard = ref({});
 
 const actionsFinalizar = [
     { label: 'Salvar e Sair', icon: 'pi pi-times', command: () => salvarSair() }
@@ -158,14 +161,22 @@ const beforeChangeInfoAdicionais = async () => {
     return validFormInfoAdicionais();
 };
 
-onMounted(async () => {
+onMounted(async () => {    
     nfeId.value = route.params.id || 0;
+    visualizacao.value = route.params.visualizacao || false;
+    if (visualizacao.value == 'true') 
+        visualizacao.value = true; 
+    else visualizacao.value = false; 
 
     if (nfeId.value > 0) {
         const cache = await NFeService.getCacheNFe(nfeId.value);
         if (cache) {
             updateFormData(formData, cache)
             destinatarioNFe.value.reloadSeletorDestinatario(formData.destinatario.destinatarioId);
+            formData.visualizacao = visualizacao.value;
+            if (visualizacao.value) {
+                wizard.value.activateAll();
+            }
         }
     } else {
         NFeService.iniciarNfe(contextoStore.contexto.empresaFilialId).then((data) => {
@@ -177,6 +188,7 @@ onMounted(async () => {
             formData.identificacaoNFe.chaveNFe = data.chaveNFe;
             formData.identificacaoNFe.enderecoEmitente = data.enderecoEmitente;
             formData.identificacaoNFe.nfeId = data.nfeId;
+            formData.identificacaoNFe.tipoNfe = data.tipoNfe;
         });
     }
 });
@@ -209,8 +221,8 @@ const onComplete = async () => {
     await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
     await NFeService.emitirNFe(nfeRequest).then(() => {
 
-        Swal.fire('Sucesso', 'NFe enviada com sucesso', 'success');
         router.push({ path: '/fiscal/gerenciador-nfe' });
+        Swal.fire('Sucesso', 'NFe preparada com sucesso', 'success');
     }).catch((error) => {
         Swal.fire('Falha', 'Ocorreu uma falha no processo de envio de nfe', error);
     }).finally(() => {
@@ -230,6 +242,7 @@ const onCancelar = async () => {
     });
 
     if (result.value) {
+        await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
         router.push({ path: '/fiscal/gerenciador-nfe' });
     } else if (result.dismiss === Swal.DismissReason.cancel) {
         return false;
@@ -238,6 +251,10 @@ const onCancelar = async () => {
         return false;
     }
 };
+
+const onFechar = async () => {
+    router.push({ path: '/fiscal/gerenciador-nfe' });
+}
 
 const salvarSair = async () => {
     await NFeService.saveCacheNFe({ nfeId: formData.identificacaoNFe.nfeId, cache: JSON.stringify(formData) });
@@ -261,39 +278,44 @@ const montarNFeRequest = () => {
 
 }
 
+const beforeChange = async () => {
+    return true; 
+}
+
 </script>
 
 <template>
     <UWPageBase title="Emissão de NFe" subtitle="Para emissão da nfe, seguir as etapas.">
-        <FormWizard color="#094899" step-size="xs" nextButtonText="Próximo" backButtonText="Anterior" >
+        <FormWizard ref="wizard" :start-index="0" :beforeChange="beforeChange" color="#094899" step-size="xs" nextButtonText="Próximo" backButtonText="Anterior">
             <template #custom-buttons-right>
-                <Button class="px-3 py-12 mr-3" outlined severity="danger" @click="onCancelar">Sair da Emissão</Button>
+                <Button v-show="!formData.visualizacao" class="px-3 py-12 mr-3" outlined severity="danger" @click="onCancelar">Sair da Emissão</Button>
+                <Button v-show="formData.visualizacao" class="px-3 py-12 mr-3" outlined severity="danger" @click="onFechar">Fechar</Button>
             </template>
             <template #prev><Button class="px-6 py-12" severity="primary">Anterior</Button></template>
             <template #next><Button class="px-6 py-12" severity="primary">Próximo</Button></template>
             <template #finish>
-                <SplitButton label="Preparar Envio NFe" class="py-12" @click="onComplete" :model="actionsFinalizar" :loading="enviandoNfe" />
+                <SplitButton v-show="!formData.visualizacao" label="Preparar Envio NFe" class="py-12" @click="onComplete" :model="actionsFinalizar" :loading="enviandoNfe" />
             </template>
             <TabContent title="Identificação da Nota Final" icon="fa fa-file-invoice" :before-change="beforeChangeIdentificacao">
-                <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe" />
+                <IdentificacaoNFe ref="identificacaoNFe" v-model="formData.identificacaoNFe" :visualizacao="formData.visualizacao" />
             </TabContent>
             <TabContent title="Destinatário" icon="fa fa-handshake" :before-change="beforeChangeDestinatario">
-                <DestinatarioNFe ref="destinatarioNFe" v-model="formData.destinatario" />
+                <DestinatarioNFe ref="destinatarioNFe" v-model="formData.destinatario" :visualizacao="formData.visualizacao" />
             </TabContent>
             <TabContent title="Produtos" icon="fa fa-barcode" :before-change="beforeChangeProdutos">
-                <ProdutosNFe ref="produtosNFe" v-model="formData.itensNFe" :dadosAuxiliares="dadosAuxiliaresItem" />
+                <ProdutosNFe ref="produtosNFe" v-model="formData.itensNFe" :dadosAuxiliares="dadosAuxiliaresItem" :visualizacao="formData.visualizacao" />
             </TabContent>
             <TabContent title="Totalizadores" icon="fa fa-list-ol">
                 <TotalizadoresNFe v-model="formData.itensNFe" />
             </TabContent>
             <TabContent title="Informações do Transporte" icon="fa fa-truck" :before-change="beforeChangeTransporte">
-                <TransporteNFe ref="transporteNFe" v-model="formData.transporte" />
+                <TransporteNFe ref="transporteNFe" v-model="formData.transporte" :visualizacao="formData.visualizacao" />
             </TabContent>
             <TabContent title="Dados do Faturamento" icon="fa fa-wallet" :before-change="beforeChangeFinanceiro">
-                <FinanceiroNFe ref="financeiroNFe" v-model="formData.financeiro" />
+                <FinanceiroNFe ref="financeiroNFe" v-model="formData.financeiro" :visualizacao="formData.visualizacao" />
             </TabContent>
             <TabContent title="Informações Adicionais" icon="fa fa-info" :before-change="beforeChangeInfoAdicionais">
-                <InformacoesAdicionaisNFe v-model="formData.informacoesAdicionais" />
+                <InformacoesAdicionaisNFe v-model="formData.informacoesAdicionais" :visualizacao="formData.visualizacao" />
             </TabContent>
             <TabContent title="Finalizar" icon="fa fa-envelope-circle-check">
                 <ResumoNFe v-model="formData" />

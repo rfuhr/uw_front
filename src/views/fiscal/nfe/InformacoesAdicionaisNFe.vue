@@ -5,6 +5,11 @@ const props = defineProps({
     modelValue: {
         type: Object,
         required: true
+    },
+    visualizacao: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
@@ -27,7 +32,7 @@ const localModelValue = computed({
                     <div class="col-12">
                         <UWFieldSet title="Informações Adicionais" class="h-full">
                             <div class="formgrid grid">
-                                <UWTextArea id="infoAdicionaisComplementares" v-model="localModelValue.infoAdicionaisComplementares" label="Informações Complementares" uppercase classContainer="col-12 md:col-12" />
+                                <UWTextArea id="infoAdicionaisComplementares" :disabled="visualizacao" v-model="localModelValue.infoAdicionaisComplementares" label="Informações Complementares" uppercase classContainer="col-12 md:col-12" />
                             </div>
                         </UWFieldSet>
                     </div>

@@ -36,6 +36,11 @@ const props = defineProps({
     dadosAuxiliares: {
         type: Object,
         required: true
+    },
+    visualizacao: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
@@ -468,7 +473,7 @@ const showDialog = () => {
                             <Toolbar>
                                 <template v-slot:start>
                                     <div>
-                                        <Button label="Adicionar Produto" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarItem()" />
+                                        <Button v-show="!visualizacao" label="Adicionar Produto" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarItem()" />
                                     </div>
                                 </template>
                             </Toolbar>
@@ -527,7 +532,7 @@ const showDialog = () => {
                                 <Column header="" style="width: 6%">
                                     <template #body="slotProps">
                                         <Button icon="pi pi-pencil" class="p-button-info p-button-sm mr-2" @click="handleEdit(slotProps)" />
-                                        <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete($event, slotProps.data)" />
+                                        <Button v-show="!visualizacao" icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete($event, slotProps.data)" />
                                     </template>
                                 </Column>
                             </DataTable>
@@ -556,6 +561,7 @@ const showDialog = () => {
                                                 label="Produto / Serviço"
                                                 @changeObject="changeItem"
                                                 :erros="_.get(errors?.value, `itens[${indexSelecionado}].detalhamentoItem.itemId`, null)"
+                                                :disabled="visualizacao"
                                             />
                                             <UWInput id="ncm" label="Ncm" v-model="itemEmManutencao.detalhamentoItem.item.ncmCodigo" disabled classContainer="col-12 md:col-1" />
                                             <UWInput id="origemProduto" label="Origem do Produto" v-model="itemEmManutencao.detalhamentoItem.item.origemNome" uppercase disabled classContainer="col-12 md:col-3" />
@@ -569,14 +575,15 @@ const showDialog = () => {
                                                 required
                                                 label="Cfop"
                                                 @changeObject="changeCfop"
+                                                :disabled="visualizacao"
                                             />
                                         </div>
                                         <div class="col-12">
                                             <UWFieldSet title="Quantidade e Valores do Item" class="h-full surface-200">
                                                 <div class="flex gap-0 flex-row justify-content-center align-content-end p-fluid formgrid grid">
-                                                    <UWInput id="unidadeMedidaComercial" v-model="itemEmManutencao.detalhamentoItem.item.unidadeMedidaComercialNome" label="Unidade de Medida" uppercase disabled classContainer="col-12 md:col-2" />
-                                                    <UWDecimal id="quantidade" label="Quantidade" v-model="itemEmManutencao.detalhamentoItem.quantidade" :maximoDigitos="5" classContainer="col-12 md:col-2" @onChange="changeQuantidade(true)" />
-                                                    <UWCurrency id="valorUnitario" label="Valor Unitário" v-model="itemEmManutencao.detalhamentoItem.valorUnitario" classContainer="col-12 md:col-2" @onChange="changeValorUnitario(true)" />
+                                                    <UWInput id="unidadeMedidaComercial" :disabled="visualizacao" v-model="itemEmManutencao.detalhamentoItem.item.unidadeMedidaComercialNome" label="Unidade de Medida" uppercase disabled classContainer="col-12 md:col-2" />
+                                                    <UWDecimal id="quantidade" :disabled="visualizacao" label="Quantidade" v-model="itemEmManutencao.detalhamentoItem.quantidade" :maximoDigitos="5" classContainer="col-12 md:col-2" @onChange="changeQuantidade(true)" />
+                                                    <UWCurrency id="valorUnitario" :disabled="visualizacao" label="Valor Unitário" v-model="itemEmManutencao.detalhamentoItem.valorUnitario" classContainer="col-12 md:col-2" @onChange="changeValorUnitario(true)" />
                                                     <UWCurrency id="valorTotalBrutoItem" label="Valor Total Bruto" v-model="subTotal" disabled classContainer="col-12 md:col-2" />
                                                     <UWDecimal
                                                         id="percentualDesconto"
@@ -585,22 +592,24 @@ const showDialog = () => {
                                                         :maximoDigitos="2"
                                                         @onChange="changePercentualDesconto(true)"
                                                         classContainer="col-12 md:col-2"
+                                                        :disabled="visualizacao"
                                                     />
-                                                    <UWCurrency id="valorDesconto" v-model="itemEmManutencao.detalhamentoItem.valorDesconto" label="Valor Desc." classContainer="col-12 md:col-2" @onChange="changeValorDesconto(true)" />
-                                                    <UWCurrency id="valorFrete" label="Valor Frete" v-model="itemEmManutencao.detalhamentoItem.valorFrete" classContainer="col-12 md:col-2" @onChange="changeValorFrete(true)" />
-                                                    <UWCurrency id="valorSeguro" label="Valor Seguro" v-model="itemEmManutencao.detalhamentoItem.valorSeguro" classContainer="col-12 md:col-2" @onChange="changeValorSeguro(true)" />
+                                                    <UWCurrency id="valorDesconto" :disabled="visualizacao" v-model="itemEmManutencao.detalhamentoItem.valorDesconto" label="Valor Desc." classContainer="col-12 md:col-2" @onChange="changeValorDesconto(true)" />
+                                                    <UWCurrency id="valorFrete" :disabled="visualizacao" label="Valor Frete" v-model="itemEmManutencao.detalhamentoItem.valorFrete" classContainer="col-12 md:col-2" @onChange="changeValorFrete(true)" />
+                                                    <UWCurrency id="valorSeguro" :disabled="visualizacao" label="Valor Seguro" v-model="itemEmManutencao.detalhamentoItem.valorSeguro" classContainer="col-12 md:col-2" @onChange="changeValorSeguro(true)" />
                                                     <UWCurrency
                                                         id="valorOutrasDespesas"
                                                         label="Outras Desp."
                                                         v-model="itemEmManutencao.detalhamentoItem.valorOutrasDespesas"
                                                         classContainer="col-12 md:col-2"
                                                         @onChange="changeValorOutrasDespesas(true)"
+                                                        :disabled="visualizacao"
                                                     />
                                                     <UWCurrency id="valorTotalBrutoItem" label="Valor Total" v-model="valorTotal" disabled classContainer="col-12 md:col-2" />
                                                 </div>
                                             </UWFieldSet>
                                         </div>
-                                        <UWTextArea id="infoAdicionais" v-model="itemEmManutencao.infoAdicionais" label="Informações Adicionais do Item" uppercase classContainer="col-12 md:col-12" />
+                                        <UWTextArea id="infoAdicionais" :disabled="visualizacao" v-model="itemEmManutencao.infoAdicionais" label="Informações Adicionais do Item" uppercase classContainer="col-12 md:col-12" />
                                     </UWFieldSet>
                                 </div>
                                 <!-- <Accordion v-if="temTributacao()" :activeIndex="0" expandIcon="pi pi-plus" collapseIcon="pi pi-minus" class="col-12"> -->
@@ -647,7 +656,7 @@ const showDialog = () => {
                                                 <IcmsUfOutroDestino v-model="itemEmManutencao" />
                                             </TabPanel> -->
                                     <TabPanel header="IPI" v-if="itemEmManutencao.configuracaoFiscal.temIpi">
-                                        <Ipi v-model="itemEmManutencao" />
+                                        <Ipi v-model="itemEmManutencao" :visualizacao="visualizacao" />
                                     </TabPanel>
                                     <!-- <TabPanel header="Imposto de Importação" v-if="configuracaoFiscal.temII">
                                                 <II v-model="itemEmManutencao" />
@@ -671,7 +680,7 @@ const showDialog = () => {
                         <Divider />
                         <div class="flex justify-content-end flex-wrap gap-2">
                             <Button label="Voltar" icon="pi pi-replay" class="p-button-help" outlined @click="handleVoltar()" />
-                            <Button type="submit" label="Confirmar" style="color: var(--teal-600)" outlined icon="pi pi-check" @click="handleConfirmar()" />
+                            <Button v-show="!visualizacao" type="submit" label="Confirmar" style="color: var(--teal-600)" outlined icon="pi pi-check" @click="handleConfirmar()" />
                         </div>
                     </div>
                 </Dialog>

@@ -26,12 +26,32 @@ class NFeService {
         return api.get(`/fiscal/nfe/cache/${cacheId}`);
     }
 
+    getNFeComunicacaoSEFAZ(nfeId) {
+        return api.get(`/fiscal/nfe/sefaz/${nfeId}`);
+    }
+
     emitirNFe(payload) {
         return api.post(`/fiscal/nfe`, payload );
     }
 
     enviarNFe(nfeId) {
         return api.get(`/fiscal/nfe/${nfeId}/enviar`, { responseType: 'blob' } );
+    }
+
+    integrarNFe(nfeId) {
+        return api.get(`/fiscal/nfe/${nfeId}/integrar`);
+    }
+
+    inutilizarNFe(nfeId) {
+        return api.get(`/fiscal/nfe/${nfeId}/inutilizar`);
+    }
+
+    cancelarNFe(nfeId) {
+        return api.get(`/fiscal/nfe/${nfeId}/cancelar`);
+    }
+
+    consultarStatusNFe(nfeId) {
+        return api.get(`/fiscal/nfe/${nfeId}/consultar-status`);
     }
 }
 

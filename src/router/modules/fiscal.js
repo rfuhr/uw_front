@@ -48,7 +48,7 @@ const fiscalRouter = {
                     },
                   }, 
                   {
-                    path: 'editar/:id(\\d+)',
+                    path: 'editar/:id(\\d+)/:visualizacao(\\d+)',
                     component: () => import('@/views/fiscal/nfe/NovaNFe.vue'),
                     name: 'fis-nfe-editar',
                     meta: {

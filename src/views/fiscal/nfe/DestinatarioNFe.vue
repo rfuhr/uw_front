@@ -12,6 +12,11 @@ const props = defineProps({
     modelValue: {
         type: Object,
         required: true
+    },
+    visualizacao: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
@@ -137,12 +142,12 @@ const changeOutroLocalEntrega = () => {
                     <div class="col-12">
                         <UWFieldSet title="Dados do Destinatário" class="h-full">
                             <div class="p-fluid formgrid grid">
-                                <UWParceiroLocal id="parceiroLocal" ref="seletorDestinatario" classContainer="col-12 md:col-4" v-model="localModelValue.destinatarioId" required label="Parceiro" @changeObject="changeParceiroLocal" :erros="errors.value?.destinatarioId" />
-                                <UWInput id="cpfCnpj" :label="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J' ? 'Cnpj' : 'Cpf'" uppercase disabled v-model="dadosParceiroLocal.cpfCnpj" classContainer="col-12 md:col-3" />
-                                <UWInput v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'" id="nomeLocal" label="Filial" uppercase disabled v-model="dadosParceiroLocal.nomeLocal" classContainer="col-12 md:col-5" />
-                                <UWInput id="endereco" label="Endereço" uppercase disabled v-model="dadosParceiroLocal.enderecoCompleto" classContainer="col-12 md:col-6" />
-                                <UWInput id="telefone" label="Telefone" disabled v-model="dadosParceiroLocal.telefoneFormatado" classContainer="col-12 md:col-3" />
-                                <UWInput id="email" label="Email" disabled v-model="dadosParceiroLocal.email" classContainer="col-12 md:col-3" />
+                                <UWParceiroLocal id="parceiroLocal" ref="seletorDestinatario" classContainer="col-12 md:col-4" v-model="localModelValue.destinatarioId" required label="Parceiro" @changeObject="changeParceiroLocal" :erros="errors.value?.destinatarioId" :disabled="visualizacao"/>
+                                <UWInput id="cpfCnpj" :label="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J' ? 'Cnpj' : 'Cpf'" uppercase disabled v-model="dadosParceiroLocal.cpfCnpj" classContainer="col-12 md:col-3" :disabled="visualizacao"/>
+                                <UWInput v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'" id="nomeLocal" label="Filial" uppercase disabled v-model="dadosParceiroLocal.nomeLocal" classContainer="col-12 md:col-5" :disabled="visualizacao"/>
+                                <UWInput id="endereco" label="Endereço" uppercase disabled v-model="dadosParceiroLocal.enderecoCompleto" classContainer="col-12 md:col-6" :disabled="visualizacao"/>
+                                <UWInput id="telefone" label="Telefone" disabled v-model="dadosParceiroLocal.telefoneFormatado" classContainer="col-12 md:col-3" :disabled="visualizacao"/>
+                                <UWInput id="email" label="Email" disabled v-model="dadosParceiroLocal.email" classContainer="col-12 md:col-3" :disabled="visualizacao"/>
 
                                 <UWPickList
                                     v-if="!dadosParceiroLocal.tipoPessoa || dadosParceiroLocal.tipoPessoa === 'J'"
@@ -173,6 +178,7 @@ const changeOutroLocalEntrega = () => {
                                                     class: [{ 'h-full': true, 'bg-green-100 border-white': !localModelValue.outroLocalEntrega, 'bg-purple-100 border-white': localModelValue.outroLocalEntrega }]
                                                 }
                                             }"
+                                            :disabled="visualizacao"
                                         />
                                     </span>
                                 </div>

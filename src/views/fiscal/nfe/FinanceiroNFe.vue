@@ -37,6 +37,11 @@ const props = defineProps({
     modelValue: {
         type: Object,
         required: true
+    },
+    visualizacao: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
@@ -201,7 +206,7 @@ defineExpose({
                             <Toolbar>
                                 <template v-slot:start>
                                     <div>
-                                        <Button label="Adicionar Pagamento" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarPagamento()" />
+                                        <Button v-show="!visualizacao" label="Adicionar Pagamento" icon="pi pi-plus" class="p-button-success p-button-outlined mb-0 p-button-sm" @click="adicionarPagamento()" />
                                     </div>
                                 </template>
                             </Toolbar>
@@ -254,8 +259,8 @@ defineExpose({
                                 <Column field="grupoCartao.numeroAutorizacao" header="Número da Autorização" style="width: 10%; text-align: left" headerClass="columnHeaderItem"> </Column>
                                 <Column header="" style="width: 18%">
                                     <template #body="slotProps">
-                                        <Button icon="pi pi-pencil" class="p-button-info p-button-sm mr-2" @click="handleEdit(slotProps)" />
-                                        <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete($event, slotProps.data)" />
+                                        <Button v-show="!visualizacao" icon="pi pi-pencil" class="p-button-info p-button-sm mr-2" @click="handleEdit(slotProps)" />
+                                        <Button v-show="!visualizacao" icon="pi pi-trash" class="p-button-danger p-button-sm" @click="handleDelete($event, slotProps.data)" />
                                     </template>
                                 </Column>
                             </DataTable>
